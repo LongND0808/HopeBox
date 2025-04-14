@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35707.178
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HopeBox.Web", "HopeBox.Web\HopeBox.Web.csproj", "{C389FC26-AD0B-4641-9E57-7AD5F8CBE2C4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HopeBox.Common", "HopeBox.Common\HopeBox.Common.csproj", "{FCDFADD9-99DE-463B-A03A-34F93527996F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HopeBox.Core", "HopeBox.Core\HopeBox.Core.csproj", "{14BBF148-4BF2-4BF2-93F1-C1B218AE6FA8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HopeBox.Domain", "HopeBox.Domain\HopeBox.Domain.csproj", "{3AF765A4-DB30-4699-879B-2B066EA2AF53}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HopeBox.Infrastructure", "HopeBox.Infrastructure\HopeBox.Infrastructure.csproj", "{073EEBDE-832A-44C8-A49B-27CCBCF5A5F4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C389FC26-AD0B-4641-9E57-7AD5F8CBE2C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C389FC26-AD0B-4641-9E57-7AD5F8CBE2C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C389FC26-AD0B-4641-9E57-7AD5F8CBE2C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C389FC26-AD0B-4641-9E57-7AD5F8CBE2C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FCDFADD9-99DE-463B-A03A-34F93527996F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCDFADD9-99DE-463B-A03A-34F93527996F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCDFADD9-99DE-463B-A03A-34F93527996F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCDFADD9-99DE-463B-A03A-34F93527996F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14BBF148-4BF2-4BF2-93F1-C1B218AE6FA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14BBF148-4BF2-4BF2-93F1-C1B218AE6FA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14BBF148-4BF2-4BF2-93F1-C1B218AE6FA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14BBF148-4BF2-4BF2-93F1-C1B218AE6FA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3AF765A4-DB30-4699-879B-2B066EA2AF53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AF765A4-DB30-4699-879B-2B066EA2AF53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AF765A4-DB30-4699-879B-2B066EA2AF53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AF765A4-DB30-4699-879B-2B066EA2AF53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{073EEBDE-832A-44C8-A49B-27CCBCF5A5F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{073EEBDE-832A-44C8-A49B-27CCBCF5A5F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{073EEBDE-832A-44C8-A49B-27CCBCF5A5F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{073EEBDE-832A-44C8-A49B-27CCBCF5A5F4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

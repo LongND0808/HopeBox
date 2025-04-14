@@ -1,0 +1,6 @@
+@HopeBox.Web_HostAddress = http://localhost:5211
+
+GET {{HopeBox.Web_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
