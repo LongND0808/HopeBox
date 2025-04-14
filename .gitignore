@@ -1,0 +1,34 @@
+# Ignore build outputs
+bin/
+obj/
+out/
+
+# Ignore user-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.swp
+
+# Ignore logs, database, and temp files
+*.log
+*.tlog
+*.cache
+*.pdb
+*.mdb
+*.opendb
+*.pyc
+*.tmp
+*.tmp*
+*.log*
+
+# Ignore IDE folders
+.vs/
+.vscode/
+.idea/
+
+# Ignore packages
+packages/
+
+# Ignore node_modules
+node_modules/
