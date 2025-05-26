@@ -13,9 +13,9 @@ namespace HopeBox.Domain.Models
 
         public MediaType Type { get; set; } 
 
-        public Guid? CampaignId { get; set; }
+        public Guid? CausesId { get; set; }
 
-        public virtual Campaign? Campaign { get; set; }
+        public virtual Cause? Causes { get; set; }
     }
 
 }

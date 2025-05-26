@@ -1,0 +1,36 @@
+
+// Goggle fonts
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,400;1,500;1,700&family=Yeseva+One&display=swap');
+
+
+// Icon font
+@import "../css/icofont.css";
+
+// Base
+@import "common/mixins";
+
+// Typography
+ @import "common/typography";
+
+// Common Styles
+@import "component/common";
+@import "component/navbar";
+@import "header/header";
+@import "header/sidebar-mobile-menu";
+@import "header/mobile-menu-toggle";
+@import "component/banner";
+@import "component/about";
+@import "component/service";
+@import "component/team";
+@import "component/causes";
+@import "component/events";
+@import "component/gallery";
+@import "component/testimonial";
+@import "component/brand-logo";
+@import "component/funfact";
+@import "component/donate";
+@import "component/icon-box";
+@import "component/form";
+@import "component/blog";
+@import "component/contact";
+@import "footer/footer";

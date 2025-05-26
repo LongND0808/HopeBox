@@ -7,7 +7,7 @@ using HopeBox.Infrastructure.Repository;
 namespace HopeBox.Core.Service
 {
     public class BaseService<TModel, TDto> : IBaseService<TModel, TDto>
-        where TModel : class
+        where TModel : BaseModel
         where TDto : class
     {
         protected readonly IRepository<TModel> _repository;
@@ -19,89 +19,91 @@ namespace HopeBox.Core.Service
             _converter = converter;
         }
 
-        public async Task<BaseResponseDTO<TDto>> GetByIdAsync(Guid id)
+        public async Task<BaseResponseDto<TDto>> GetByIdAsync(Guid id)
         {
             try
             {
-                var entity = await _repository.GetOneAsyncUntracked<TModel>(filter: f => (f as BaseModel).Id == id);
+                var entity = await _repository.GetOneAsyncUntracked<TModel>(filter: f => f.Id == id);
                 if (entity == null)
                 {
-                    return new BaseResponseDTO<TDto>
+                    return new BaseResponseDto<TDto>
                     {
                         Status = 404,
                         Message = "Entity not found.",
-                        Data = null
+                        ResponseData = null
                     };
                 }
 
                 var dto = _converter.ToDTO(entity);
-                return new BaseResponseDTO<TDto> { Status = 200, Message = "Success", Data = dto };
+                return new BaseResponseDto<TDto> { Status = 200, Message = "Success", ResponseData = dto };
             }
             catch (Exception ex)
             {
-                return new BaseResponseDTO<TDto> { Status = 500, Message = ex.Message, Data = null };
+                return new BaseResponseDto<TDto> { Status = 500, Message = ex.Message, ResponseData = null };
             }
         }
 
-        public async Task<BaseResponseDTO<IEnumerable<TDto>>> GetAllAsync()
+        public async Task<BaseResponseDto<IEnumerable<TDto>>> GetAllAsync()
         {
             try
             {
                 var entities = await _repository.GetListAsyncUntracked<TModel>();
                 var dtos = _converter.ToListDTO(entities);
-                return new BaseResponseDTO<IEnumerable<TDto>> { Status = 200, Message = "Success", Data = dtos };
+                return new BaseResponseDto<IEnumerable<TDto>> { Status = 200, Message = "Success", ResponseData = dtos };
             }
             catch (Exception ex)
             {
-                return new BaseResponseDTO<IEnumerable<TDto>> { Status = 500, Message = ex.Message, Data = null };
+                return new BaseResponseDto<IEnumerable<TDto>> { Status = 500, Message = ex.Message, ResponseData = null };
             }
         }
 
-        public async Task<BaseResponseDTO<bool>> AddAsync(TModel model)
+        public async Task<BaseResponseDto<bool>> AddAsync(TDto dto)
         {
             try
             {
+                var model = _converter.ToModel(dto);
                 await _repository.AddAsync(model);
                 await _repository.SaveChangesAsync();
-                return new BaseResponseDTO<bool> { Status = 201, Message = "Add successful", Data = true };
+                return new BaseResponseDto<bool> { Status = 201, Message = "Add successful", ResponseData = true };
             }
             catch (Exception ex)
             {
-                return new BaseResponseDTO<bool> { Status = 500, Message = ex.Message, Data = false };
+                return new BaseResponseDto<bool> { Status = 500, Message = ex.Message, ResponseData = false };
             }
         }
 
-        public async Task<BaseResponseDTO<bool>> UpdateAsync(TModel model)
+        public async Task<BaseResponseDto<bool>> UpdateAsync(TDto dto)
         {
             try
             {
+                var model = _converter.ToModel(dto);
                 await _repository.UpdateAsync(model);
                 await _repository.SaveChangesAsync();
-                return new BaseResponseDTO<bool> { Status = 200, Message = "Update successful", Data = true };
+                return new BaseResponseDto<bool> { Status = 200, Message = "Update successful", ResponseData = true };
             }
             catch (Exception ex)
             {
-                return new BaseResponseDTO<bool> { Status = 500, Message = ex.Message, Data = false };
+                return new BaseResponseDto<bool> { Status = 500, Message = ex.Message, ResponseData = false };
             }
         }
 
-        public async Task<BaseResponseDTO<bool>> DeleteAsync(Guid id)
+        public async Task<BaseResponseDto<bool>> DeleteAsync(Guid id)
         {
             try
             {
                 var entity = await _repository.GetOneAsyncUntracked<TModel>(filter: f => (f as BaseModel).Id == id);
                 if (entity == null)
                 {
-                    return new BaseResponseDTO<bool> { Status = 404, Message = "Entity not found.", Data = false };
+                    return new BaseResponseDto<bool> { Status = 404, Message = "Entity not found.", ResponseData = false };
                 }
 
                 await _repository.DeleteAsync(entity);
                 await _repository.SaveChangesAsync();
-                return new BaseResponseDTO<bool> { Status = 200, Message = "Delete successful", Data = true };
+                return new BaseResponseDto<bool> { Status = 200, Message = "Delete successful", ResponseData = true };
             }
             catch (Exception ex)
             {
-                return new BaseResponseDTO<bool> { Status = 500, Message = ex.Message, Data = false };
+                return new BaseResponseDto<bool> { Status = 500, Message = ex.Message, ResponseData = false };
             }
         }
     }

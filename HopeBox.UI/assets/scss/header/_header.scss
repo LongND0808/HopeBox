@@ -1,0 +1,236 @@
+/*
+-----------------------------------------------------------------------
+  Header CSS
+-----------------------------------------------------------------------
+*/
+
+.header-area {
+    padding: 50px 0;
+
+    // Header Default
+    &.header-default {
+        background-color: $white;
+        box-shadow: 0px 15px 35px 0px rgba(0, 29, 35, 0.02);
+        border: 0 !important;
+        padding: 15px 0;
+        position: relative;
+        z-index: 999;
+        @media #{$sm-device} {
+            padding: 10px 0;
+        }
+        .container {
+            @media #{$xxl-device} {
+                max-width: 1397px;
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+        }
+        .header-logo-area {
+            top: 0;
+            @media #{$md-device} {
+                padding-right: 25px;
+            }
+            @media #{$sm-device} {
+                padding-right: 10px;
+            }
+        }
+        .header-align {
+            align-items: center;
+            display: flex;
+            justify-content: flex-end;
+            @media #{$md-device} {
+                justify-content: flex-end;
+            }
+
+            .header-navigation-area {
+                @media #{$lg-device} {
+                    display: none;
+                }
+                .main-menu {
+                    & > li {
+                        margin-right: 0;
+                        &:first-child {
+                            & > a {
+                                &.router-link-exact-active {
+                                    &:before {
+                                        left: 30%;
+                                    }
+                                }
+                            }
+                            & > a {
+                                padding-left: 0;
+                            }
+                        }
+                        &:last-child {
+                            margin-right: 0;
+                            & > a {
+                                &.router-link-exact-active {
+                                    &:before {
+                                        left: 65%;
+                                    }
+                                }
+                            }
+                            & > a {
+                                padding-right: 0;
+                            }
+                        }
+                        & > a {
+                            &.router-link-exact-active {
+                                color: $white;
+                                position: relative;
+                                &:before {
+                                    background-image: url("/images/shape/menu-shape.png");
+                                    background-repeat: no-repeat;
+                                    background-position: 45% 15%;
+                                    content: "";
+                                    display: block;
+                                    height: 100%;
+                                    left: 50%;
+                                    min-width: 118px;
+                                    position: absolute;
+                                    top: 50%;
+                                    width: 100%;
+                                    z-index: -1;
+                                    @include translate(-50%, -50%);
+                                }
+                            }
+                        }
+                        &.has-submenu {
+                            & > a {
+                                &:before {
+                                    display: block;
+                                }
+                            }
+                        }
+                        & > a {
+                            padding: 7px 34px;
+                            @media #{$xl-device} {
+                                padding: 7px 31px;
+                            }
+                        }
+                        &.has-submenu {
+                            .submenu-nav {
+                                background-color: $white;
+                                border: none;
+                                border-radius: 0 0 5px 5px;
+                                box-shadow: 0px 20px 80px 0px rgba(171, 181, 189, 0.35);
+                                left: -10px;
+                                margin-top: 25px;
+                                min-width: 195px;
+                                &:before {
+                                    height: 40px;
+                                }
+                                & > li {
+                                    a {
+                                        color: $black-0e;
+                                        &:hover {
+                                            color: $theme-color;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            .header-action-area {
+                display: flex;
+                align-items: center;
+                margin-left: 91px;
+                position: relative;
+                @media (max-width: 1699px) {
+                    margin-left: 50px;
+                }
+                @media (max-width: 1599px) {
+                    margin-left: 45px;
+                }
+                @media #{$xl-device} {
+                    margin-left: 40px;
+                }
+                @media #{$xxs-device} {
+                    margin-left: 0;
+                }
+                button,
+                a {
+                    &.btn-theme {
+                        margin-left: 15px;
+                        @media (max-width: 1599px) {
+                            min-width: 175px;
+                            padding: 17px 27px;
+                        }
+                        @media #{$lg-device} {
+                            padding: 15px 27px;
+                        }
+                        @media #{$sm-device} {
+                            font-size: 14px;
+                            min-width: 130px;
+                            padding: 11px 16px;
+                        }
+                        @media (max-width: 384px) {
+                            display: none;
+                        }
+                        &:before {
+                            @media #{$sm-device} {
+                                bottom: -50px;
+                            }
+                        }
+                        &:after {
+                            @media #{$sm-device} {
+                                top: -50px;
+                            }
+                        }
+                        &.btn-slide {
+                            .icon {
+                                &.icon-img {
+                                    right: 28px;
+                                    @media #{$sm-device} {
+                                        right: 15px;
+                                        width: 10px;
+                                    }
+                                }
+                            }
+                            &:hover {
+                                &:before {
+                                    @media #{$sm-device} {
+                                        bottom: 0;
+                                    }
+                                }
+                                &:after {
+                                    @media #{$sm-device} {
+                                        top: 0;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// sticky css
+.header-area {
+    &.is-sticky {
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 99;
+        position: fixed;
+        animation: fadeInDown .5s ease-in-out;
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translate3d(0, -100%, 0);
+    }
+  
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+

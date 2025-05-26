@@ -1,0 +1,1 @@
+export { default } from "file:///C:/Work/HopeBox/HopeBox.UI/node_modules/@nuxt/vite-builder/dist/runtime/vite-node.mjs"

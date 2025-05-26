@@ -16,7 +16,7 @@ namespace HopeBox.Domain.Models
         [Range(0, double.MaxValue)]
         public decimal UnitPrice { get; set; }
 
-        public ICollection<ReliefPackageItem>? PackageItems { get; set; }
+        public virtual ICollection<ReliefPackageItem>? PackageItems { get; set; }
     }
 
 }

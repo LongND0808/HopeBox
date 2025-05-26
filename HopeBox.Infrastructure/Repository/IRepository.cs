@@ -28,6 +28,8 @@ namespace HopeBox.Infrastructure.Repository
             int? pageSize = null,
             int? pageNumber = null);
 
+        Task<int> GetCount(Expression<Func<T, bool>>? filter = null);
+
         Task AddAsync(T entity);
         Task UpdateAsync(T entity);
         Task DeleteAsync(T entity);

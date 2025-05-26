@@ -1,0 +1,98 @@
+/*
+-----------------------------------------------------------------------
+  Brand Logo CSS
+-----------------------------------------------------------------------
+*/
+
+.brand-logo-area {
+    &.brand-logo-default-area {
+        padding: 109px 0 300px;
+        @media #{$lg-device} {
+            padding: 140px 0 215px;
+        }
+        @media #{$sm-device} {
+            padding: 40px 15px 215px;
+        }
+        .section-title {
+            margin-bottom: 80px;
+            @media #{$sm-device} {
+                margin-bottom: 60px;
+            }
+            @media #{$xs-device} {
+                margin: 0 auto 60px;
+                max-width: 260px;
+            }
+            .title {
+                &.title-style {
+                    .img-shape {
+                        @include translate(-60%, -47%);
+                        @media #{$md-device} {
+                            @include translate(-50%, -50%);
+                        }
+                    }
+                }
+            }
+            .btn-theme {
+                &.btn-border {
+                    padding: 19.5px 60px 19.5px 36px;
+                    @media #{$sm-device} {
+                        padding: 13px 50px 13px 20px;
+                    }
+                    .icon {
+                        right: 30px;
+                        @media #{$sm-device} {
+                            right: 20px;
+                        }
+                    }
+                }
+            }
+        }
+
+        .brand-logo-content {
+            padding-left: 50px;
+            @media #{$xs-device}{
+                padding-left: 0;
+            }
+            .brand-logo-item {
+                align-items: center;
+                display: flex;
+                justify-content: center;
+                min-height: 79px;
+                text-align: center;
+            }
+        }
+    }
+}
+
+.brand-logo-item {
+    img {
+        opacity: 1;
+        @include transition(0.3s);
+    }
+    &:hover {
+        img {
+            opacity: 0.7;
+        }
+    }
+}
+
+.brand-logo-slider-container {
+    padding-left: 20px;
+    .brand-logo-slider {
+        .brand-logo-item {
+            align-items: center;
+            display: flex;
+            justify-content: center;
+            min-height: 96px;
+        }
+    }
+}
+.home-default-wrapper {
+    .brand-logo-area {
+        &.brand-logo-default-area {
+            @media #{$sm-device} {
+                padding: 98px 15px 215px;
+            }
+        }
+    }
+}

@@ -1,0 +1,175 @@
+/*
+-----------------------------------------------------------------------
+  Typography CSS
+-----------------------------------------------------------------------
+*/
+
+body {
+    color: $body-color;
+    font-size: $font-size-base;
+    font-family: $body-font;
+    font-weight: $font-weight-normal;
+    line-height: $body-line-height;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+    color: $heading-color;
+    font-family: $heading-font;
+    font-weight: $heading-font-weight;
+    line-height: 1.1;
+    margin-bottom: 10px;
+    margin-top: 0;
+}
+
+a {
+    color: $theme-color;
+    text-decoration: none;
+    @include transition(0.3s);
+
+    &:hover,
+    &:active,
+    &:focus {
+        box-shadow: none;
+        color: darken($theme-color, 15%);
+        outline: none;
+        text-decoration: none;
+    }
+
+    img {
+        border: none;
+    }
+}
+
+button {
+    border: transparent;
+}
+
+.btn:focus {
+    box-shadow: none;
+}
+
+p {
+    margin-bottom: 30px;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+:active,
+:focus {
+    box-shadow: none;
+    outline: none !important;
+}
+
+img {
+    max-width: 100%;
+}
+
+iframe {
+    border: none !important;
+}
+
+textarea,
+input {
+    &:focus,
+    &:active {
+        outline: none;
+    }
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+
+    li {
+        list-style: none;
+    }
+}
+
+pre,
+ul,
+ol,
+dl,
+dd,
+blockquote,
+address,
+table,
+fieldset {
+    margin-bottom: 30px;
+}
+
+table p {
+    margin-bottom: 0;
+}
+
+
+// scroll to top
+.scroll-top {
+    box-shadow: 0 30px 50px rgba(0,0,0,.03);
+    padding: 0;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 25px;
+    line-height: 60px;
+    color: $white;
+    transition: $transition;
+    overflow: hidden;
+    background-color: $theme-color;
+    background: linear-gradient(to left, #FEA444 0%, #FC6539 100%);
+    position: fixed;
+    right: 30px;
+    bottom: 30px;
+    opacity: 0;
+    visibility: hidden;
+    &.show {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    @media #{$xxs-device}{
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
+        font-size: 18px;
+    }
+
+    i{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        color: $white;
+        transition: $transition;
+    }
+
+    .arrow-top{
+        transform: translate(-50%, -50%);
+    }
+
+    .arrow-bottom{
+        transform: translate(-50%, 80px);
+    }
+
+    &:hover{
+        background-position: right center;
+        .arrow-top{
+            transform: translate(-50%, -80px);
+        }
+        .arrow-bottom{
+            transform: translate(-50%, -50%);
+        }
+    }
+}

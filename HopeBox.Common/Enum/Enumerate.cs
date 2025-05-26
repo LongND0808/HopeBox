@@ -4,7 +4,6 @@ namespace HopeBox.Common.Enum
 {
     public class Enumerate
     {
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public enum Gender
         {
             Unknown = 0,
@@ -13,7 +12,6 @@ namespace HopeBox.Common.Enum
             Other = 3
         }
 
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public enum UserStatus
         {
             Active = 1,
@@ -23,7 +21,6 @@ namespace HopeBox.Common.Enum
             Deleted = 5
         }
 
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public enum VolunteerStatus
         {
             Pending = 1,
@@ -31,8 +28,7 @@ namespace HopeBox.Common.Enum
             Rejected = 3
         }
 
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public enum CampaignStatus
+        public enum CausesStatus
         {
             Pending = 1,
             Approved = 2,
@@ -40,8 +36,24 @@ namespace HopeBox.Common.Enum
             Completed = 4,
             Canceled = 5
         }
+        public enum CausesType
+        {
+            Water = 1,
+            Food = 2,
+            Medicine = 3,
+            Education = 4,
+            Shelter = 5,
+            Clothing = 6
+        }
 
-        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public enum EventStatus
+        {
+            Upcoming = 1,
+            Ongoing = 2,
+            Completed = 3,
+            Cancelled = 4
+        }
+
         public enum MediaType
         {
             Image = 1,
@@ -49,7 +61,6 @@ namespace HopeBox.Common.Enum
             Document = 3,
         }
 
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public enum Unit
         {
             kg = 1,
@@ -58,9 +69,8 @@ namespace HopeBox.Common.Enum
             Box = 4,
             Bottle = 5,
             Carton = 6
-        }  
+        }
 
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public enum PaymentMethod
         {
             VNPAY = 1,

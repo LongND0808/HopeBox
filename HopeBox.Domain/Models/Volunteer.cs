@@ -11,13 +11,13 @@ namespace HopeBox.Domain.Models
     {
         public Guid UserId { get; set; }
 
-        public Guid CampaignId { get; set; }
+        public Guid CausesId { get; set; }
 
         public DateTime JoinDate { get; set; }
 
         public VolunteerStatus Status { get; set; }
 
         public virtual User? User { get; set; }
-        public virtual Campaign? Campaign { get; set; }
+        public virtual Cause? Causes { get; set; }
     }
 }

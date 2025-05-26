@@ -6,10 +6,10 @@ namespace HopeBox.Core.IService
         where TModel : class
         where TDto : class
     {
-        Task<BaseResponseDTO<TDto>> GetByIdAsync(Guid id);
-        Task<BaseResponseDTO<IEnumerable<TDto>>> GetAllAsync();
-        Task<BaseResponseDTO<bool>> AddAsync(TModel model);
-        Task<BaseResponseDTO<bool>> UpdateAsync(TModel model);
-        Task<BaseResponseDTO<bool>> DeleteAsync(Guid id);
+        Task<BaseResponseDto<TDto>> GetByIdAsync(Guid id);
+        Task<BaseResponseDto<IEnumerable<TDto>>> GetAllAsync();
+        Task<BaseResponseDto<bool>> AddAsync(TDto model);
+        Task<BaseResponseDto<bool>> UpdateAsync(TDto model);
+        Task<BaseResponseDto<bool>> DeleteAsync(Guid id);
     }
 }

@@ -7,9 +7,9 @@ namespace HopeBox.Infrastructure.Repository
 {
     public class Repository<T> : IRepository<T> where T : class
     {
-        protected readonly IDataContext _context;
+        protected readonly IHopeBoxDataContext _context;
 
-        public Repository(IDataContext context)
+        public Repository(IHopeBoxDataContext context)
         {
             _context = context;
         }
@@ -184,6 +184,18 @@ namespace HopeBox.Infrastructure.Repository
         public async Task AddRangeAsync(List<T> entities)
         {
             await _context.Set<T>().AddRangeAsync(entities);
+        }
+
+        public async Task<int> GetCount(Expression<Func<T, bool>>? filter = null)
+        {
+            IQueryable<T> query = _context.Set<T>().AsNoTracking();
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            return await query.CountAsync();
         }
     }
 }

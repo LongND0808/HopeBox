@@ -1,4 +1,8 @@
 using HopeBox.Core.Config;
+using HopeBox.Core.IAspModelService;
+using HopeBox.Core.IdentityModelService;
+using HopeBox.Core.IService;
+using HopeBox.Core.Service;
 using HopeBox.Domain.Converter;
 using HopeBox.Domain.Models;
 using HopeBox.Infrastructure.DataContext;
@@ -6,8 +10,10 @@ using HopeBox.Infrastructure.Repository;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Org.BouncyCastle.Asn1.X509.Qualified;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,13 +23,17 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddControllersWithViews();
-
-builder.Services.AddDbContext<DataContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("BetaCinema")));
+builder.Services.AddDbContext<HopeBoxDataContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("HopeBox")));
 
 builder.Services.AddSingleton<IConfig, Config>();
-builder.Services.AddScoped<IDataContext, DataContext>();
+builder.Services.AddScoped<IHopeBoxDataContext, HopeBoxDataContext>();
+
+builder.Services.AddScoped(typeof(IConverter<,>), typeof(HopeBox.Domain.Converter.Converter<,>));
+builder.Services.AddScoped(typeof(IBaseService<,>), typeof(BaseService<,>));
+
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICauseService, CauseService>();
 
 #region Add Repository
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -46,7 +56,7 @@ builder.Services.AddSession(options =>
 });
 
 builder.Services.AddIdentity<User, Role>()
-    .AddEntityFrameworkStores<DataContext>()
+    .AddEntityFrameworkStores<HopeBoxDataContext>()
     .AddDefaultTokenProviders();
 
 var config = new Config(builder.Configuration);
@@ -81,7 +91,16 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddControllers();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();
@@ -96,6 +115,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseCors("AllowAll");
 
 app.MapControllers();
 

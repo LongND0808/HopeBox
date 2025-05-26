@@ -14,13 +14,10 @@ namespace HopeBox.Domain.Converter
             var dto = new TDTO();
             foreach (var prop in typeof(TModel).GetProperties())
             {
-                if (!prop.GetGetMethod().IsVirtual)
+                var dtoProp = typeof(TDTO).GetProperty(prop.Name);
+                if (dtoProp != null && dtoProp.CanWrite)
                 {
-                    var dtoProp = typeof(TDTO).GetProperty(prop.Name);
-                    if (dtoProp != null && dtoProp.CanWrite)
-                    {
-                        dtoProp.SetValue(dto, prop.GetValue(model));
-                    }
+                    dtoProp.SetValue(dto, prop.GetValue(model));
                 }
             }
             return dto;
@@ -32,7 +29,7 @@ namespace HopeBox.Domain.Converter
             foreach (var prop in typeof(TDTO).GetProperties())
             {
                 var modelProp = typeof(TModel).GetProperty(prop.Name);
-                if (modelProp != null && modelProp.CanWrite && !modelProp.GetGetMethod().IsVirtual)
+                if (modelProp != null && modelProp.CanWrite)
                 {
                     modelProp.SetValue(model, prop.GetValue(dto));
                 }

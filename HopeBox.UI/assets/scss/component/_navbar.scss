@@ -1,0 +1,126 @@
+/*
+-----------------------------------------------------------------------
+	Main Navigation CSS
+-----------------------------------------------------------------------
+*/
+
+.main-menu {
+    align-content: center;
+    font-family: $font-current-theme1;
+
+    & > li {
+        margin-right: 14px;
+        padding: 3px 0;
+
+        &:last-child {
+            margin-right: 0;
+        }
+
+        & > a {
+            color: $theme-color3;
+            display: block;
+            font-size: 17px;
+            font-weight: $font-weight-medium;
+            line-height: 22px;
+            padding: 7px 25px;
+            position: relative;
+        }
+
+        &:hover,
+        &.active {
+            & > a {
+                color: $theme-color;
+            }
+        }
+    }
+}
+
+// Sub Menu Or Dropdown Menu
+.has-submenu {
+    padding-right: 10px;
+    position: relative;
+
+    // Menu Item Arrows
+    & > a {
+        position: relative;
+    }
+
+    // After Hover Sub Menu
+    &:hover {
+        & > .submenu-nav {
+            transform: none;
+            opacity: 1;
+            visibility: visible;
+            pointer-events: visible;
+        }
+
+        .menu-content {
+            .menu-content-inner {
+                h4,
+                .btn-brand {
+                    transform: none !important;
+                }
+            }
+        }
+    }
+
+    // Sub Menu Style
+    .submenu-nav {
+        background-color: $black-111;
+        border: none;
+        border-bottom: none;
+        padding: 15px 0 15px;
+        position: absolute;
+        left: -25px;
+        top: 100%;
+        transform: translateY(50px);
+        transition: 0.4s;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        min-width: 250px;
+        margin-top: 42px;
+        z-index: 9999;
+
+        @media #{$lg-device} {
+            min-width: 210px;
+        }
+
+        &:before {
+            content: "";
+            position: absolute;
+            height: 56px;
+            width: 100%;
+            left: 0;
+            bottom: 100%;
+        }
+
+        & > li {
+            padding: 5px 25px;
+
+            a {
+                color: #aaa;
+                display: block;
+                font-weight: $font-weight-normal;
+                font-size: 14px;
+                letter-spacing: inherit;
+                text-transform: capitalize;
+
+                &:hover {
+                    color: $white;
+                }
+            }
+
+            &:hover {
+                & > a {
+                    color: $white;
+                }
+
+                &:after {
+                    color: $white !important;
+                }
+            }
+        }
+    }
+}
+
