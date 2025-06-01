@@ -1,119 +1,170 @@
 <template>
-    <section class="blog-grid-area">
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <div class="blog-content-column">
-                        <div class="blog-content-area post-items-style2">
-                            <div class="post-item" v-for="(blog, index) in blogs" :key="index">
-                                <div class="thumb">
-                                    <nuxt-link to="/blog-details">
-                                        <img :src="blog.imgSrc" :alt="blog.title">
-                                    </nuxt-link>
-                                    <div class="meta-date">
-                                        <nuxt-link to="/blog"><span>{{ blog.day }}</span>{{ blog.month }}</nuxt-link>
-                                    </div>
-                                    <div class="shape-line"></div>
-                                </div>
-                                <div class="content">
-                                    <div class="inner-content">
-                                        <div class="meta">
-                                            <nuxt-link to="/blog" class="post-category">{{ blog.category }}</nuxt-link>
-                                            <nuxt-link to="/blog" class="post-author">
-                                                <span class="icon">
-                                                    <img class="icon-img" src="/images/icons/admin1.png" alt="Icon-Image">
-                                                </span>By: {{ blog.author }}
-                                            </nuxt-link>
-                                        </div>
-                                        <h4 class="title">
-                                        <nuxt-link to="/blog-details">{{ blog.title }}</nuxt-link>
-                                        </h4>
-                                        <p>{{ blog.desc }}</p>
-                                        <nuxt-link to="/blog-details" class="btn-theme btn-border-gradient btn-size-md">
-                                            <span>Read More 
-                                                <img class="icon icon-img" src="/images/icons/arrow-line-right-gradient.png" alt="Icon">
-                                            </span>
-                                        </nuxt-link>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="pagination-area pt-0 pb-0">
-                                <nav>
-                                    <ul class="page-numbers">
-                                        <li>
-                                            <a class="page-number" href="#">1</a>
-                                        </li>
-                                        <li>
-                                            <a class="page-number" href="#">2</a>
-                                        </li>
-                                        <li>
-                                            <a class="page-number" href="#">3</a>
-                                        </li>
-                                        <li>
-                                            <a class="page-number next" href="#">
-                                                <img src="/images/icons/arrow-line-right-gradient.png" alt="Icon-Image">
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </nav>
-                            </div>
-                        </div>
-
-                        <SidebarWrapper />
-                    </div>
+  <section class="blog-grid-area">
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <div class="blog-content-column">
+            <div class="blog-content-area post-items-style2">
+              <div class="post-item" v-for="blog in paginatedBlogs" :key="blog.id">
+                <div class="thumb">
+                  <nuxt-link :to="`/blog-details?id=${blog.id}`">
+                  <img :src="blog.imageUrl" :alt="blog.title">
+                  </nuxt-link>
+                  <div class="meta-date">
+                    <span>{{ formatDate(blog.createdAt).day }}</span>{{ formatDate(blog.createdAt).month }}
+                  </div>
+                  <div class="shape-line"></div>
                 </div>
+                <div class="content">
+                  <div class="inner-content">
+                    <div class="meta">
+                      <nuxt-link to="/blog" class="post-category">{{ blog.category || 'Chưa phân loại' }}</nuxt-link>
+                      <nuxt-link to="/blog" class="post-author">
+                        <span class="icon">
+                          <img class="icon-img" src="/images/icons/admin1.png" alt="Icon-Image">
+                        </span>By: {{ blog.authorName || 'Ẩn danh' }}
+                      </nuxt-link>
+                    </div>
+                    <h4 class="title">
+                       <nuxt-link :to="`/blog-details?id=${blog.id}`">{{ blog.title }}</nuxt-link>
+                    </h4>
+                    <p>{{ blog.description }}</p>
+                  <nuxt-link :to="`/blog-details?id=${blog.id}`" class="btn-theme btn-border-gradient btn-size-md">
+                    <span>
+                      Đọc thêm
+                       <img class="icon icon-img" src="/images/icons/arrow-line-right-gradient.png" alt="Icon">
+                    </span>
+                  </nuxt-link>
+                  </div>
+                </div>
+              </div>
+
+              <div v-if="paginatedBlogs.length === 0">
+                <p>Không có bài viết nào.</p>
+              </div>
+
+              <div class="pagination-area pt-0 pb-0">
+                <nav>
+                  <ul class="page-numbers">
+                    <li>
+                      <a class="page-number prev" href="#" @click.prevent="prevPage" :class="{ 'disabled-link': currentPage === 1 }">
+                        <img src="/images/icons/test-arrow-left.png" alt="Icon-Image"> </a>
+                    </li>
+                    <li v-for="page in totalPages" :key="page">
+                      <a class="page-number" href="#" @click.prevent="goToPage(page)" :class="{ current: page === currentPage }">
+                        {{ page }}
+                      </a>
+                    </li>
+                    <li>
+                      <a class="page-number next" href="#" @click.prevent="nextPage" :class="{ 'disabled-link': currentPage === totalPages }">
+                        <img src="/images/icons/arrow-line-right-gradient.png" alt="Icon-Image">
+                      </a>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
             </div>
+
+            
+          </div>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 </template>
 
 <script>
-    export default {
-        components: {
-            SidebarWrapper: () => import('@/components/SidebarWrapper'),
-        },
+import SidebarWrapper from '@/components/SidebarWrapper.vue';
+import axios from 'axios';
 
-        data() {
-            return {
-                blogs: [
-                    {
-                        imgSrc: "/images/blog/g1.jpg",
-                        day: 15,
-                        month: "June",
-                        category: "Education",
-                        author: "Marinda Roderick",
-                        title: "Children education needs for change the world.",
-                        desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has industry's standard dummy text ever since the 1500 an when an unknown printer took a galley scrambled it to make a type specimen book.",
-                    },
-                    {
-                        imgSrc: "/images/blog/g2.jpg",
-                        day: 10,
-                        month: "July",
-                        category: "Health",
-                        author: "Maria Merry",
-                        title: "Need school for mozambique children.",
-                        desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has industry's standard dummy text ever since the 1500 an when an unknown printer took a galley scrambled it to make a type specimen book.",
-                    },
-                    {
-                        imgSrc: "/images/blog/g3.jpg",
-                        day: 17,
-                        month: "March",
-                        category: "Water",
-                        author: "Robbin",
-                        title: "Need pure water for all people",
-                        desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has industry's standard dummy text ever since the 1500 an when an unknown printer took a galley scrambled it to make a type specimen book.",
-                    },
-                    {
-                        imgSrc: "/images/blog/g4.jpg",
-                        day: 26,
-                        month: "August",
-                        category: "Health",
-                        author: "Uzzal Hossain",
-                        title: "Save Children Life For Future.",
-                        desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has industry's standard dummy text ever since the 1500 an when an unknown printer took a galley scrambled it to make a type specimen book.",
-                    },
-                ]
-            }
-        },
+export default {
+  components: {
+    SidebarWrapper,
+  },
+  data() {
+    return {
+      allBlogs: [],
+      currentPage: 1,
+      blogsPerPage: 3,
     };
+  },
+  computed: {
+    totalPages() {
+      return Math.ceil(this.allBlogs.length / this.blogsPerPage);
+    },
+    paginatedBlogs() {
+      const startIndex = (this.currentPage - 1) * this.blogsPerPage;
+      const endIndex = startIndex + this.blogsPerPage;
+      return this.allBlogs.slice(startIndex, endIndex);
+    },
+  },
+  async mounted() {
+    try {
+      const response = await axios.get('https://localhost:7213/api/Blog/get-all');
+      if (response.data && response.data.status === 200) {
+        const blogsRaw = response.data.responseData;
+
+        const blogsWithAuthors = await Promise.all(
+          blogsRaw.map(async (blog) => {
+            let authorName = 'Ẩn danh';
+            try {
+              const userRes = await axios.get(`https://localhost:7213/api/User/get-by-id?id=${blog.createdBy}`);
+              if (userRes.data && userRes.data.responseData) {
+                authorName = userRes.data.responseData.fullName || authorName;
+              }
+            } catch {
+              // If there's an error fetching the author, keep it as 'Ẩn danh'
+            }
+            return { ...blog, authorName };
+          })
+        );
+
+        this.allBlogs = blogsWithAuthors;
+      } else {
+        console.warn('API Blog returned invalid data:', response);
+      }
+    } catch (error) {
+      console.error('Error loading blog posts:', error);
+    }
+  },
+  methods: {
+    formatDate(dateStr) {
+      const date = new Date(dateStr);
+      const day = date.getDate();
+      const month = date.toLocaleString('default', { month: 'short' });
+      return { day, month };
+    },
+    goToPage(page) {
+      this.currentPage = page;
+    },
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+      }
+    },
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+      }
+    },
+  },
+};
 </script>
+<style scoped>
+/* This is CSS */
+.meta-date {
+  /* Some CSS properties */
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* ... */
+}
+
+/* This is the problematic line that should NOT be in <style> */
+/* Remove this: */
+/* <span>{{ formatDate(blog.createdAt).day }}</span>{{ formatDate(blog.createdAt).month }} */
+
+.some-other-css-rule {
+  /* More CSS */
+}
+</style>

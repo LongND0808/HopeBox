@@ -180,7 +180,48 @@ namespace HopeBox.Infrastructure.Migrations
                     { mediaIds[4], "https://cdn.hope.org/media/shelter.jpg", (int)MediaType.Image, causeShelterId },
                     { mediaIds[5], "https://cdn.hope.org/media/clothing.jpg", (int)MediaType.Image, causeClothingId }
                 });
+            var blogId1 = Guid.NewGuid();
+            var blogId2 = Guid.NewGuid();
+            var blogId3 = Guid.NewGuid();
+            var blogId4 = Guid.NewGuid();
+            var blogId5 = Guid.NewGuid();
+            var blogId6 = Guid.NewGuid();
+            var blogId7 = Guid.NewGuid();
+            var blogId8 = Guid.NewGuid();
+            var blogId9 = Guid.NewGuid();
+            var blogId10 = Guid.NewGuid();
+            var blogId11 = Guid.NewGuid();
+            var blogId12 = Guid.NewGuid();
+
+            // 8. Blogs
+            // =========================================
+            migrationBuilder.InsertData(
+                table: "Blogs",
+                columns: new[]
+                {
+                    "Id", "Title", "Content", "Description", "ImageUrl", "IsPublished", "CreatedAt", "CreatedBy", "UpdatedAt"
+                },
+                values: new object[,]
+                {
+                    { blogId1, "Giúp Trẻ Em Vùng Cao Có Nước Sạch", "Nội dung chi tiết về việc xây dựng giếng khoan và lọc nước sạch cho các bản làng vùng cao...", "Tổng quan về dự án nước sạch cho trẻ em vùng cao.", "/images/blog/g1.jpg", true, DateTime.UtcNow.AddDays(-10), userAdminId, null },
+                    { blogId2, "Chương Trình Hỗ Trợ Dinh Dưỡng Cho Trẻ Em", "Chi tiết chương trình cung cấp thực phẩm dinh dưỡng cho trẻ em suy dinh dưỡng vùng cao...", "Giới thiệu chương trình hỗ trợ dinh dưỡng cho trẻ em vùng cao.", "/images/blog/g2.jpg", false, DateTime.UtcNow.AddDays(-5), userAdminId, null },
+                    { blogId3, "Xây Dựng Lớp Học Vùng Núi", "Thông tin về dự án xây trường học mới cho trẻ em ở vùng sâu vùng xa...", "Cải thiện điều kiện học tập cho trẻ em vùng núi.", "/images/blog/g3.jpg", true, DateTime.UtcNow.AddDays(-20), userAdminId, null },
+                    { blogId4, "Tặng Quần Áo Ấm Cho Trẻ Em Mùa Đông", "Chiến dịch quyên góp và phân phát áo ấm cho trẻ em vùng lạnh...", "Mang đến hơi ấm mùa đông cho trẻ em vùng cao.", "/images/blog/g4.jpg", true, DateTime.UtcNow.AddDays(-15), userAdminId, null },
+                    { blogId5, "Cung Cấp Sách Giáo Khoa Và Dụng Cụ Học Tập", "Hỗ trợ sách vở và dụng cụ học tập cho học sinh nghèo...", "Nâng cao chất lượng giáo dục thông qua việc hỗ trợ vật chất học tập.", "/images/blog/1.jpg", true, DateTime.UtcNow.AddDays(-12), userAdminId, null },
+                    { blogId6, "Khám Sức Khỏe Định Kỳ Cho Trẻ Em", "Chương trình tổ chức các buổi khám sức khỏe miễn phí cho trẻ em...", "Quan tâm sức khỏe định kỳ cho trẻ em vùng xa.", "/images/blog/2.jpg", false, DateTime.UtcNow.AddDays(-8), userAdminId, null },
+                    { blogId7, "Trại Hè Tình Nguyện Cho Trẻ Em", "Tổ chức các hoạt động trại hè bổ ích và vui chơi cho trẻ em có hoàn cảnh khó khăn...", "Mang đến nụ cười và niềm vui cho trẻ em mùa hè.", "/images/blog/3.jpg", true, DateTime.UtcNow.AddDays(-18), userAdminId, null },
+                    { blogId8, "Hướng Nghiệp Và Định Hướng Tương Lai", "Chia sẻ kiến thức nghề nghiệp và định hướng tương lai cho học sinh trung học...", "Đồng hành cùng các em trong hành trình tương lai.", "/images/blog/s3.jpg", false, DateTime.UtcNow.AddDays(-6), userAdminId, null },
+                    { blogId9, "Học Bổng Cho Học Sinh Nghèo Vượt Khó", "Thông tin chi tiết về chương trình học bổng dành cho học sinh có hoàn cảnh khó khăn nhưng học giỏi...", "Khuyến khích học sinh tiếp tục học tập và phát triển.", "/images/blog/s2.jpg", true, DateTime.UtcNow.AddDays(-25), userAdminId, null },
+                    { blogId10, "Tổ Chức Ngày Hội Đọc Sách", "Khơi dậy niềm yêu thích đọc sách trong trẻ em thông qua các ngày hội đọc sách...", "Góp phần xây dựng văn hóa đọc cho thế hệ tương lai.", "/images/blog/s1.jpg", true, DateTime.UtcNow.AddDays(-7), userAdminId, null },
+                    { blogId11, "Chiến Dịch Trồng Cây Xanh Ở Trường Học", "Chi tiết về chiến dịch trồng cây xanh tại các điểm trường vùng cao nhằm tạo môi trường học tập xanh - sạch - đẹp...", "Góp phần cải thiện môi trường sống và học tập cho trẻ em.", "/images/blog/g3.jpg", true, DateTime.UtcNow.AddDays(-4), userAdminId, null },
+                    { blogId12, "Khóa Học Kỹ Năng Sống Cho Học Sinh", "Chương trình giáo dục kỹ năng sống giúp học sinh tự tin, giao tiếp và xử lý tình huống trong cuộc sống...", "Giáo dục toàn diện cho học sinh thông qua kỹ năng mềm.", "/images/blog/g1.jpg", true, DateTime.UtcNow.AddDays(-2), userAdminId, null }
+
+                });
+
         }
+
+
+
 
 
         /// <inheritdoc />

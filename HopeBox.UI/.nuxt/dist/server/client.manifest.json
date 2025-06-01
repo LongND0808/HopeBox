@@ -6,10 +6,10 @@
     "module": true,
     "resourceType": "script"
   },
-  "C:/Work/HopeBox/HopeBox.UI/node_modules/nuxt/dist/app/entry.mjs": {
+  "E:/EXE/HopeBox/HopeBox.UI/node_modules/nuxt/dist/app/entry.mjs": {
     "resourceType": "script",
     "module": true,
     "isEntry": true,
-    "file": "C:/Work/HopeBox/HopeBox.UI/node_modules/nuxt/dist/app/entry.mjs"
+    "file": "E:/EXE/HopeBox/HopeBox.UI/node_modules/nuxt/dist/app/entry.mjs"
   }
 }

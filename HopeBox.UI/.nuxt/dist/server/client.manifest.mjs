@@ -1,1 +1,1 @@
-export { default } from "file:///C:/Work/HopeBox/HopeBox.UI/node_modules/@nuxt/vite-builder/dist/runtime/client.manifest.mjs"
+export { default } from "file:///E:/EXE/HopeBox/HopeBox.UI/node_modules/@nuxt/vite-builder/dist/runtime/client.manifest.mjs"
