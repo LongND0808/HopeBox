@@ -2,7 +2,7 @@
 using HopeBox.Domain.RequestDto;
 using HopeBox.Domain.ResponseDto;
 
-namespace HopeBox.Core.IAspModelService
+namespace HopeBox.Core.IService
 {
     public interface IEventService
     {

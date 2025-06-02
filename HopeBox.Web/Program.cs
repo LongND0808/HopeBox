@@ -42,6 +42,7 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 #region Add Services
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<IVolunteerService, VolunteerService>();
 #endregion
 
 #region Add Converter

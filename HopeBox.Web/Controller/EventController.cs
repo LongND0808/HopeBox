@@ -1,4 +1,4 @@
-﻿using HopeBox.Core.IAspModelService;
+﻿using HopeBox.Core.IService;
 using HopeBox.Domain.Dtos;
 using HopeBox.Domain.RequestDto;
 using HopeBox.Domain.ResponseDto;
