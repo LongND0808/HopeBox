@@ -1,5 +1,6 @@
 ﻿using HopeBox.Core.IAspModelService;
 using HopeBox.Domain.Dtos;
+using HopeBox.Domain.RequestDto;
 using HopeBox.Domain.ResponseDto;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,6 +21,13 @@ namespace HopeBox.Web.Controller
         public virtual async Task<ActionResult<BaseResponseDto<EventDto>>> GetByNearestEvent()
         {
             var result = await _eventService.GetNearestEventAsync();
+            return StatusCode(result.Status, result);
+        }
+
+        [HttpGet("get-event-by-filter")]
+        public async Task<IActionResult> GetEventsByFilter([FromQuery] EventFilterRequestDto request)
+        {
+            var result = await _eventService.GetEventsByFilterAsync(request);
             return StatusCode(result.Status, result);
         }
     }
