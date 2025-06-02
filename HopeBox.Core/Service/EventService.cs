@@ -83,6 +83,7 @@ namespace HopeBox.Core.Service
                 {
                     filter = filter.And(e => EF.Functions.Like(e.Title, $"%{request.Title}%"));
                 }
+
                 var totalRecords = await _repository.GetCount(filter);
                 var totalPages = (int)Math.Ceiling((double)totalRecords / request.PageSize);
 
