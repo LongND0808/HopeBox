@@ -1,5 +1,5 @@
 
-import { defuFn } from 'C:/Work/HopeBox/HopeBox.UI/node_modules/defu/dist/defu.mjs'
+import { defuFn } from 'D:/Project/HopeBox/HopeBox/HopeBox.UI/node_modules/defu/dist/defu.mjs'
 
 const inlineConfig = {}
 

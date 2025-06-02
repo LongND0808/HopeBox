@@ -1,3 +1,4 @@
+using HopeBox.Core.AspModelService;
 using HopeBox.Core.Config;
 using HopeBox.Core.IAspModelService;
 using HopeBox.Core.IdentityModelService;
@@ -41,6 +42,7 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 #region Add Services
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<IEventService, EventService>();
 #endregion
 
 #region Add Converter
