@@ -32,3 +32,8 @@ packages/
 
 # Ignore node_modules
 node_modules/
+
+# Ignore Nuxt build and dev folders
+.nuxt/
+dist/
+output/
