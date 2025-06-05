@@ -31,11 +31,13 @@ namespace HopeBox.Core.Service
             try
             {
                 var today = DateTime.Now;
-                var events = await _repository.GetListAsyncUntracked<Event>(
+
+                var nearestEvent = (await _repository.GetListAsyncUntracked<Event>(
                     filter: e => e.EndDate >= today,
+                    include: query => query.Include(e => e.Creator)
+                                            .Include(e => e.Organization),
                     orderBy: q => q.OrderBy(e => e.StartDate)
-                );
-                var nearestEvent = events.FirstOrDefault();
+                )).FirstOrDefault();
 
                 if (nearestEvent == null)
                 {
@@ -46,8 +48,10 @@ namespace HopeBox.Core.Service
                         ResponseData = null
                     };
                 }
-
                 var dto = _converter.ToDTO(nearestEvent);
+                dto.CreatedByName = nearestEvent.Creator?.FullName ?? "Unknown";
+                dto.OrganizationName = nearestEvent.Organization?.Name ?? "Unknown";
+
                 return new BaseResponseDto<EventDto>
                 {
                     Status = 200,
@@ -89,12 +93,20 @@ namespace HopeBox.Core.Service
 
                 var entities = await _repository.GetListAsyncUntracked<Event>(
                     filter: filter,
+                    include: query => query.Include(e => e.Creator)
+                                           .Include(e => e.Organization),
                     pageSize: request.PageSize,
                     pageNumber: request.PageIndex,
                     orderBy: q => q.OrderByDescending(e => e.StartDate)
                 );
 
-                var dtos = _converter.ToListDTO(entities);
+                var dtos = entities.Select(e =>
+                {
+                    var dto = _converter.ToDTO(e);
+                    dto.CreatedByName = e.Creator?.FullName ?? "Unknown";
+                    dto.OrganizationName = e.Organization?.Name ?? "Unknown";
+                    return dto;
+                }).ToList();
 
                 var pagingResponse = new BasePagingResponseDto<EventDto>
                 {

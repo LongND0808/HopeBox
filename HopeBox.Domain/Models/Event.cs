@@ -10,10 +10,10 @@ namespace HopeBox.Domain.Models
         [Required, MaxLength(200)]
         public string? Title { get; set; }
 
-        [Required, MaxLength(500)]
+        [Required, MaxLength(2000)]
         public string? Description { get; set; }
 
-        [Required, MaxLength(5000)]
+        [Required, MaxLength(10000)]
         public string? Detail { get; set; }
 
         public string? BannerImage { get; set; }
@@ -24,7 +24,7 @@ namespace HopeBox.Domain.Models
         [Required]
         public DateTime EndDate { get; set; }
 
-        [MaxLength(500)]
+        [MaxLength(1000)]
         public string? Location { get; set; }
 
         public decimal TargetAmount { get; set; }

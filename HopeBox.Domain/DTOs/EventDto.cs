@@ -15,5 +15,7 @@
         public int Status { get; set; }
         public Guid CreatedBy { get; set; }
         public Guid OrganizationId { get; set; }
+        public string? CreatedByName { get; set; }
+        public string? OrganizationName { get; set; }
     }
 }

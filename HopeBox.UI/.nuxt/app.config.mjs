@@ -1,8 +1,18 @@
 
-import { defuFn } from 'D:/Project/HopeBox/HopeBox/HopeBox.UI/node_modules/defu/dist/defu.mjs'
+import { _replaceAppConfig } from '#app/config'
+import { defuFn } from 'defu'
 
-const inlineConfig = {}
+const inlineConfig = {
+  "nuxt": {}
+}
+
+// Vite - webpack is handled directly in #app/config
+if (import.meta.hot) {
+  import.meta.hot.accept((newModule) => {
+    _replaceAppConfig(newModule.default)
+  })
+}
 
 
 
-export default defuFn(inlineConfig)
+export default /*@__PURE__*/ defuFn(inlineConfig)
