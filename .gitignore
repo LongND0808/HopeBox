@@ -1,16 +1,37 @@
-# Ignore build outputs
+# ========== Build outputs ==========
 bin/
 obj/
 out/
 
-# Ignore user-specific files
+# ========== Nuxt build artifacts ==========
+.nuxt/
+dist/
+node_modules/
+*.log
+
+# ========== App settings ==========
+appsettings.json
+appsettings.*.json
+
+# ========== Node/Nuxt cache, temp, lock files ==========
+*.lock
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+.env
+.env.*
+
+# ========== User-specific/IDE ==========
 *.user
 *.suo
 *.userosscache
 *.sln.docstates
 *.swp
+.vscode/
+.vs/
+.idea/
 
-# Ignore logs, database, and temp files
+# ========== Logs, cache, pdb, debug ==========
 *.log
 *.tlog
 *.cache
@@ -22,13 +43,11 @@ out/
 *.tmp*
 *.log*
 
-# Ignore IDE folders
-.vs/
-.vscode/
-.idea/
+# ========== TypeScript auto-generated ==========
+*.tsbuildinfo
 
-# Ignore packages
+# ========== Other ==========
 packages/
-
-# Ignore node_modules
-node_modules/
+coverage/
+.DS_Store
+Thumbs.db
