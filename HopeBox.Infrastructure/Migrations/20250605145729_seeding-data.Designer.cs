@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HopeBox.Infrastructure.Migrations
 {
     [DbContext(typeof(HopeBoxDataContext))]
-    [Migration("20250605002357_init-database")]
-    partial class initdatabase
+    [Migration("20250605145729_seeding-data")]
+    partial class seedingdata
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -233,6 +233,64 @@ namespace HopeBox.Infrastructure.Migrations
                     b.ToTable("DonationReliefPackages");
                 });
 
+            modelBuilder.Entity("HopeBox.Domain.Models.Event", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("BannerImage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("CurrentAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("Detail")
+                        .IsRequired()
+                        .HasMaxLength(10000)
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Location")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<Guid>("OrganizationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TargetAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("OrganizationId");
+
+                    b.ToTable("Events");
+                });
+
             modelBuilder.Entity("HopeBox.Domain.Models.Feedback", b =>
                 {
                     b.Property<Guid>("Id")
@@ -273,6 +331,9 @@ namespace HopeBox.Infrastructure.Migrations
                     b.Property<Guid?>("CauseId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("EventId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
@@ -282,6 +343,8 @@ namespace HopeBox.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CauseId");
+
+                    b.HasIndex("EventId");
 
                     b.ToTable("Medias");
                 });
@@ -661,6 +724,9 @@ namespace HopeBox.Infrastructure.Migrations
                     b.Property<Guid>("CauseId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("EventId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("JoinDate")
                         .HasColumnType("datetime2");
 
@@ -673,6 +739,8 @@ namespace HopeBox.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CauseId");
+
+                    b.HasIndex("EventId");
 
                     b.HasIndex("UserId");
 
@@ -846,6 +914,25 @@ namespace HopeBox.Infrastructure.Migrations
                     b.Navigation("ReliefPackage");
                 });
 
+            modelBuilder.Entity("HopeBox.Domain.Models.Event", b =>
+                {
+                    b.HasOne("HopeBox.Domain.Models.User", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatedBy")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("HopeBox.Domain.Models.Organization", "Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Creator");
+
+                    b.Navigation("Organization");
+                });
+
             modelBuilder.Entity("HopeBox.Domain.Models.Feedback", b =>
                 {
                     b.HasOne("HopeBox.Domain.Models.Cause", "Cause")
@@ -869,6 +956,11 @@ namespace HopeBox.Infrastructure.Migrations
                     b.HasOne("HopeBox.Domain.Models.Cause", "Cause")
                         .WithMany("Documents")
                         .HasForeignKey("CauseId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("HopeBox.Domain.Models.Event", null)
+                        .WithMany("Photos")
+                        .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Cause");
@@ -960,6 +1052,11 @@ namespace HopeBox.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("HopeBox.Domain.Models.Event", null)
+                        .WithMany("Volunteers")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("HopeBox.Domain.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -1021,6 +1118,13 @@ namespace HopeBox.Infrastructure.Migrations
             modelBuilder.Entity("HopeBox.Domain.Models.Donation", b =>
                 {
                     b.Navigation("ReliefPackages");
+                });
+
+            modelBuilder.Entity("HopeBox.Domain.Models.Event", b =>
+                {
+                    b.Navigation("Photos");
+
+                    b.Navigation("Volunteers");
                 });
 
             modelBuilder.Entity("HopeBox.Domain.Models.ReliefItem", b =>

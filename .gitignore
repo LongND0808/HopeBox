@@ -4,14 +4,11 @@ obj/
 out/
 
 # ========== Nuxt build artifacts ==========
-.nuxt/
+HopeBox.UI/.nuxt/
+HopeBox.Web/appsettings.json
 dist/
 node_modules/
 *.log
-
-# ========== App settings ==========
-appsettings.json
-appsettings.*.json
 
 # ========== Node/Nuxt cache, temp, lock files ==========
 *.lock

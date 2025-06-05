@@ -369,6 +369,41 @@ namespace HopeBox.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Events",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
+                    Detail = table.Column<string>(type: "nvarchar(max)", maxLength: 10000, nullable: false),
+                    BannerImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Location = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    TargetAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CurrentAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OrganizationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Events", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Events_AspNetUsers_CreatedBy",
+                        column: x => x.CreatedBy,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Events_Organizations_OrganizationId",
+                        column: x => x.OrganizationId,
+                        principalTable: "Organizations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Donations",
                 columns: table => new
                 {
@@ -428,26 +463,6 @@ namespace HopeBox.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Medias",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Url = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Type = table.Column<int>(type: "int", nullable: false),
-                    CauseId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Medias", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Medias_Causes_CauseId",
-                        column: x => x.CauseId,
-                        principalTable: "Causes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ReliefPackages",
                 columns: table => new
                 {
@@ -468,6 +483,33 @@ namespace HopeBox.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Medias",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Url = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    CauseId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    EventId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Medias", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Medias_Causes_CauseId",
+                        column: x => x.CauseId,
+                        principalTable: "Causes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Medias_Events_EventId",
+                        column: x => x.EventId,
+                        principalTable: "Events",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Volunteers",
                 columns: table => new
                 {
@@ -475,7 +517,8 @@ namespace HopeBox.Infrastructure.Migrations
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CauseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     JoinDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false)
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    EventId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -490,6 +533,12 @@ namespace HopeBox.Infrastructure.Migrations
                         name: "FK_Volunteers_Causes_CauseId",
                         column: x => x.CauseId,
                         principalTable: "Causes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Volunteers_Events_EventId",
+                        column: x => x.EventId,
+                        principalTable: "Events",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -626,6 +675,16 @@ namespace HopeBox.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Events_CreatedBy",
+                table: "Events",
+                column: "CreatedBy");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Events_OrganizationId",
+                table: "Events",
+                column: "OrganizationId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Feedbacks_CauseId",
                 table: "Feedbacks",
                 column: "CauseId");
@@ -639,6 +698,11 @@ namespace HopeBox.Infrastructure.Migrations
                 name: "IX_Medias_CauseId",
                 table: "Medias",
                 column: "CauseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Medias_EventId",
+                table: "Medias",
+                column: "EventId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Notifications_UserId",
@@ -674,6 +738,11 @@ namespace HopeBox.Infrastructure.Migrations
                 name: "IX_Volunteers_CauseId",
                 table: "Volunteers",
                 column: "CauseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Volunteers_EventId",
+                table: "Volunteers",
+                column: "EventId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Volunteers_UserId",
@@ -743,6 +812,9 @@ namespace HopeBox.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "ReliefPackages");
+
+            migrationBuilder.DropTable(
+                name: "Events");
 
             migrationBuilder.DropTable(
                 name: "Causes");

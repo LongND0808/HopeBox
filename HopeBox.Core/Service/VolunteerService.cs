@@ -31,7 +31,7 @@ namespace HopeBox.Core.Service
                 var volunteer = new Volunteer
                 {
                     UserId = request.UserId,
-                    CausesId = request.CauseId,
+                    CauseId = request.CauseId,
                     JoinDate = request.JoinDate,
                     Status = VolunteerStatus.Pending
 

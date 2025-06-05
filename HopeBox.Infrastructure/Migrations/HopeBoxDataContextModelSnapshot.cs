@@ -955,12 +955,12 @@ namespace HopeBox.Infrastructure.Migrations
                         .HasForeignKey("CauseId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.Navigation("Cause");
                     b.HasOne("HopeBox.Domain.Models.Event", null)
                         .WithMany("Photos")
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.Navigation("Cause");
                 });
 
             modelBuilder.Entity("HopeBox.Domain.Models.Notification", b =>

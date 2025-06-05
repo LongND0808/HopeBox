@@ -70,7 +70,7 @@ namespace HopeBox.Infrastructure.Migrations
                 });
 
             var orgId = Guid.NewGuid();
-            var userId = userAdminId; // Đảm bảo bạn đã có userAdminId
+            var userId = userAdminId;
             var causeWaterId = Guid.NewGuid();
             var causeFoodId = Guid.NewGuid();
             var causeMedicineId = Guid.NewGuid();
@@ -84,21 +84,19 @@ namespace HopeBox.Infrastructure.Migrations
                 Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid()
             };
 
-
             migrationBuilder.InsertData(
                 table: "Organizations",
                 columns: new[]
                 {
                     "Id", "Name", "Email", "PhoneNumber", "Address", "City", "Description", "Website", "Verified",
                     "CreatedAt", "UserId"
-                            },
-                            values: new object[]
-                            {
+                },
+                values: new object[]
+                {
                     orgId, "Global Hope Org", "info@globalhope.org", "0988888888",
                     "456 Charity Lane", "HCMC", "Supporting humanitarian efforts",
                     "https://globalhope.org", true, DateTime.UtcNow, userId
-                            });
-
+                });
 
             migrationBuilder.InsertData(
                 table: "Causes",
@@ -166,8 +164,6 @@ namespace HopeBox.Infrastructure.Migrations
                     }
                 });
 
-
-
             migrationBuilder.InsertData(
                 table: "Medias",
                 columns: new[] { "Id", "Url", "Type", "CauseId" },
@@ -180,7 +176,6 @@ namespace HopeBox.Infrastructure.Migrations
                     { mediaIds[4], "https://cdn.hope.org/media/shelter.jpg", (int)MediaType.Image, causeShelterId },
                     { mediaIds[5], "https://cdn.hope.org/media/clothing.jpg", (int)MediaType.Image, causeClothingId }
                 });
-
 
             var blogId1 = Guid.NewGuid();
             var blogId2 = Guid.NewGuid();
@@ -195,32 +190,68 @@ namespace HopeBox.Infrastructure.Migrations
             var blogId11 = Guid.NewGuid();
             var blogId12 = Guid.NewGuid();
 
-
-            // 8. Blogs
-            // =========================================
             migrationBuilder.InsertData(
-        table: "Blogs",
-        columns: new[]
-        {
-            "Id", "Title", "Content", "Description", "ImageUrl", "IsPublished", "CreatedAt", "CreatedBy", "UpdatedAt"
-        },
-        values: new object[,]
-        {
-            { blogId1, "Giúp Trẻ Em Vùng Cao Có Nước Sạch", "Nội dung chi tiết về việc xây dựng giếng khoan và lọc nước sạch cho các bản làng vùng cao...", "Tổng quan về dự án nước sạch cho trẻ em vùng cao.", "/images/blog/g1.jpg", true, DateTime.UtcNow.AddDays(-10), userAdminId, null },
-            { blogId2, "Chương Trình Hỗ Trợ Dinh Dưỡng Cho Trẻ Em", "Chi tiết chương trình cung cấp thực phẩm dinh dưỡng cho trẻ em suy dinh dưỡng vùng cao...", "Giới thiệu chương trình hỗ trợ dinh dưỡng cho trẻ em vùng cao.", "/images/blog/g1.jpg", false, DateTime.UtcNow.AddDays(-5), userAdminId, null },
-            { blogId3, "Xây Dựng Lớp Học Vùng Núi", "Thông tin về dự án xây trường học mới cho trẻ em ở vùng sâu vùng xa...", "Cải thiện điều kiện học tập cho trẻ em vùng núi.", "/images/blog/g1.jpg", true, DateTime.UtcNow.AddDays(-20), userAdminId, null },
-            { blogId4, "Tặng Quần Áo Ấm Cho Trẻ Em Mùa Đông", "Chiến dịch quyên góp và phân phát áo ấm cho trẻ em vùng lạnh...", "Mang đến hơi ấm mùa đông cho trẻ em vùng cao.", "/images/blog/g1.jpg", true, DateTime.UtcNow.AddDays(-15), userAdminId, null },
-            { blogId5, "Cung Cấp Sách Giáo Khoa Và Dụng Cụ Học Tập", "Hỗ trợ sách vở và dụng cụ học tập cho học sinh nghèo...", "Nâng cao chất lượng giáo dục thông qua việc hỗ trợ vật chất học tập.", "/images/blog/g2.jpg", true, DateTime.UtcNow.AddDays(-12), userAdminId, null },
-            { blogId6, "Khám Sức Khỏe Định Kỳ Cho Trẻ Em", "Chương trình tổ chức các buổi khám sức khỏe miễn phí cho trẻ em...", "Quan tâm sức khỏe định kỳ cho trẻ em vùng xa.", "/images/blog/g2.jpg", false, DateTime.UtcNow.AddDays(-8), userAdminId, null },
-            { blogId7, "Trại Hè Tình Nguyện Cho Trẻ Em", "Tổ chức các hoạt động trại hè bổ ích và vui chơi cho trẻ em có hoàn cảnh khó khăn...", "Mang đến nụ cười và niềm vui cho trẻ em mùa hè.", "/images/blog/g2.jpg", true, DateTime.UtcNow.AddDays(-18), userAdminId, null },
-            { blogId8, "Hướng Nghiệp Và Định Hướng Tương Lai", "Chia sẻ kiến thức nghề nghiệp và định hướng tương lai cho học sinh trung học...", "Đồng hành cùng các em trong hành trình tương lai.", "/images/blog/g3.jpg", false, DateTime.UtcNow.AddDays(-6), userAdminId, null },
-            { blogId9, "Học Bổng Cho Học Sinh Nghèo Vượt Khó", "Thông tin chi tiết về chương trình học bổng dành cho học sinh có hoàn cảnh khó khăn nhưng học giỏi...", "Khuyến khích học sinh tiếp tục học tập và phát triển.", "/images/blog/g3.jpg", true, DateTime.UtcNow.AddDays(-25), userAdminId, null },
-            { blogId10, "Tổ Chức Ngày Hội Đọc Sách", "Khơi dậy niềm yêu thích đọc sách trong trẻ em thông qua các ngày hội đọc sách...", "Góp phần xây dựng văn hóa đọc cho thế hệ tương lai.", "/images/blog/g3.jpg", true, DateTime.UtcNow.AddDays(-7), userAdminId, null },
-            { blogId11, "Chiến Dịch Trồng Cây Xanh Ở Trường Học", "Chi tiết về chiến dịch trồng cây xanh tại các điểm trường vùng cao nhằm tạo môi trường học tập xanh - sạch - đẹp...", "Góp phần cải thiện môi trường sống và học tập cho trẻ em.", "/images/blog/g4.jpg", true, DateTime.UtcNow.AddDays(-4), userAdminId, null },
-            { blogId12, "Khóa Học Kỹ Năng Sống Cho Học Sinh", "Chương trình giáo dục kỹ năng sống giúp học sinh tự tin, giao tiếp và xử lý tình huống trong cuộc sống...", "Giáo dục toàn diện cho học sinh thông qua kỹ năng mềm.", "/images/blog/g4.jpg", true, DateTime.UtcNow.AddDays(-2), userAdminId, null }
+                table: "Blogs",
+                columns: new[]
+                {
+                    "Id", "Title", "Content", "Description", "ImageUrl", "IsPublished", "CreatedAt", "CreatedBy", "UpdatedAt"
+                },
+                values: new object[,]
+                {
+                    { blogId1, "Giúp Trẻ Em Vùng Cao Có Nước Sạch", "Nội dung chi tiết về việc xây dựng giếng khoan và lọc nước sạch cho các bản làng vùng cao...", "Tổng quan về dự án nước sạch cho trẻ em vùng cao.", "/images/blog/g1.jpg", true, DateTime.UtcNow.AddDays(-10), userAdminId, null },
+                    { blogId2, "Chương Trình Hỗ Trợ Dinh Dưỡng Cho Trẻ Em", "Chi tiết chương trình cung cấp thực phẩm dinh dưỡng cho trẻ em suy dinh dưỡng vùng cao...", "Giới thiệu chương trình hỗ trợ dinh dưỡng cho trẻ em vùng cao.", "/images/blog/g1.jpg", false, DateTime.UtcNow.AddDays(-5), userAdminId, null },
+                    { blogId3, "Xây Dựng Lớp Học Vùng Núi", "Thông tin về dự án xây trường học mới cho trẻ em ở vùng sâu vùng xa...", "Cải thiện điều kiện học tập cho trẻ em vùng núi.", "/images/blog/g1.jpg", true, DateTime.UtcNow.AddDays(-20), userAdminId, null },
+                    { blogId4, "Tặng Quần Áo Ấm Cho Trẻ Em Mùa Đông", "Chiến dịch quyên góp và phân phát áo ấm cho trẻ em vùng lạnh...", "Mang đến hơi ấm mùa đông cho trẻ em vùng cao.", "/images/blog/g1.jpg", true, DateTime.UtcNow.AddDays(-15), userAdminId, null },
+                    { blogId5, "Cung Cấp Sách Giáo Khoa Và Dụng Cụ Học Tập", "Hỗ trợ sách vở và dụng cụ học tập cho học sinh nghèo...", "Nâng cao chất lượng giáo dục thông qua việc hỗ trợ vật chất học tập.", "/images/blog/g2.jpg", true, DateTime.UtcNow.AddDays(-12), userAdminId, null },
+                    { blogId6, "Khám Sức Khỏe Định Kỳ Cho Trẻ Em", "Chương trình tổ chức các buổi khám sức khỏe miễn phí cho trẻ em...", "Quan tâm sức khỏe định kỳ cho trẻ em vùng xa.", "/images/blog/g2.jpg", false, DateTime.UtcNow.AddDays(-8), userAdminId, null },
+                    { blogId7, "Trại Hè Tình Nguyện Cho Trẻ Em", "Tổ chức các hoạt động trại hè bổ ích và vui chơi cho trẻ em có hoàn cảnh khó khăn...", "Mang đến nụ cười và niềm vui cho trẻ em mùa hè.", "/images/blog/g2.jpg", true, DateTime.UtcNow.AddDays(-18), userAdminId, null },
+                    { blogId8, "Hướng Nghiệp Và Định Hướng Tương Lai", "Chia sẻ kiến thức nghề nghiệp và định hướng tương lai cho học sinh trung học...", "Đồng hành cùng các em trong hành trình tương lai.", "/images/blog/g3.jpg", false, DateTime.UtcNow.AddDays(-6), userAdminId, null },
+                    { blogId9, "Học Bổng Cho Học Sinh Nghèo Vượt Khó", "Thông tin chi tiết về chương trình học bổng dành cho học sinh có hoàn cảnh khó khăn nhưng học giỏi...", "Khuyến khích học sinh tiếp tục học tập và phát triển.", "/images/blog/g3.jpg", true, DateTime.UtcNow.AddDays(-25), userAdminId, null },
+                    { blogId10, "Tổ Chức Ngày Hội Đọc Sách", "Khơi dậy niềm yêu thích đọc sách trong trẻ em thông qua các ngày hội đọc sách...", "Góp phần xây dựng văn hóa đọc cho thế hệ tương lai.", "/images/blog/g3.jpg", true, DateTime.UtcNow.AddDays(-7), userAdminId, null },
+                    { blogId11, "Chiến Dịch Trồng Cây Xanh Ở Trường Học", "Chi tiết về chiến dịch trồng cây xanh tại các điểm trường vùng cao nhằm tạo môi trường học tập xanh - sạch - đẹp...", "Góp phần cải thiện môi trường sống và học tập cho trẻ em.", "/images/blog/g4.jpg", true, DateTime.UtcNow.AddDays(-4), userAdminId, null },
+                    { blogId12, "Khóa Học Kỹ Năng Sống Cho Học Sinh", "Chương trình giáo dục kỹ năng sống giúp học sinh tự tin, giao tiếp và xử lý tình huống trong cuộc sống...", "Giáo dục toàn diện cho học sinh thông qua kỹ năng mềm.", "/images/blog/g4.jpg", true, DateTime.UtcNow.AddDays(-2), userAdminId, null }
+                });
 
-        });
-
+            migrationBuilder.InsertData(
+                table: "Events",
+                columns: new[]
+                {
+                    "Id", "Title", "Description", "Detail", "BannerImage", "StartDate", "EndDate", "Location",
+                    "TargetAmount", "CurrentAmount", "Status", "CreatedBy", "OrganizationId"
+                },
+                values: new object[,]
+                {
+                    {
+                        Guid.NewGuid(),
+                        "Ngày hội Trao Quà Cho Trẻ Em Nghèo Hà Nội",
+                        "Ngày hội Trao Quà Cho Trẻ Em Nghèo Hà Nội là chương trình thiện nguyện đầy ý nghĩa, nhằm mang đến niềm vui và sự động viên thiết thực cho các em nhỏ có hoàn cảnh khó khăn tại các vùng ngoại thành Hà Nội. Sự kiện không chỉ là dịp các em nhận được sách vở, quà tặng và bữa ăn dinh dưỡng mà còn là nơi các em giao lưu, tham gia các hoạt động văn nghệ, trò chơi tập thể cùng hơn 200 tình nguyện viên và các nhà hảo tâm.",
+                        "Sự kiện “Ngày hội Trao Quà Cho Trẻ Em Nghèo Hà Nội” sẽ diễn ra vào ngày 12/7/2025 tại Trường Tiểu học A, Hoài Đức, Hà Nội, dự kiến chào đón hơn 500 em nhỏ thuộc các hộ gia đình khó khăn trên địa bàn. Tại đây, mỗi em sẽ được nhận một phần quà bao gồm sách vở, đồ dùng học tập, sữa, bánh kẹo và một suất ăn trưa dinh dưỡng. Ngoài hoạt động trao quà, chương trình còn tổ chức các tiết mục văn nghệ do chính các em và tình nguyện viên biểu diễn, các trò chơi vận động, đố vui nhận thưởng, giúp các em giao lưu, tự tin hơn và có thêm nhiều kỷ niệm đẹp. Ban tổ chức bố trí đội ngũ y tế hỗ trợ, đảm bảo an toàn và sức khỏe cho tất cả người tham dự. Sự kiện cũng tạo cơ hội cho cộng đồng cùng chung tay chia sẻ, lan tỏa yêu thương và tiếp thêm động lực để các em nhỏ vượt qua khó khăn, vươn lên trong học tập cũng như cuộc sống.",
+                        "https://images.baodantoc.vn/uploads/2021/Th%C3%A1ng_12/Ng%C3%A0y%203/TRUNG/T%E1%BA%B7ng%20qu%C3%A0/A1%20-%20OK.jpg",
+                        new DateTime(2025, 7, 12, 8, 0, 0),
+                        new DateTime(2025, 7, 12, 16, 0, 0),
+                        "Trường Tiểu học A, Thị trấn Trạm Trôi, Huyện Hoài Đức, Hà Nội",
+                        50000000m,
+                        0m,
+                        (int)EventStatus.Ongoing,
+                        userId,
+                        orgId
+                    },
+                    {
+                        Guid.NewGuid(),
+                        "Ngày hội Hiến Máu Nhân Đạo Đà Nẵng",
+                        "Ngày hội Hiến Máu Nhân Đạo Đà Nẵng - Một hành trình ý nghĩa lan tỏa yêu thương, kêu gọi toàn thể cộng đồng Đà Nẵng cùng chung tay giúp đỡ những bệnh nhân cần máu. Sự kiện diễn ra tại Nhà Văn hóa Thiếu nhi Đà Nẵng với không gian rộng rãi, trang thiết bị hiện đại, tạo điều kiện cho người tham gia có trải nghiệm tốt nhất.",
+                        "Thời gian diễn ra từ 8h sáng đến 17h chiều ngày 20/7/2025. Mỗi người tham gia hiến máu sẽ được nhận quà tặng, giấy chứng nhận và phần ăn nhẹ. Ban tổ chức bố trí đội ngũ y tế túc trực, hỗ trợ tư vấn sức khỏe, theo dõi sát sao toàn bộ quá trình hiến máu. Đây là sự kiện thường niên, mong muốn kết nối các tình nguyện viên, nhóm máu hiếm và các tổ chức xã hội tại Đà Nẵng.",
+                        "https://media-cdn-v2.laodong.vn/storage/newsportal/2022/12/11/1126243/484Fa6554cc4959accd5.jpg",
+                        new DateTime(2025, 7, 20, 8, 0, 0),
+                        new DateTime(2025, 7, 20, 17, 0, 0),
+                        "Nhà Văn hóa Thiếu nhi Đà Nẵng, 2 Phan Đăng Lưu, Hải Châu, Đà Nẵng",
+                        0m,
+                        0m,
+                        (int)EventStatus.Ongoing,
+                        userId,
+                        orgId
+                    }
+                });
         }
 
         /// <inheritdoc />
