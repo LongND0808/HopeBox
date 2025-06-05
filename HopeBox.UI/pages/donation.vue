@@ -8,7 +8,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-lg-10 m-auto">
-                        <DonationForm :causesId="$route.query.causesId" />
+                        <DonationForm :causeId="$route.query.causeId" />
                     </div>
                 </div>
             </div>

@@ -7,6 +7,6 @@ namespace HopeBox.Domain.Dtos
     {
         public string? Url { get; set; }
         public MediaType Type { get; set; }
-        public Guid? CausesId { get; set; }
+        public Guid? CauseId { get; set; }
     }
 }

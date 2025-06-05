@@ -70,7 +70,7 @@
 
     export default {
         props: {
-            causesId: {
+            causeId: {
                 type: String,
                 required: false
             }
@@ -79,7 +79,7 @@
             return {
                 donation: {
                     userId: '00000000-0000-0000-0000-000000000000',
-                    causesId: this.causesId,
+                    causeId: this.causeId,
                     amount: 50000,
                     donationDate: new Date().toISOString(),
                     paymentMethod: PaymentMethod.VNPAY,
@@ -99,7 +99,7 @@
             submitDonation: async function () {
                 try {
                     const payload = {
-                        causesId: this.donation.causesId,
+                        causeId: this.donation.causeId,
                         amount: this.donation.amount,
                         donationDate: this.donation.donationDate,
                         paymentMethod: this.donation.paymentMethod,

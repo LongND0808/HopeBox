@@ -1,4 +1,5 @@
-﻿using HopeBox.Core.IService;
+﻿using HopeBox.Core.Email;
+using HopeBox.Core.IService;
 using HopeBox.Domain.Converter;
 using HopeBox.Domain.Dtos;
 using HopeBox.Domain.Models;
@@ -20,11 +21,16 @@ namespace HopeBox.Core.Service
     {
         private readonly IConfiguration _configuration;
         private readonly IRepository<Cause> _causeRepository;
+        private readonly IRepository<User> _userRepository;
+        private readonly IEmailService _emailService;
 
-        public DonationService(IConfiguration configuration, IRepository<Donation> repository, IConverter<Donation, DonationDto> converter)
+        public DonationService(IConfiguration configuration, IRepository<Donation> repository, IConverter<Donation, DonationDto> converter, IRepository<Cause> causeRepository, IRepository<User> userRepository, IEmailService emailService)
             : base(repository, converter)
         {
             _configuration = configuration;
+            _causeRepository = causeRepository;
+            _userRepository = userRepository;
+            _emailService = emailService;
         }
 
         public async Task<BaseResponseDto<string>> CreateVNPayPaymentUrlAsync(Guid donationId, string ipAddress)
@@ -86,7 +92,7 @@ namespace HopeBox.Core.Service
 
         public async Task<BaseResponseDto<bool>> HandleVNPayReturnAsync(VNPayReturnRequestDto dto)
         {
-            var donation = await _repository.GetOneAsync(d => d.TradingCode == dto.vnp_TxnRef);
+            var donation = await _repository.GetOneAsync(filter: f => f.TradingCode == dto.vnp_TxnRef);
             if (donation == null)
             {
                 return new BaseResponseDto<bool>
@@ -97,31 +103,44 @@ namespace HopeBox.Core.Service
                 };
             }
 
+            if (donation == null)
+            {
+                return new BaseResponseDto<bool>
+                {
+                    Status = 404,
+                    Message = "Không tìm thấy donation",
+                    ResponseData = false
+                };
+            }
+
             if (dto.vnp_ResponseCode == "00")
             {
                 donation.TransactionId = dto.vnp_TransactionNo;
                 donation.Status = DonationStatus.Paid;
+                await _repository.UpdateAsync(donation);
+                await _repository.SaveChangesAsync();
 
-                var causeId = donation.CauseId;
+                var userInfo = await _userRepository.GetOneAsyncUntracked<dynamic>(
+                    filter: f => f.Id == donation.UserId,
+                    selector: s => new {s.FullName, s.Email });
 
-                var cause = await _causeRepository.GetOneAsync(filter: c => c.Id == causeId);
-
-                if (cause == null)
+                if (userInfo == null)
                 {
                     return new BaseResponseDto<bool>
                     {
                         Status = 404,
-                        Message = "Không tìm thấy cause",
+                        Message = "Không tìm thấy email người dùng",
                         ResponseData = false
                     };
                 }
 
-                cause.CurrentAmount += donation.Amount;
+                var causeTitle = await _causeRepository.GetOneAsyncUntracked<string>(
+                    filter: f => f.Id == donation.CauseId, selector: s => s.Title);
 
-                await _causeRepository.UpdateAsync(cause);
+                string subject = "Hóa đơn quyên góp - HopeBox";
+                string body = GenerateInvoiceHtml(donation, userInfo.FullName, userInfo.Email, causeTitle);
+                await _emailService.SendEmailAsync(userInfo.Email, subject, body);
 
-                await _repository.UpdateAsync(donation);
-                await _repository.SaveChangesAsync();
 
                 return new BaseResponseDto<bool>
                 {
@@ -130,25 +149,32 @@ namespace HopeBox.Core.Service
                     ResponseData = true
                 };
             }
-            else if (dto.vnp_ResponseCode == "24")
-            {
-                donation.Status = DonationStatus.Cancelled;
-            }
-            else
-            {
-                donation.Status = DonationStatus.Failed;
-            }
-
-            await _repository.UpdateAsync(donation);
-            await _repository.SaveChangesAsync();
 
             return new BaseResponseDto<bool>
             {
                 Status = 400,
-                Message = dto.vnp_ResponseCode == "24" ? "Giao dịch đã bị hủy" : "Thanh toán không thành công",
+                Message = "Thanh toán không thành công",
                 ResponseData = false
             };
         }
+
+        private string GenerateInvoiceHtml(Donation donation, string userName, string userEmail, string causeTitle)
+        {
+            return $@"
+                <h2>Cảm ơn bạn đã quyên góp cho HopeBox!</h2>
+                <p><strong>Tên người dùng:</strong> {userName}</p>
+                <p><strong>Email:</strong> {userEmail}</p>
+                <p><strong>Số tiền:</strong> {donation.Amount:N0} VND</p>
+                <p><strong>Ngày quyên góp:</strong> {donation.DonationDate:dd/MM/yyyy HH:mm}</p>
+                <p><strong>Mã giao dịch:</strong> {donation.TradingCode}</p>
+                <p><strong>ID giao dịch ngân hàng:</strong> {donation.TransactionId}</p>
+                <p><strong>Chiến dịch:</strong> {causeTitle}</p>
+                <br/>
+                <p>Một lần nữa, chúng tôi xin chân thành cảm ơn bạn vì sự đóng góp quý báu này!</p>
+                <p>HopeBox Team ❤️</p>
+            ";
+        }
+
 
         public async Task<BaseResponseDto<DonationDto>> GetByTradingCodeAsync(string tradingCode)
         {
@@ -252,7 +278,7 @@ namespace HopeBox.Core.Service
                 return new BaseResponseDto<string>
                 {
                     Status = 200,
-                    Message = "Donation created successfully",
+                    Message = "Đơn quyên góp đã được tạo thành công",
                     ResponseData = donationId
                 };
             }

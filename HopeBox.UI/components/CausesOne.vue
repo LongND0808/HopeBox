@@ -42,7 +42,7 @@
                             </div>
                             <nuxt-link :to="{
                                             path: '/donation',
-                                            query: { causesId: causes.id }
+                                            query: { causeId: causes.id }
                                         }" class="btn-theme btn-border-gradient gray-border btn-size-md">
                                 <span>
                                     Quyên góp
