@@ -13,12 +13,12 @@ namespace HopeBox.Domain.Dtos
         public string? ChallengeImage { get; set; }
         public string? Summary { get; set; }
         public string? SummaryImage { get; set; }
-        public CausesType Type { get; set; }
+        public CauseType Type { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public decimal TargetAmount { get; set; }
         public decimal CurrentAmount { get; set; }
-        public CausesStatus Status { get; set; }
+        public CauseStatus Status { get; set; }
         public Guid CreatedBy { get; set; }
         public Guid OrganizationId { get; set; }
     }

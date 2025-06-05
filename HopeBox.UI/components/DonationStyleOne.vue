@@ -78,7 +78,7 @@ export default {
         const causesWithUser = await Promise.all(
           list.map(async (item) => {
             return {
-              imgSrc: `/images/causes/${item.heroImage || 'default.jpg'}`,
+              imgSrc: item.heroImage || 'default.jpg',
               title: item.title,
             };
           })

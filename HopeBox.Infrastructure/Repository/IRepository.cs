@@ -5,11 +5,11 @@ namespace HopeBox.Infrastructure.Repository
 {
     public interface IRepository<T> where T : class
     {
-        Task<TResult?> GetOneAsync<TResult>(
+        Task<T?> GetOneAsync(
             Expression<Func<T, bool>>? filter = null,
             Expression<Func<IQueryable<T>, IOrderedQueryable<T>>>? orderBy = null,
             Expression<Func<IQueryable<T>, IQueryable<T>>>? include = null);
-        Task<IEnumerable<TResult>> GetListAsync<TResult>(
+        Task<IEnumerable<T>> GetListAsync(
             Expression<Func<T, bool>>? filter = null,
             Expression<Func<IQueryable<T>, IOrderedQueryable<T>>>? orderBy = null,
             Expression<Func<IQueryable<T>, IQueryable<T>>>? include = null,
@@ -31,6 +31,7 @@ namespace HopeBox.Infrastructure.Repository
         Task<int> GetCount(Expression<Func<T, bool>>? filter = null);
 
         Task AddAsync(T entity);
+        Task AddRangeAsync(IEnumerable<T> entities);
         Task UpdateAsync(T entity);
         Task DeleteAsync(T entity);
         Task SaveChangesAsync();

@@ -86,7 +86,7 @@
 
 <script>
     import axios from 'axios';
-    import { CausesType, CausesTypeLabel } from '~/enums/enums.js';
+    import { CausesType, CausesTypeLabel } from '@/enums/enums.js';
 
     export default {
         props: {
@@ -130,7 +130,7 @@
                         }
 
                         return {
-                            imgSrc: `/images/causes/${item.heroImage || 'default.jpg'}`,
+                            imgSrc: item.heroImage || 'default.jpg',
                             id: item.id,
                             title: item.title,
                             desc: item.description,

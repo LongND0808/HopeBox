@@ -1,5 +1,3 @@
-// src/enums/index.js
-
 export const Gender = {
   UNKNOWN: 0,
   MALE: 1,
@@ -128,10 +126,10 @@ export const UnitLabel = {
 
 export const PaymentMethod = {
   VNPAY: 1,
-  MOMO: 2
+  VietQR: 2
 };
 
 export const PaymentMethodLabel = {
   [PaymentMethod.VNPAY]: 'VNPAY',
-  [PaymentMethod.MOMO]: 'MOMO'
+  [PaymentMethod.VietQR]: 'VietQR'
 };

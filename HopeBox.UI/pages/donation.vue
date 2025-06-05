@@ -2,13 +2,13 @@
     <div class="donation-page-wrapper">
         <Header />
         <OffCanvasMobileMenu />
-        <Breadcrumb items="Become donor" title="Become donor" />
+        <Breadcrumb items="Quyên góp" title="Quyên góp" />
 
         <div class="donation-wrapper">
             <div class="container">
                 <div class="row">
                     <div class="col-lg-10 m-auto">
-                        <DonationForm />
+                        <DonationForm :causesId="$route.query.causesId" />
                     </div>
                 </div>
             </div>
@@ -29,5 +29,3 @@
         }
     };
 </script>
-
-

@@ -1,5 +1,6 @@
 ﻿using HopeBox.Core.IService;
 using HopeBox.Domain.ResponseDto;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HopeBox.Web.Controller
@@ -18,38 +19,41 @@ namespace HopeBox.Web.Controller
         }
 
         [HttpGet("get-all")]
-        public virtual async Task<ActionResult<BaseResponseDto<IEnumerable<TDto>>>> GetAll()
+        public virtual async Task<BaseResponseDto<IEnumerable<TDto>>> GetAll()
         {
             var result = await _baseService.GetAllAsync();
-            return StatusCode(result.Status, result);
+            return (result);
         }
 
         [HttpGet("get-by-id")]
-        public virtual async Task<ActionResult<BaseResponseDto<TDto>>> GetById([FromQuery] Guid id)
+        public virtual async Task<BaseResponseDto<TDto>> GetById([FromQuery] Guid id)
         {
             var result = await _baseService.GetByIdAsync(id);
-            return StatusCode(result.Status, result);
+            return (result);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost("add")]
-        public virtual async Task<ActionResult<BaseResponseDto<bool>>> Add([FromBody] TDto dto)
+        public virtual async Task<BaseResponseDto<bool>> Add([FromBody] TDto dto)
         {
             var result = await _baseService.AddAsync(dto);
-            return StatusCode(result.Status, result);
+            return (result);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost("update")]
-        public virtual async Task<ActionResult<BaseResponseDto<bool>>> Update([FromBody] TDto dto)
+        public virtual async Task<BaseResponseDto<bool>> Update([FromBody] TDto dto)
         {
             var result = await _baseService.UpdateAsync(dto);
-            return StatusCode(result.Status, result);
+            return (result);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost("delete")]
-        public virtual async Task<ActionResult<BaseResponseDto<bool>>> Delete([FromBody] Guid id)
+        public virtual async Task<BaseResponseDto<bool>> Delete([FromBody] Guid id)
         {
             var result = await _baseService.DeleteAsync(id);
-            return StatusCode(result.Status, result);
+            return (result);
         }
     }
 }

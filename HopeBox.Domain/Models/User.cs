@@ -9,13 +9,13 @@ namespace HopeBox.Domain.Models
 
         public string? FullName { get; set; }
 
+        public string? Address { get; set; }
+
         public DateTime DateOfBirth { get; set; }
 
         public Gender Gender { get; set; }
 
         public string? AvatarUrl { get; set; }
-
-        public Guid UserStatusId { get; set; }
 
         public UserStatus UserStatus { get; set; }
 

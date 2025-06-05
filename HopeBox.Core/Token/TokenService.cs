@@ -65,7 +65,7 @@ namespace HopeBox.Core.Token
 
         public async Task<string> CreateRefreshTokenAsync(User user)
         {
-            var existingTokens = await _refreshTokenRepository.GetListAsync<RefreshToken>(x => x.UserId == user.Id);
+            var existingTokens = await _refreshTokenRepository.GetListAsync(x => x.UserId == user.Id);
 
             var lastToken = existingTokens.LastOrDefault();
 
@@ -94,7 +94,7 @@ namespace HopeBox.Core.Token
         public async Task<string> RefreshAccessTokenAsync(string refreshToken)
         {
             var existingToken = await _refreshTokenRepository
-                .GetOneAsync<RefreshToken>(x => x.Token == refreshToken);
+                .GetOneAsync(x => x.Token == refreshToken);
 
             if (existingToken == null || existingToken.ExpiredTime <= DateTime.UtcNow)
             {

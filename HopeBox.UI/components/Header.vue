@@ -22,11 +22,25 @@
                                     <i class="icon-bottom"></i>
                                 </button>
                             </div>
-                            <nuxt-link to="/contact" class="btn-theme btn-gradient btn-slide btn-style">
-                                Quyên góp
+
+                            <template v-if="isLoggedIn">
+                                <nuxt-link to="/profile" style="font-size: 14px;"
+                                    class="btn-theme btn-gradient btn-slide btn-style orange-btn">
+                                    Thông Tin Cá Nhân
+                                </nuxt-link>
+                                <button @click="handleLogout" style="font-size: 14px;"
+                                    class="btn-theme btn-white btn-slide btn-style logout-btn">
+                                    Đăng Xuất
+                                    <img class="icon icon-img" src="/images/icons/arrow-line-right2.png" alt="Icon">
+                                </button>
+                            </template>
+
+                            <nuxt-link v-else to="/login" class="btn-theme btn-gradient btn-slide btn-style">
+                                Đăng Nhập
                                 <img class="icon icon-img" src="/images/icons/arrow-line-right2.png" alt="Icon">
                             </nuxt-link>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -35,38 +49,58 @@
 </template>
 
 <script>
+    import axios from 'axios'
+    import Navigation from '@/components/Navigation.vue'
+
     export default {
-        components: {
-            Navigation: () => import("@/components/Navigation"),
-        },
+        components: { Navigation },
 
         data() {
             return {
                 isSticky: false,
+                isLoggedIn: false
             }
         },
 
-        mounted(){
+        mounted() {
+            this.checkLoginStatus()
+
             window.addEventListener('scroll', () => {
-                let scrollPos = window.scrollY
-                if(scrollPos >= 200){
-                    this.isSticky = true
-                } else {
-                    this.isSticky = false
-                }
+                this.isSticky = window.scrollY >= 200
             })
         },
 
         methods: {
-            // offcanvas mobile-menu
             mobiletoggleClass(addRemoveClass, className) {
-                const el = document.querySelector('#offcanvas-menu');
-                if (addRemoveClass === 'addClass') {
-                    el.classList.add(className);
-                } else {
-                    el.classList.remove(className);
+                const el = document.querySelector('#offcanvas-menu')
+                if (!el) return
+                if (addRemoveClass === 'addClass') el.classList.add(className)
+                else el.classList.remove(className)
+            },
+
+            async checkLoginStatus() {
+                try {
+                    const res = await axios.get('https://localhost:7213/api/Authentication/me', {
+                        withCredentials: true
+                    })
+                    this.isLoggedIn = true
+                } catch (err) {
+                    this.isLoggedIn = false
                 }
             },
-        },
-    };
+
+            async handleLogout() {
+                try {
+                    await axios.post('https://localhost:7213/api/Authentication/logout', {}, {
+                        withCredentials: true
+                    })
+                } catch (error) {
+                    console.error('Lỗi khi đăng xuất:', error)
+                }
+
+                this.isLoggedIn = false
+                this.$router.push('/')
+            }
+        }
+    }
 </script>

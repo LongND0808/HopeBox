@@ -7,7 +7,7 @@ namespace HopeBox.Domain.Models
     {
         public Guid UserId { get; set; }
 
-        public Guid? CausesId { get; set; } 
+        public Guid? CauseId { get; set; } 
 
         [Range(1, 5)]
         public int Rating { get; set; }
@@ -18,6 +18,6 @@ namespace HopeBox.Domain.Models
         public DateTime CreatedAt { get; set; }
 
         public virtual User? User { get; set; }
-        public virtual Cause? Causes { get; set; }
+        public virtual Cause? Cause { get; set; }
     }
 }

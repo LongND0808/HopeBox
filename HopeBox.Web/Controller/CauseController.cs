@@ -22,21 +22,21 @@ namespace HopeBox.Web.Controller
         public virtual async Task<ActionResult<BaseResponseDto<IEnumerable<CauseDto>>>> GetCauseOne()
         {
             var result = await _causeService.GetCauseOneAsync();
-            return StatusCode(result.Status, result);
+            return (result);
         }
 
         [HttpGet("get-cause-highest-target")]
-        public virtual async Task<ActionResult<BaseResponseDto<IEnumerable<CauseDto>>>> GetCauseHighestTarget()
+        public virtual async Task<BaseResponseDto<CauseDto>> GetCauseHighestTarget()
         {
             var result = await _causeService.GetCauseHighestTargetAsync();
-            return StatusCode(result.Status, result);
+            return (result);
         }
 
         [HttpPost("get-cause-by-filter")]
-        public async Task<IActionResult> GetCauseByFilter([FromBody] CauseFilterRequestDto request)
+        public async Task<BaseResponseDto<BasePagingResponseDto<CauseDto>>> GetCauseByFilter([FromBody] CauseFilterRequestDto request)
         {
             var result = await _causeService.GetCauseByFilter(request);
-            return StatusCode(result.Status, result);
+            return (result);
         }
     }
 }

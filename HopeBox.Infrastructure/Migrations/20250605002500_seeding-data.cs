@@ -25,23 +25,23 @@ namespace HopeBox.Infrastructure.Migrations
                 {
                     "Id", "UserName", "NormalizedUserName", "Email", "NormalizedEmail", "EmailConfirmed",
                     "PasswordHash", "SecurityStamp", "ConcurrencyStamp", "PhoneNumber", "PhoneNumberConfirmed",
-                    "FullName", "DateOfBirth", "Gender", "AvatarUrl", "Point", "UserStatus", "UserStatusId",
+                    "FullName", "DateOfBirth", "Gender", "AvatarUrl", "Point", "UserStatus",
                     "AccessFailedCount", "LockoutEnabled", "LockoutEnd", "TwoFactorEnabled"
-                },
-                values: new object[,]
-                {
+                            },
+                            values: new object[,]
+                            {
                     {
                         userAdminId, "Nguyễn Đăng Long", "NGUYEN DANG LONG", "admin@hopebox.org", "ADMIN@HOPEBOX.ORG", true,
                         new PasswordHasher<IdentityUser<Guid>>().HashPassword(null, "Admin@123"),
                         Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "08684532345", true,
-                        "Nguyễn Đăng Long", new DateTime(1990,1,1), 1, null, 100, 1, Guid.NewGuid(),
+                        "Nguyễn Đăng Long", new DateTime(1990,1,1), 1, "images/user/admin.jpg", 100, 1,
                         0, false, null, false
                     },
                     {
                         userCustomerId, "Nguyễn Hoàng Thắng", "NGUYEN HOANG THANG", "customer@hopebox.org", "CUSTOMER@HOPEBOX.ORG", true,
                         new PasswordHasher<IdentityUser<Guid>>().HashPassword(null, "Customer@123"),
                         Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "08684531111", true,
-                        "Nguyễn Hoàng Thắng", new DateTime(1995, 5, 15), 1, null, 50, 1, Guid.NewGuid(),
+                        "Nguyễn Hoàng Thắng", new DateTime(1995, 5, 15), 1, null, 50, 1,
                         0, false, null, false
                     }
                 });
@@ -91,13 +91,13 @@ namespace HopeBox.Infrastructure.Migrations
                 {
                     "Id", "Name", "Email", "PhoneNumber", "Address", "City", "Description", "Website", "Verified",
                     "CreatedAt", "UserId"
-                },
-                values: new object[]
-                {
+                            },
+                            values: new object[]
+                            {
                     orgId, "Global Hope Org", "info@globalhope.org", "0988888888",
                     "456 Charity Lane", "HCMC", "Supporting humanitarian efforts",
                     "https://globalhope.org", true, DateTime.UtcNow, userId
-                });
+                            });
 
 
             migrationBuilder.InsertData(
@@ -113,56 +113,56 @@ namespace HopeBox.Infrastructure.Migrations
                     {
                         causeWaterId, "Nước Sạch Cho Em", "Mang nước sạch đến các bản làng vùng cao",
                         "Xây dựng giếng khoan và hệ thống lọc nước giúp trẻ em có nguồn nước an toàn để sinh hoạt và học tập.",
-                        "hero-water.jpg", "Nguồn nước ô nhiễm khiến trẻ em mắc bệnh tiêu hóa và da liễu",
-                        "challenge-water.jpg", "Nước sạch là nền tảng cho sức khỏe và sự phát triển",
-                        "summary-water.jpg",
-                        (int)CausesType.Water, new DateTime(2025,6,1), new DateTime(2025,12,1), 10000m, 0m,
-                        (int)CausesStatus.Pending, userId, orgId
+                        "/images/causes/hero-water.jpg", "Nguồn nước ô nhiễm khiến trẻ em mắc bệnh tiêu hóa và da liễu",
+                        "/images/causes/challenge-water.jpg", "Nước sạch là nền tảng cho sức khỏe và sự phát triển",
+                        "/images/causes/summary-water.jpg",
+                        (int)CauseType.Water, new DateTime(2025,6,1), new DateTime(2025,12,1), 10000m, 0m,
+                        (int)CauseStatus.Pending, userId, orgId
                     },
                     {
                         causeFoodId, "Bữa Ăn Đầy Đủ", "Cung cấp thực phẩm cho trẻ em suy dinh dưỡng",
                         "Hỗ trợ các gia đình vùng cao bằng các phần quà thực phẩm thiết yếu hàng tháng cho trẻ nhỏ.",
-                        "hero-food.jpg", "Thiếu ăn kéo dài khiến trẻ còi cọc và học kém",
-                        "challenge-food.jpg", "Dinh dưỡng đầy đủ giúp trẻ lớn khôn khỏe mạnh",
-                        "summary-food.jpg",
-                        (int)CausesType.Food, new DateTime(2025,7,1), new DateTime(2025,11,1), 8000m, 0m,
-                        (int)CausesStatus.Pending, userId, orgId
+                        "/images/causes/hero-food.jpg", "Thiếu ăn kéo dài khiến trẻ còi cọc và học kém",
+                        "/images/causes/challenge-food.jpg", "Dinh dưỡng đầy đủ giúp trẻ lớn khôn khỏe mạnh",
+                        "/images/causes/summary-food.jpg",
+                        (int)CauseType.Food, new DateTime(2025,7,1), new DateTime(2025,11,1), 8000m, 0m,
+                        (int)CauseStatus.Pending, userId, orgId
                     },
                     {
                         causeMedicineId, "Tủ Thuốc Nhân Ái", "Cung cấp thuốc cơ bản cho trẻ em vùng cao",
                         "Phối hợp với trạm y tế để cung cấp thuốc hạ sốt, tiêu hóa, bông băng y tế cho các điểm trường và hộ gia đình có trẻ nhỏ.",
-                        "hero-medicine.jpg", "Trẻ em không được điều trị kịp thời vì thiếu thuốc",
-                        "challenge-medicine.jpg", "Thuốc cơ bản có thể cứu sống trẻ em",
-                        "summary-medicine.jpg",
-                        (int)CausesType.Medicine, new DateTime(2025,8,1), new DateTime(2025,12,31), 12000m, 0m,
-                        (int)CausesStatus.Pending, userId, orgId
+                        "/images/causes/hero-medicine.jpg", "Trẻ em không được điều trị kịp thời vì thiếu thuốc",
+                        "/images/causes/challenge-medicine.jpg", "Thuốc cơ bản có thể cứu sống trẻ em",
+                        "/images/causes/summary-medicine.jpg",
+                        (int)CauseType.Medicine, new DateTime(2025,8,1), new DateTime(2025,12,31), 12000m, 0m,
+                        (int)CauseStatus.Pending, userId, orgId
                     },
                     {
                         causeEducationId, "Cặp Sách Đến Trường", "Tặng dụng cụ học tập và học phí",
                         "Tài trợ cặp sách, bút vở và đồng phục cho học sinh tiểu học và trung học ở vùng sâu vùng xa.",
-                        "hero-edu.jpg", "Nhiều em phải nghỉ học vì không đủ điều kiện vật chất",
-                        "challenge-edu.jpg", "Giáo dục là con đường thoát nghèo bền vững",
-                        "summary-edu.jpg",
-                        (int)CausesType.Education, new DateTime(2025,6,15), new DateTime(2025,12,15), 15000m, 0m,
-                        (int)CausesStatus.Pending, userId, orgId
+                        "/images/causes/hero-edu.jpg", "Nhiều em phải nghỉ học vì không đủ điều kiện vật chất",
+                        "/images/causes/challenge-edu.jpg", "Giáo dục là con đường thoát nghèo bền vững",
+                        "/images/causes/summary-edu.jpg",
+                        (int)CauseType.Education, new DateTime(2025,6,15), new DateTime(2025,12,15), 15000m, 0m,
+                        (int)CauseStatus.Pending, userId, orgId
                     },
                     {
                         causeShelterId, "Mái Ấm Vùng Cao", "Sửa chữa và xây mới nhà cho trẻ em khó khăn",
                         "Hỗ trợ xây dựng nhà ở an toàn sau thiên tai và cho những gia đình nghèo có trẻ em.",
-                        "hero-shelter.jpg", "Trẻ em sống trong nhà tạm bợ không đảm bảo an toàn",
-                        "challenge-shelter.jpg", "Một mái ấm vững chắc mang lại hy vọng và tương lai",
-                        "summary-shelter.jpg",
-                        (int)CausesType.Shelter, new DateTime(2025,9,1), new DateTime(2026,1,1), 20000m, 0m,
-                        (int)CausesStatus.Pending, userId, orgId
+                        "/images/causes/hero-shelter.jpg", "Trẻ em sống trong nhà tạm bợ không đảm bảo an toàn",
+                        "/images/causes/challenge-shelter.jpg", "Một mái ấm vững chắc mang lại hy vọng và tương lai",
+                        "/images/causes/summary-shelter.jpg",
+                        (int)CauseType.Shelter, new DateTime(2025,9,1), new DateTime(2026,1,1), 20000m, 0m,
+                        (int)CauseStatus.Pending, userId, orgId
                     },
                     {
                         causeClothingId, "Áo Ấm Mùa Đông", "Gửi quần áo ấm cho trẻ em vùng núi",
                         "Tổ chức quyên góp và trao tặng áo khoác, khăn len, tất và giày dép cho trẻ em vào mùa đông lạnh giá.",
-                        "hero-clothing.jpg", "Nhiều em chịu rét trong giá lạnh vì thiếu quần áo",
-                        "challenge-clothing.jpg", "Một chiếc áo ấm cũng có thể cứu một sinh mạng",
-                        "summary-clothing.jpg",
-                        (int)CausesType.Clothing, new DateTime(2025,10,1), new DateTime(2025,12,31), 6000m, 0m,
-                        (int)CausesStatus.Pending, userId, orgId
+                        "/images/causes/hero-clothing.jpg", "Nhiều em chịu rét trong giá lạnh vì thiếu quần áo",
+                        "/images/causes/challenge-clothing.jpg", "Một chiếc áo ấm cũng có thể cứu một sinh mạng",
+                        "/images/causes/summary-clothing.jpg",
+                        (int)CauseType.Clothing, new DateTime(2025,10,1), new DateTime(2025,12,31), 6000m, 0m,
+                        (int)CauseStatus.Pending, userId, orgId
                     }
                 });
 
@@ -170,7 +170,7 @@ namespace HopeBox.Infrastructure.Migrations
 
             migrationBuilder.InsertData(
                 table: "Medias",
-                columns: new[] { "Id", "Url", "Type", "CausesId" },
+                columns: new[] { "Id", "Url", "Type", "CauseId" },
                 values: new object[,]
                 {
                     { mediaIds[0], "https://cdn.hope.org/media/water.jpg", (int)MediaType.Image, causeWaterId },
@@ -181,7 +181,6 @@ namespace HopeBox.Infrastructure.Migrations
                     { mediaIds[5], "https://cdn.hope.org/media/clothing.jpg", (int)MediaType.Image, causeClothingId }
                 });
         }
-
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)

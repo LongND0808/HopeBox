@@ -3,7 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using HopeBox.Domain.Dtos;
 using HopeBox.Core.IService;
 using HopeBox.Domain.ResponseDto;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 using HopeBox.Core.IAspModelService;
+using Duende.IdentityModel;
 
 namespace HopeBox.Web.Controller
 {
@@ -13,44 +16,48 @@ namespace HopeBox.Web.Controller
     {
         protected readonly IUserService _userService;
 
-        public UserController(IUserService baseService)
+        public UserController(IUserService userService)
         {
-            _userService = baseService;
+            _userService = userService;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("get-all")]
-        public virtual async Task<ActionResult<BaseResponseDto<IEnumerable<UserDto>>>> GetAll()
+        public virtual async Task<BaseResponseDto<IEnumerable<UserDto>>> GetAll()
         {
             var result = await _userService.GetAllAsync();
-            return StatusCode(result.Status, result);
+            return result;
         }
 
         [HttpGet("get-by-id")]
-        public virtual async Task<ActionResult<BaseResponseDto<UserDto>>> GetById([FromQuery] Guid id)
+        public virtual async Task<BaseResponseDto<UserDto>> GetById([FromQuery] Guid id)
         {
             var result = await _userService.GetByIdAsync(id);
-            return StatusCode(result.Status, result);
+            return result;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost("add")]
-        public virtual async Task<ActionResult<BaseResponseDto<bool>>> Add([FromBody] UserDto dto)
+        public virtual async Task<BaseResponseDto<bool>> Add([FromBody] UserDto dto)
         {
             var result = await _userService.AddAsync(dto);
-            return StatusCode(result.Status, result);
+            return result;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost("update")]
-        public virtual async Task<ActionResult<BaseResponseDto<bool>>> Update([FromBody] UserDto dto)
+        public virtual async Task<BaseResponseDto<bool>> Update([FromBody] UserDto dto)
         {
             var result = await _userService.UpdateAsync(dto);
-            return StatusCode(result.Status, result);
+            return result;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost("delete")]
-        public virtual async Task<ActionResult<BaseResponseDto<bool>>> Delete([FromBody] Guid id)
+        public virtual async Task<BaseResponseDto<bool>> Delete([FromBody] Guid id)
         {
             var result = await _userService.DeleteAsync(id);
-            return StatusCode(result.Status, result);
+            return result;
         }
     }
 }

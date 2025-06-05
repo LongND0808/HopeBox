@@ -33,17 +33,21 @@
                         <div class="causes-footer">
                             <div class="admin">
                                 <h5>
-                                    <nuxt-link to="/causes">
+                                    <nuxt-link to="#">
                                         <span class="icon-img">
                                             <img src="/images/icons/admin1.png" alt="Icon">
                                         </span> {{ causes.name }}
                                     </nuxt-link>
                                 </h5>
                             </div>
-                            <nuxt-link to="/donation" class="btn-theme btn-border-gradient gray-border btn-size-md">
+                            <nuxt-link :to="{
+                                            path: '/donation',
+                                            query: { causesId: causes.id }
+                                        }" class="btn-theme btn-border-gradient gray-border btn-size-md">
                                 <span>
                                     Quyên góp
-                                    <img class="icon icon-img" src="/images/icons/arrow-line-right-gradient.png" alt="Icon">
+                                    <img class="icon icon-img" src="/images/icons/arrow-line-right-gradient.png"
+                                        alt="Icon">
                                 </span>
                             </nuxt-link>
                         </div>
@@ -55,55 +59,56 @@
 </template>
 
 <script>
-import axios from 'axios';
+    import axios from 'axios';
 
-export default {
-    data() {
-        return {
-            causesData: []
-        };
-    },
-    mounted() {
-        axios.get('https://localhost:7213/api/Cause/get-cause-one')
-            .then(async response => {
-                const causes = response.data.responseData;
+    export default {
+        data() {
+            return {
+                causesData: []
+            };
+        },
+        mounted() {
+            axios.get('https://localhost:7213/api/Cause/get-cause-one')
+                .then(async response => {
+                    const causes = response.data.responseData;
 
-                const causesWithUser = await Promise.all(causes.map(async (item) => {
-                    let userName = 'Ẩn danh';
-                    try {
-                        const userRes = await axios.get(`https://localhost:7213/api/User/get-by-id?id=${item.createdBy}`);
-                        userName = userRes.data.responseData.fullName;
-                    } catch (err) {
-                        console.warn('Lỗi lấy tên người dùng:', err);
-                    }
+                    const causesWithUser = await Promise.all(causes.map(async (item) => {
+                        let userName = 'Ẩn danh';
+                        try {
+                            const userRes = await axios.get(`https://localhost:7213/api/User/get-by-id?id=${item.createdBy}`);
+                            userName = userRes.data.responseData.fullName;
+                        } catch (err) {
+                            console.warn('Lỗi lấy tên người dùng:', err);
+                        }
 
-                    return {
-                        imgSrc: `/images/causes/${item.heroImage || 'default.jpg'}`,
-                        title: item.title,
-                        desc: item.description,
-                        name: userName,
-                        infoList: [
-                            {
-                                infoTitle: "Mục tiêu",
-                                amount: `${item.targetAmount}₫`
-                            },
-                            {
-                                infoTitle: "Đã góp",
-                                amount: `${item.currentAmount}₫`
-                            },
-                            {
-                                infoTitle: "Còn thiếu",
-                                amount: `${Math.max(item.targetAmount - item.currentAmount, 0)}₫`
-                            }
-                        ]
-                    };
-                }));
+                        return {
+                            id: item.id,
+                            imgSrc: item.heroImage || 'default.jpg',
+                            title: item.title,
+                            desc: item.description,
+                            name: userName,
+                            infoList: [
+                                {
+                                    infoTitle: "Mục tiêu",
+                                    amount: `${item.targetAmount}₫`
+                                },
+                                {
+                                    infoTitle: "Đã góp",
+                                    amount: `${item.currentAmount}₫`
+                                },
+                                {
+                                    infoTitle: "Còn thiếu",
+                                    amount: `${Math.max(item.targetAmount - item.currentAmount, 0)}₫`
+                                }
+                            ]
+                        };
+                    }));
 
-                this.causesData = causesWithUser;
-            })
-            .catch(error => {
-                console.error('Lỗi khi gọi API Causes:', error);
-            });
-    }
-};
+                    this.causesData = causesWithUser;
+                })
+                .catch(error => {
+                    console.error('Lỗi khi gọi API Causes:', error);
+                });
+        }
+    };
 </script>

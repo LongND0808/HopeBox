@@ -7,7 +7,7 @@
             <div class="causes-details-content">
               <div class="causes-details">
                 <div class="thumb">
-                  <img class="w-100" :src="`/images/causes/${cause.heroImage}`" alt="image">
+                  <img class="w-100" :src="cause.heroImage" alt="image">
                 </div>
                 <h3 class="cause-title">{{ cause.title }}</h3>
                 <div class="donate-info-wrp">
@@ -42,11 +42,11 @@
                 <p>{{ cause.detail }}</p>
 
                 <h3>Vấn đề khó khăn</h3>
-                <img class="w-100 mb-3" :src="`/images/causes/${cause.challengeImage}`" alt="Challenge image">
+                <img class="w-100 mb-3" :src="cause.challengeImage" alt="Challenge image">
                 <p>{{ cause.challenge }}</p>
 
                 <h3>Tổng quan</h3>
-                <img class="w-100 mb-3" :src="`/images/causes/${cause.summaryImage}`" alt="Summary image">
+                <img class="w-100 mb-3" :src="cause.summaryImage" alt="Summary image">
                 <p>{{ cause.summary }}</p>
               </div>
 

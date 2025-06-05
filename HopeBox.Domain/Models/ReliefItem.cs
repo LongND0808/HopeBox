@@ -11,7 +11,7 @@ namespace HopeBox.Domain.Models
         public string ItemName { get; set; } = string.Empty;
 
         [Required]
-        public string Unit { get; set; } = "pcs";
+        public string Unit { get; set; }
 
         [Range(0, double.MaxValue)]
         public decimal UnitPrice { get; set; }

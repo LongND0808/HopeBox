@@ -11,5 +11,9 @@ namespace HopeBox.Domain.Dtos
         public DateTime DonationDate { get; set; }
         public PaymentMethod PaymentMethod { get; set; }
         public string? TransactionId { get; set; }
+        public string? TradingCode { get; set; }
+        public DonationStatus Status { get; set; }
+        public bool IsAnonymous { get; set; }
+        public string? Message { get; set; }
     }
 }

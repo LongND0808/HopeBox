@@ -8,6 +8,8 @@ namespace HopeBox.Domain.Models
 {
     public class ReliefPackage : BaseModel
     {
+        public Guid CauseId { get; set; }
+
         [Required]
         public string Name { get; set; } = string.Empty;
 
@@ -16,6 +18,7 @@ namespace HopeBox.Domain.Models
         [NotMapped]
         public decimal TotalAmount => PackageItems?.Sum(i => i.TotalPrice) ?? 0;
 
+        public virtual Cause? Cause { get; set; }
         public virtual ICollection<ReliefPackageItem>? PackageItems { get; set; }
     }
 }

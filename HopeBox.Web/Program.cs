@@ -1,19 +1,20 @@
+using Duende.IdentityModel;
 using HopeBox.Core.Config;
+using HopeBox.Core.Email;
 using HopeBox.Core.IAspModelService;
 using HopeBox.Core.IdentityModelService;
 using HopeBox.Core.IService;
 using HopeBox.Core.Service;
+using HopeBox.Core.Token;
 using HopeBox.Domain.Converter;
 using HopeBox.Domain.Models;
 using HopeBox.Infrastructure.DataContext;
 using HopeBox.Infrastructure.Repository;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Org.BouncyCastle.Asn1.X509.Qualified;
+using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,17 +31,20 @@ builder.Services.AddSingleton<IConfig, Config>();
 builder.Services.AddScoped<IHopeBoxDataContext, HopeBoxDataContext>();
 
 builder.Services.AddScoped(typeof(IConverter<,>), typeof(HopeBox.Domain.Converter.Converter<,>));
-builder.Services.AddScoped(typeof(IBaseService<,>), typeof(BaseService<,>));
-
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<ICauseService, CauseService>();
 
 #region Add Repository
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 #endregion
 
 #region Add Services
+builder.Services.AddScoped(typeof(IBaseService<,>), typeof(BaseService<,>));
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IDonationService, DonationService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICauseService, CauseService>();
 #endregion
 
 #region Add Converter
@@ -73,7 +77,8 @@ builder.Services.AddAuthentication(options =>
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options =>
+})
+.AddJwtBearer(options =>
 {
     options.SaveToken = true;
     options.RequireHttpsMetadata = false;
@@ -87,19 +92,35 @@ builder.Services.AddAuthentication(options =>
 
         ValidAudience = builder.Configuration["JWT:ValidAudience"],
         ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"] ?? ""))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"] ?? "")),
+        RoleClaimType = ClaimTypes.Role
+    };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            if (context.Request.Cookies.ContainsKey("accessToken"))
+            {
+                context.Token = context.Request.Cookies["accessToken"];
+            }
+            return Task.CompletedTask;
+        }
     };
 });
 
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy =>
+    options.AddPolicy("AllowLocalhost", policy =>
     {
-        policy.AllowAnyOrigin()
+        policy.WithOrigins("http://localhost:3000")
+              .AllowCredentials()
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
 });
+
 
 builder.Services.AddEndpointsApiExplorer();
 
@@ -114,9 +135,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.UseCors("AllowLocalhost");
 
-app.UseCors("AllowAll");
+app.UseAuthentication();
+
+app.UseAuthorization();
 
 app.MapControllers();
 

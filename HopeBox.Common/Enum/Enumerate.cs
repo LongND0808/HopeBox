@@ -16,9 +16,10 @@ namespace HopeBox.Common.Enum
         {
             Active = 1,
             Inactive = 2,
-            Suspended = 3,
-            Banned = 4,
-            Deleted = 5
+            Pending = 3,
+            Suspended = 4,
+            Banned = 5,
+            Deleted = 6
         }
 
         public enum VolunteerStatus
@@ -28,7 +29,7 @@ namespace HopeBox.Common.Enum
             Rejected = 3
         }
 
-        public enum CausesStatus
+        public enum CauseStatus
         {
             Pending = 1,
             Approved = 2,
@@ -36,7 +37,7 @@ namespace HopeBox.Common.Enum
             Completed = 4,
             Canceled = 5
         }
-        public enum CausesType
+        public enum CauseType
         {
             Water = 1,
             Food = 2,
@@ -71,10 +72,18 @@ namespace HopeBox.Common.Enum
             Carton = 6
         }
 
+        public enum DonationStatus
+        {
+            Pending = 0,
+            Paid = 1,
+            Failed = 2,
+            Cancelled = 3
+        }
+
         public enum PaymentMethod
         {
-            VNPAY = 1,
-            MOMO = 2
+            VNPay = 0,
+            VietQR = 1
         }
     }
 }

@@ -28,7 +28,7 @@ namespace HopeBox.Domain.Models
 
         public string? SummaryImage { get; set; }
 
-        public CausesType Type { get; set; }
+        public CauseType Type { get; set; }
 
         [Required]
         public DateTime StartDate { get; set; }
@@ -42,7 +42,7 @@ namespace HopeBox.Domain.Models
         public decimal CurrentAmount { get; set; }
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
-        public CausesStatus Status { get; set; }
+        public CauseStatus Status { get; set; }
 
         public Guid CreatedBy { get; set; }
 
@@ -51,6 +51,7 @@ namespace HopeBox.Domain.Models
         [ForeignKey(nameof(CreatedBy))]
         public virtual User? Creator { get; set; }
         public virtual Organization? Organization { get; set; }
+        public virtual ICollection<ReliefPackage>? ReliefPackages { get; set; }
         public virtual ICollection<Donation>? Donations { get; set; }
         public virtual ICollection<Volunteer>? Volunteers { get; set; }
         public virtual ICollection<Media>? Documents { get; set; }

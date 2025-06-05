@@ -9,7 +9,7 @@ namespace HopeBox.Domain.Models
         public Guid UserId { get; set; }
         public virtual User? User { get; set; }
 
-        public Guid CausesId { get; set; }
+        public Guid CauseId { get; set; }
 
         public decimal Amount { get; set; }
 
@@ -20,7 +20,10 @@ namespace HopeBox.Domain.Models
 
         public string? TransactionId { get; set; }
 
-        public virtual Cause? Causes { get; set; }
+        public string? TradingCode { get; set; } 
+        public DonationStatus Status { get; set; } 
+
+        public virtual Cause? Cause { get; set; }
         public virtual ICollection<DonationReliefPackage>? ReliefPackages { get; set; }
     }
 

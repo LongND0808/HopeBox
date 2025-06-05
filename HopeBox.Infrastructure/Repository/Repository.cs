@@ -17,6 +17,13 @@ namespace HopeBox.Infrastructure.Repository
         public async Task AddAsync(T entity)
         {
             await _context.Set<T>().AddAsync(entity);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task AddRangeAsync(IEnumerable<T> entities)
+        {
+            await _context.Set<T>().AddRangeAsync(entities);
+            await _context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(T entity)
@@ -109,7 +116,7 @@ namespace HopeBox.Infrastructure.Repository
             }
         }
 
-        public async Task<TResult?> GetOneAsync<TResult>(
+        public async Task<T?> GetOneAsync(
             Expression<Func<T, bool>>? filter = null,
             Expression<Func<IQueryable<T>, IOrderedQueryable<T>>>? orderBy = null,
             Expression<Func<IQueryable<T>, IQueryable<T>>>? include = null)
@@ -131,10 +138,10 @@ namespace HopeBox.Infrastructure.Repository
                 query = orderBy.Compile()(query);
             }
 
-            return await query.Cast<TResult>().FirstOrDefaultAsync();
+            return await query.FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<TResult>> GetListAsync<TResult>(
+        public async Task<IEnumerable<T>> GetListAsync(
             Expression<Func<T, bool>>? filter = null,
             Expression<Func<IQueryable<T>, IOrderedQueryable<T>>>? orderBy = null,
             Expression<Func<IQueryable<T>, IQueryable<T>>>? include = null,
@@ -163,7 +170,7 @@ namespace HopeBox.Infrastructure.Repository
                 query = query.Skip((pageNumber.Value - 1) * pageSize.Value).Take(pageSize.Value);
             }
 
-            return await query.Cast<TResult>().ToListAsync();
+            return await query.ToListAsync();
         }
 
         public async Task<IDbContextTransaction> BeginTransactionAsync()
