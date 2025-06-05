@@ -3,7 +3,7 @@
         <Header />
         <OffCanvasMobileMenu />
         <Breadcrumb items="Event details" title="Event details" />
-        <EventDetailsContent />
+        <EventDetailsContent/>
         <Footer />
     </div>
 </template>
