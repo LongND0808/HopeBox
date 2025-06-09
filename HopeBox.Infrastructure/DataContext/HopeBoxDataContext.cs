@@ -9,7 +9,9 @@ namespace HopeBox.Infrastructure.DataContext
     public partial class HopeBoxDataContext : IdentityDbContext<User, Role, Guid, IdentityUserClaim<Guid>,
         UserRole, IdentityUserLogin<Guid>, IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>, IHopeBoxDataContext
     {
-        public HopeBoxDataContext(DbContextOptions<HopeBoxDataContext> options) : base(options) { }
+        public HopeBoxDataContext(DbContextOptions<HopeBoxDataContext> options) : base(options) {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+        }
 
         public new DbSet<TEntity> Set<TEntity>() where TEntity : class => base.Set<TEntity>();
 

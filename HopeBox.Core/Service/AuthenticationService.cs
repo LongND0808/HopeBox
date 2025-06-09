@@ -168,7 +168,7 @@ namespace HopeBox.Core.Service
                     Point = 0,
                     Gender = request.Gender,
                     AvatarUrl = "DefaultAvatar.jpg",
-                    UserStatus = UserStatus.Suspended,
+                    UserStatus = UserStatus.Pending,
                 };
 
                 var passwordHasher = new PasswordHasher<User>();

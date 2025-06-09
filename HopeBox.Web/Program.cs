@@ -13,6 +13,7 @@ using HopeBox.Infrastructure.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
@@ -25,7 +26,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<HopeBoxDataContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("HopeBox")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("HopeBox")));
 
 builder.Services.AddSingleton<IConfig, Config>();
 builder.Services.AddScoped<IHopeBoxDataContext, HopeBoxDataContext>();
@@ -54,12 +55,12 @@ builder.Services.AddScoped(typeof(IConverter<,>), typeof(HopeBox.Domain.Converte
 #endregion
 
 
-builder.Services.AddSession(options =>
+/*builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
-});
+});*/
 
 builder.Services.AddIdentity<User, Role>()
     .AddEntityFrameworkStores<HopeBoxDataContext>()
@@ -67,12 +68,12 @@ builder.Services.AddIdentity<User, Role>()
 
 var config = new Config(builder.Configuration);
 
-builder.Services.AddIdentityServer()
-    .AddInMemoryIdentityResources(config.GetIdentityResources())
-    .AddInMemoryApiScopes(config.GetApiScopes())
-    .AddInMemoryClients(config.GetClients())
-    .AddDeveloperSigningCredential()
-    .AddAspNetIdentity<User>();
+//builder.Services.AddIdentityServer()
+//    .AddInMemoryIdentityResources(config.GetIdentityResources())
+//    .AddInMemoryApiScopes(config.GetApiScopes())
+//    .AddInMemoryClients(config.GetClients())
+//    .AddDeveloperSigningCredential()
+//    .AddAspNetIdentity<User>();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -128,12 +129,9 @@ builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
+
 
 app.UseHttpsRedirection();
 
@@ -144,5 +142,21 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<HopeBoxDataContext>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+
+    try
+    {
+        dbContext.Database.Migrate();
+        logger.LogInformation("Database migration applied successfully.");
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "An error occurred while applying migrations.");
+    }
+}
 
 app.Run();
