@@ -5,7 +5,7 @@ out/
 
 # ========== Nuxt build artifacts ==========
 HopeBox.UI/.nuxt/
-HopeBox.Web/appsettings.json
+HopeBox.Web/appsettings.Development.json
 dist/
 node_modules/
 *.log
