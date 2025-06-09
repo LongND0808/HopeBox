@@ -31,6 +31,6 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: "hopebox"
-          directory: "HopeBox.UI/.output/public/"
-##          directory: "HopeBox.UI/dist"
+##          directory: "HopeBox.UI/.output/public/"
+          directory: "HopeBox.UI/dist"
           gitHubToken: ${{ secrets.GH_TOKEN }}
