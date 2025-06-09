@@ -11,4 +11,8 @@ export default defineNuxtConfig({
     },
   },
   plugins: ["@/plugins/aos"],
+  ssr: true,
+  nitro: {
+    preset: 'cloudflare-pages'
+  }
 })
