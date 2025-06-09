@@ -9,6 +9,7 @@ HopeBox.Web/appsettings.Development.json
 dist/
 node_modules/
 *.log
+HopeBox.UI/.output/
 
 # ========== Node/Nuxt cache, temp, lock files ==========
 *.lock
