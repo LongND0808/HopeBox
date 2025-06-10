@@ -33,7 +33,9 @@ namespace HopeBox.Infrastructure.Repository
         Task AddAsync(T entity);
         Task AddRangeAsync(IEnumerable<T> entities);
         Task UpdateAsync(T entity);
+        Task UpdateRangeAsync(IEnumerable<T> entitíe);
         Task DeleteAsync(T entity);
+        Task DeleteRangeAsync(IEnumerable<T> entities);
         Task SaveChangesAsync();
         Task<IDbContextTransaction> BeginTransactionAsync();
         Task CommitTransactionAsync(IDbContextTransaction transaction);

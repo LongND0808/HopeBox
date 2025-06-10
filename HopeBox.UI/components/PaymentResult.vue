@@ -27,74 +27,49 @@
 </template>
 
 <script>
-    import axios from 'axios';
-    import Swal from 'sweetalert2';
+import axios from 'axios';
+import { showSuccessAlert, showErrorAlert } from '@/utils/alertHelper.js';
 
-    export default {
-        data() {
-            return {
-                isLoading: true,
-                statusMessage: '',
-                detailMessage: ''
-            };
-        },
-        async mounted() {
-            try {
-                const query = this.$route.query;
+export default {
+    data() {
+        return {
+            isLoading: true,
+            statusMessage: '',
+            detailMessage: ''
+        };
+    },
+    async mounted() {
+        try {
+            const query = this.$route.query;
 
-                const response = await axios.post(`https://localhost:7213/api/Donation/vnpay-return`, {
-                    vnp_TxnRef: query.vnp_TxnRef,
-                    vnp_ResponseCode: query.vnp_ResponseCode,
-                    vnp_TransactionNo: query.vnp_TransactionNo
-                });
+            const response = await axios.post(`https://localhost:7213/api/Donation/vnpay-return`, {
+                vnp_TxnRef: query.vnp_TxnRef,
+                vnp_ResponseCode: query.vnp_ResponseCode,
+                vnp_TransactionNo: query.vnp_TransactionNo
+            });
 
-                const result = response.data;
+            const result = response.data;
 
+            if (result.status === 200 && result.responseData === true) {
+                this.statusMessage = 'Thanh toán thành công!';
+                this.detailMessage = (result.message || 'Cảm ơn bạn đã quyên góp!') + ' Hóa đơn đã được gửi vào Gmail của bạn.';
 
-                if (result.status === 200 && result.responseData === true) {
-                    this.statusMessage = 'Thanh toán thành công!';
-                    this.detailMessage = (result.message || 'Cảm ơn bạn đã quyên góp!') + ' Hóa đơn đã được gửi vào Gmail của bạn.';
+                await showSuccessAlert('Thanh toán thành công', this.detailMessage);
+            } else {
+                this.statusMessage = 'Thanh toán thất bại';
+                this.detailMessage = result.message || 'Thanh toán không thành công. Vui lòng thử lại.';
 
-                    await Swal.fire({
-                        icon: 'success',
-                        title: 'Thanh toán thành công',
-                        text: this.detailMessage,
-                        confirmButtonText: 'Tuyệt vời',
-                        confirmButtonColor: '#f37224',
-                        background: '#0c1e25',
-                        color: '#fff'
-                    });
-                } else {
-                    this.statusMessage = 'Thanh toán thất bại';
-                    this.detailMessage = result.message || 'Thanh toán không thành công. Vui lòng thử lại.';
-
-                    await Swal.fire({
-                        icon: 'error',
-                        title: 'Thanh toán thất bại',
-                        text: this.detailMessage,
-                        confirmButtonText: 'Thử lại',
-                        confirmButtonColor: '#d33',
-                        background: '#0c1e25',
-                        color: '#fff'
-                    });
-                }
-
-            } catch (error) {
-                this.statusMessage = 'Lỗi hệ thống';
-                this.detailMessage = 'Có lỗi xảy ra khi xác minh thanh toán.';
-
-                await Swal.fire({
-                    icon: 'error',
-                    title: 'Lỗi',
-                    text: this.detailMessage,
-                    confirmButtonText: 'Đóng',
-                    confirmButtonColor: '#d33',
-                    background: '#0c1e25',
-                    color: '#fff'
-                });
-            } finally {
-                this.isLoading = false;
+                await showErrorAlert('Thanh toán thất bại', this.detailMessage);
             }
+
+        } catch (error) {
+            this.statusMessage = 'Lỗi hệ thống';
+            this.detailMessage = 'Có lỗi xảy ra khi xác minh thanh toán.';
+
+            await showErrorAlert('Lỗi', this.detailMessage);
+        } finally {
+            this.isLoading = false;
         }
-    };
+    }
+};
 </script>

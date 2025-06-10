@@ -127,5 +127,11 @@ namespace HopeBox.Web.Controller
                 ResponseData = true
             });
         }
+
+        [HttpPost("send-confirmation-code")]
+        public async Task<BaseResponseDto<bool>> SendConfirmationCode([FromBody] SendCodeRequestDto request)
+        {
+            return await _authenticationService.SendConfirmationCodeAsync(request.Email);
+        }
     }
 }

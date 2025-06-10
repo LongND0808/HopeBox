@@ -65,8 +65,7 @@
 <script>
     import { PaymentMethod, PaymentMethodLabel } from '@/enums/enums.js';
     import axios from 'axios';
-    import Swal from 'sweetalert2'
-
+    import { showSuccessAlert, showErrorAlert } from '@/utils/alertHelper.js'; // ✅ Import helper
 
     export default {
         props: {
@@ -128,34 +127,20 @@
                         throw new Error("Không lấy được URL thanh toán.");
                     }
 
-                    Swal.fire({
-                        title: 'Tạo đơn quyên góp thành Công',
-                        text: message,
-                        icon: 'success',
-                        confirmButtonText: 'Thanh Toán Ngay',
-                        confirmButtonColor: '#f37224', 
-                        background: '#0c1e25',
-                        color: '#fff'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.href = paymentUrl;
-                        }
-                    });
+                    const result = await showSuccessAlert('Tạo đơn quyên góp thành công', message);
+
+                    if (result.isConfirmed) {
+                        window.location.href = paymentUrl;
+                    }
 
                 } catch (err) {
                     console.error("Lỗi:", err);
-                    Swal.fire({
-                        title: 'Đã xảy ra lỗi',
-                        text: err.response?.data?.message || "Có lỗi xảy ra. Vui lòng thử lại.",
-                        icon: 'error',
-                        confirmButtonText: 'Đóng',
-                        confirmButtonColor: '#d33',
-                        background: '#0c1e25',
-                        color: '#fff'
-                    });
+                    await showErrorAlert(
+                        'Đã xảy ra lỗi',
+                        err.response?.data?.message || "Có lỗi xảy ra. Vui lòng thử lại."
+                    );
                 }
             }
-
         }
     };
 </script>

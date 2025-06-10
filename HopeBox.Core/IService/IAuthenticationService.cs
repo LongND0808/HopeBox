@@ -10,5 +10,6 @@ namespace HopeBox.Core.IService
         Task<BaseResponseDto<bool>> ConfirmEmail(ConfirmEmailRequestDto request);
         Task<BaseResponseDto<LoginResponseDto>> Login(LoginRequestDto request);
         Task<BaseResponseDto<bool>> Register(RegisterRequestDto model);
+        Task<BaseResponseDto<bool>> SendConfirmationCodeAsync(string email);
     }
 }

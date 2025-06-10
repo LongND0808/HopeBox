@@ -177,30 +177,10 @@ namespace HopeBox.Core.Service
                 await _userRepository.AddAsync(newUser);
                 await _userRepository.SaveChangesAsync();
 
-                string confirmCode = GenerateVerificationCode(8);
-
-                var confirmEmail = new ConfirmEmail
-                {
-                    UserId = newUser.Id,
-                    ConfirmCode = confirmCode,
-                    RequestedAt = DateTime.UtcNow,
-                    ExpiresAt = DateTime.UtcNow.AddMinutes(10),
-                    IsConfirmed = false
-                };
-
-                await _confirmEmailRepository.AddAsync(confirmEmail);
-                await _confirmEmailRepository.SaveChangesAsync();
-
-                string subject = "Xác thực đăng ký tài khoản HopeBox";
-                string body = $"Mã xác thực đăng ký của bạn là: <strong>{confirmCode}</strong>";
-                await _emailService.SendEmailAsync(newUser.Email, subject, body);
-
-                await _userRepository.CommitTransactionAsync(transaction);
-
                 return new BaseResponseDto<bool>
                 {
                     Status = 200,
-                    Message = "Registration successful. Please verify your email.",
+                    Message = "Đăng ký thành công, hãy kích hoạt tài khoản của bạn.",
                     ResponseData = true
                 };
             }
@@ -214,6 +194,77 @@ namespace HopeBox.Core.Service
                     ResponseData = false
                 };
             }
+        }
+
+        public async Task<BaseResponseDto<bool>> SendConfirmationCodeAsync(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return new BaseResponseDto<bool>
+                {
+                    Status = 400,
+                    Message = "Email cannot be empty.",
+                    ResponseData = false
+                };
+            }
+
+            var user = await _userRepository.GetOneAsync(u => u.Email == email);
+            if (user == null)
+            {
+                return new BaseResponseDto<bool>
+                {
+                    Status = 404,
+                    Message = "User not found.",
+                    ResponseData = false
+                };
+            }
+
+            if (user.UserStatus == UserStatus.Active)
+            {
+                return new BaseResponseDto<bool>
+                {
+                    Status = 400,
+                    Message = "User already activated.",
+                    ResponseData = false
+                };
+            }
+
+            var oldCodes = await _confirmEmailRepository.GetListAsync(
+                c => c.UserId == user.Id && !c.IsConfirmed && c.ExpiresAt > DateTime.UtcNow
+            );
+
+            foreach (var old in oldCodes)
+            {
+                old.IsConfirmed = true;
+            }
+
+            await _confirmEmailRepository.UpdateRangeAsync(oldCodes);
+
+            string confirmCode = GenerateVerificationCode(8);
+
+            var confirmEmail = new ConfirmEmail
+            {
+                UserId = user.Id,
+                ConfirmCode = confirmCode,
+                RequestedAt = DateTime.UtcNow,
+                ExpiresAt = DateTime.UtcNow.AddMinutes(10),
+                IsConfirmed = false
+            };
+
+            await _confirmEmailRepository.AddAsync(confirmEmail);
+            await _confirmEmailRepository.SaveChangesAsync();
+
+            string subject = "Xác thực tài khoản HopeBox";
+            string body = $"Mã xác thực của bạn là: <strong>{confirmCode}</strong>";
+
+            await _emailService.SendEmailAsync(user.Email, subject, body);
+
+            return new BaseResponseDto<bool>
+            {
+                Status = 200,
+                Message = "Confirmation code sent successfully.",
+                ResponseData = true
+            };
         }
 
         private string GenerateVerificationCode(int length)

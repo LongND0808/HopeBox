@@ -13,7 +13,6 @@ using HopeBox.Infrastructure.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
@@ -26,7 +25,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<HopeBoxDataContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("HopeBox")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("HopeBox")));
 
 builder.Services.AddSingleton<IConfig, Config>();
 builder.Services.AddScoped<IHopeBoxDataContext, HopeBoxDataContext>();

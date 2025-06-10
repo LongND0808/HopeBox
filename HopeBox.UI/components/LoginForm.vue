@@ -24,7 +24,7 @@
         </div>
 
         <div class="signup-link">
-          <nuxt-link to="/register">Kích hoạt tài khoản</nuxt-link>
+          <nuxt-link to="/activate-account">Kích hoạt tài khoản</nuxt-link>
         </div>
 
       </form>
