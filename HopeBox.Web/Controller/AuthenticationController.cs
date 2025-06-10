@@ -71,6 +71,48 @@ namespace HopeBox.Web.Controller
             });
         }
 
+        [HttpPost("admin-login")]
+        public async Task<BaseResponseDto<LoginResponseDto>> AdminLogin([FromBody] LoginRequestDto loginDto)
+        {
+            var response = await _authenticationService.AdminLogin(loginDto);
+
+            if (response.Status != 200)
+            {
+                return (response);
+            }
+
+            var accessToken = response.ResponseData?.AccessToken;
+            var refreshToken = response.ResponseData?.RefreshToken;
+
+            var accessTokenCookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Expires = DateTimeOffset.UtcNow.AddHours(int.TryParse(_configuration["JWT:TokenValidityInHours"], out int hours) ? hours : 8),
+                Path = "/"
+            };
+
+            var refreshTokenCookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Expires = DateTimeOffset.UtcNow.AddDays(int.TryParse(_configuration["JWT:RefreshTokenValidityInDays"], out int validity) ? validity : 7),
+                Path = "/"
+            };
+
+            Response.Cookies.Append("accessToken", accessToken, accessTokenCookieOptions);
+            Response.Cookies.Append("refreshToken", refreshToken, refreshTokenCookieOptions);
+
+            return (new BaseResponseDto<LoginResponseDto>
+            {
+                Status = 200,
+                Message = "Login successfully.",
+                ResponseData = null
+            });
+        }
+
         [HttpGet("me")]
         [Authorize]
         public async Task<BaseResponseDto<UserDto>> Me()
@@ -133,5 +175,69 @@ namespace HopeBox.Web.Controller
         {
             return await _authenticationService.SendConfirmationCodeAsync(request.Email);
         }
+
+        [HttpPost("refresh-token")]
+        public async Task<BaseResponseDto<bool>> RefreshToken()
+        {
+            var refreshToken = Request.Cookies["refreshToken"];
+
+            var request = new RefreshTokenRequestDto
+            {
+                RefreshToken = refreshToken
+            };
+
+            if (string.IsNullOrEmpty(refreshToken))
+            {
+                return (new BaseResponseDto<bool>
+                {
+                    Status = 401,
+                    Message = "Refresh token is missing",
+                    ResponseData = false
+                });
+            }
+
+            var result = await _authenticationService.RefreshTokenAsync(request);
+            if (result.Status != 200 || result.ResponseData == null)
+            {
+                return (new BaseResponseDto<bool>
+                {
+                    Status = 401,
+                    Message = "Refresh token is invalid or expired",
+                    ResponseData = false
+                });
+            }
+
+            var newAccessToken = result.ResponseData.AccessToken;
+            var newRefreshToken = result.ResponseData.RefreshToken;
+
+            var accessTokenCookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Expires = DateTimeOffset.UtcNow.AddHours(int.TryParse(_configuration["JWT:TokenValidityInHours"], out int hours) ? hours : 8),
+                Path = "/"
+            };
+
+            var refreshTokenCookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Expires = DateTimeOffset.UtcNow.AddDays(int.TryParse(_configuration["JWT:RefreshTokenValidityInDays"], out int validity) ? validity : 7),
+                Path = "/"
+            };
+
+            Response.Cookies.Append("accessToken", newAccessToken, accessTokenCookieOptions);
+            Response.Cookies.Append("refreshToken", newRefreshToken, refreshTokenCookieOptions);
+
+            return (new BaseResponseDto<bool>
+            {
+                Status = 200,
+                Message = "Access token refreshed successfully",
+                ResponseData = true
+            });
+        }
+
     }
 }

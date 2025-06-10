@@ -49,58 +49,75 @@
 </template>
 
 <script>
-    import axios from 'axios'
-    import Navigation from '@/components/Navigation.vue'
+import axios from 'axios'
+import Navigation from '@/components/Navigation.vue'
 
-    export default {
-        components: { Navigation },
+export default {
+    components: { Navigation },
 
-        data() {
-            return {
-                isSticky: false,
-                isLoggedIn: false
-            }
+    data() {
+        return {
+            isSticky: false,
+            isLoggedIn: false
+        }
+    },
+
+    mounted() {
+        this.checkLoginStatus()
+
+        window.addEventListener('scroll', () => {
+            this.isSticky = window.scrollY >= 200
+        })
+    },
+
+    methods: {
+        mobiletoggleClass(addRemoveClass, className) {
+            const el = document.querySelector('#offcanvas-menu')
+            if (!el) return
+            if (addRemoveClass === 'addClass') el.classList.add(className)
+            else el.classList.remove(className)
         },
 
-        mounted() {
-            this.checkLoginStatus()
+        async checkLoginStatus() {
+            try {
+                await axios.get('https://localhost:7213/api/Authentication/me', {
+                    withCredentials: true
+                })
+                this.isLoggedIn = true
+            } catch (err) {
+                if (err.response && err.response.status === 401) {
+                    try {
+                        await axios.post('https://localhost:7213/api/Authentication/refresh-token', {}, {
+                            withCredentials: true
+                        })
 
-            window.addEventListener('scroll', () => {
-                this.isSticky = window.scrollY >= 200
-            })
-        },
+                        const retry = await axios.get('https://localhost:7213/api/Authentication/me', {
+                            withCredentials: true
+                        })
 
-        methods: {
-            mobiletoggleClass(addRemoveClass, className) {
-                const el = document.querySelector('#offcanvas-menu')
-                if (!el) return
-                if (addRemoveClass === 'addClass') el.classList.add(className)
-                else el.classList.remove(className)
-            },
-
-            async checkLoginStatus() {
-                try {
-                    const res = await axios.get('https://localhost:7213/api/Authentication/me', {
-                        withCredentials: true
-                    })
-                    this.isLoggedIn = true
-                } catch (err) {
+                        this.isLoggedIn = true
+                    } catch (refreshErr) {
+                        console.warn('Refresh token hết hạn hoặc lỗi', refreshErr)
+                        this.isLoggedIn = false
+                    }
+                } else {
                     this.isLoggedIn = false
                 }
-            },
-
-            async handleLogout() {
-                try {
-                    await axios.post('https://localhost:7213/api/Authentication/logout', {}, {
-                        withCredentials: true
-                    })
-                } catch (error) {
-                    console.error('Lỗi khi đăng xuất:', error)
-                }
-
-                this.isLoggedIn = false
-                this.$router.push('/')
             }
+        },
+
+        async handleLogout() {
+            try {
+                await axios.post('https://localhost:7213/api/Authentication/logout', {}, {
+                    withCredentials: true
+                })
+            } catch (error) {
+                console.error('Lỗi khi đăng xuất:', error)
+            }
+
+            this.isLoggedIn = false
+            this.$router.push('/')
         }
     }
+}
 </script>

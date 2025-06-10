@@ -7,8 +7,8 @@ export const showSuccessAlert = async (title = 'Thành công', message = '') => 
         text: message,
         confirmButtonText: 'OK',
         confirmButtonColor: '#f37224',
-        background: '#0c1e25',
-        color: '#fff'
+        background: '#ffffff',
+        color: '#000000'
     });
 };
 
@@ -19,8 +19,8 @@ export const showErrorAlert = async (title = 'Lỗi', message = '') => {
         text: message,
         confirmButtonText: 'Đóng',
         confirmButtonColor: '#d33',
-        background: '#0c1e25',
-        color: '#fff'
+        background: '#ffffff',
+        color: '#000000'
     });
 };
 
@@ -31,8 +31,8 @@ export const showWarningAlert = async (title = 'Cảnh báo', message = '') => {
         text: message,
         confirmButtonText: 'Hiểu rồi',
         confirmButtonColor: '#f0ad4e',
-        background: '#0c1e25',
-        color: '#fff'
+        background: '#ffffff',
+        color: '#000000'
     });
 };
 
@@ -51,7 +51,7 @@ export const showConfirmDialog = async (
         cancelButtonText: cancelText,
         confirmButtonColor: '#f37224',
         cancelButtonColor: '#6c757d',
-        background: '#0c1e25',
-        color: '#fff'
+        background: '#ffffff',
+        color: '#000000'
     });
 };

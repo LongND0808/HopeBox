@@ -25,16 +25,88 @@ namespace HopeBox.Core.Service
     public class AuthenticationService : IAuthenticationService
     {
         private readonly IRepository<User> _userRepository;
+        private readonly IRepository<UserRole> _userRoleRepository;
         private readonly IRepository<ConfirmEmail> _confirmEmailRepository;
+        private readonly IRepository<RefreshToken> _refreshTokenRepository;
         private readonly ITokenService _tokenService;
         private readonly IEmailService _emailService;
+        private readonly UserManager<User> _userManager;
 
-        public AuthenticationService(IRepository<User> userRepository, IRepository<ConfirmEmail> confirmEmailRepository, ITokenService tokenService, IEmailService emailService)
+        public AuthenticationService(IRepository<User> userRepository, IRepository<ConfirmEmail> confirmEmailRepository, ITokenService tokenService, IEmailService emailService, IRepository<RefreshToken> refreshTokenRepository, IRepository<UserRole> userRoleRepository, UserManager<User> userManager)
         {
             _userRepository = userRepository;
             _confirmEmailRepository = confirmEmailRepository;
             _tokenService = tokenService;
             _emailService = emailService;
+            _refreshTokenRepository = refreshTokenRepository;
+            _userRoleRepository = userRoleRepository;
+            _userManager = userManager;
+        }
+
+        public async Task<BaseResponseDto<LoginResponseDto>> AdminLogin(LoginRequestDto loginDto)
+        {
+            var user = await _userRepository.GetOneAsyncUntracked<User>(
+                filter: u => u.Email == loginDto.LoginEmail);
+
+            if (user == null)
+            {
+                return new BaseResponseDto<LoginResponseDto>
+                {
+                    Status = 404,
+                    Message = "Email không tồn tại.",
+                    ResponseData = null
+                };
+            }
+
+            var passwordHasher = new PasswordHasher<User>();
+            var verificationResult = passwordHasher.VerifyHashedPassword(
+                user, user.PasswordHash ?? "", loginDto.Password);
+
+            if (verificationResult != PasswordVerificationResult.Success)
+            {
+                return new BaseResponseDto<LoginResponseDto>
+                {
+                    Status = 401,
+                    Message = "Sai mật khẩu.",
+                    ResponseData = null
+                };
+            }
+
+            if (user.UserStatus != UserStatus.Active)
+            {
+                return new BaseResponseDto<LoginResponseDto>
+                {
+                    Status = 400,
+                    Message = "Tài khoản chưa được kích hoạt.",
+                    ResponseData = null
+                };
+            }
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            if (!userRoles.Contains("Admin"))
+            {
+                return new BaseResponseDto<LoginResponseDto>
+                {
+                    Status = 403,
+                    Message = "Bạn không có quyền truy cập trang quản trị.",
+                    ResponseData = null
+                };
+            }
+
+            var accessToken = await _tokenService.CreateAccessTokenAsync(user);
+            var refreshToken = await _tokenService.CreateRefreshTokenAsync(user);
+
+            return new BaseResponseDto<LoginResponseDto>
+            {
+                Status = 200,
+                Message = "Đăng nhập admin thành công.",
+                ResponseData = new LoginResponseDto
+                {
+                    AccessToken = accessToken,
+                    RefreshToken = refreshToken
+                }
+            };
         }
 
         public async Task<BaseResponseDto<bool>> ConfirmEmail(ConfirmEmailRequestDto request)
@@ -80,8 +152,6 @@ namespace HopeBox.Core.Service
             await _userRepository.UpdateAsync(user);
 
             await _confirmEmailRepository.UpdateAsync(confirmEmail);
-
-            await _confirmEmailRepository.SaveChangesAsync();
 
             return new BaseResponseDto<bool>
             {
@@ -142,6 +212,41 @@ namespace HopeBox.Core.Service
             };
         }
 
+        public async Task<BaseResponseDto<RefreshTokenResponseDto>> RefreshTokenAsync(RefreshTokenRequestDto request)
+        {
+            var userId = await _refreshTokenRepository.GetOneAsyncUntracked<Guid>(
+                filter: f => f.Token == request.RefreshToken && f.ExpiredTime > DateTime.UtcNow,
+                selector: s => s.UserId);
+
+            var user = await _userRepository.GetOneAsyncUntracked<User>(
+                filter: f => f.Id == userId);
+
+            if (user == null)
+            {
+                return new BaseResponseDto<RefreshTokenResponseDto>
+                {
+                    Status = 401,
+                    Message = "Invalid refresh token",
+                    ResponseData = null
+                };
+            }
+
+            var accessToken = await _tokenService.CreateAccessTokenAsync(user);
+            var newRefreshToken = await _tokenService.CreateRefreshTokenAsync(user);
+
+            return new BaseResponseDto<RefreshTokenResponseDto>
+            {
+                Status = 200,
+                Message = "Token refreshed",
+                ResponseData = new RefreshTokenResponseDto
+                {
+                    AccessToken = accessToken,
+                    RefreshToken = newRefreshToken
+                }
+            };
+        }
+
+
         public async Task<BaseResponseDto<bool>> Register(RegisterRequestDto request)
         {
             using var transaction = await _userRepository.BeginTransactionAsync();
@@ -161,13 +266,17 @@ namespace HopeBox.Core.Service
                 var newUser = new User
                 {
                     Id = Guid.NewGuid(),
+                    NormalizedEmail = request.Email.ToUpper(),
+                    NormalizedUserName = request.FullName.ToUpper(),
+                    SecurityStamp = Guid.NewGuid().ToString(),
                     Email = request.Email,
                     UserName = request.FullName,
                     FullName = request.FullName,
                     DateOfBirth = request.DateOfBirth,
                     Point = 0,
                     Gender = request.Gender,
-                    AvatarUrl = "DefaultAvatar.jpg",
+                    PhoneNumber = request.PhoneNumber,
+                    AvatarUrl = "images/user/DefaultAvatar.jpg",
                     UserStatus = UserStatus.Pending,
                 };
 
@@ -175,7 +284,8 @@ namespace HopeBox.Core.Service
                 newUser.PasswordHash = passwordHasher.HashPassword(newUser, request.Password);
 
                 await _userRepository.AddAsync(newUser);
-                await _userRepository.SaveChangesAsync();
+
+                await _userRepository.CommitTransactionAsync(transaction);
 
                 return new BaseResponseDto<bool>
                 {
@@ -252,7 +362,6 @@ namespace HopeBox.Core.Service
             };
 
             await _confirmEmailRepository.AddAsync(confirmEmail);
-            await _confirmEmailRepository.SaveChangesAsync();
 
             string subject = "Xác thực tài khoản HopeBox";
             string body = $"Mã xác thực của bạn là: <strong>{confirmCode}</strong>";

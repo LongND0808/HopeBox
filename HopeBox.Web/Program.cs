@@ -53,26 +53,12 @@ builder.Services.AddScoped<ICauseService, CauseService>();
 builder.Services.AddScoped(typeof(IConverter<,>), typeof(HopeBox.Domain.Converter.Converter<,>));
 #endregion
 
-
-/*builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-});*/
-
 builder.Services.AddIdentity<User, Role>()
     .AddEntityFrameworkStores<HopeBoxDataContext>()
     .AddDefaultTokenProviders();
 
 var config = new Config(builder.Configuration);
 
-//builder.Services.AddIdentityServer()
-//    .AddInMemoryIdentityResources(config.GetIdentityResources())
-//    .AddInMemoryApiScopes(config.GetApiScopes())
-//    .AddInMemoryClients(config.GetClients())
-//    .AddDeveloperSigningCredential()
-//    .AddAspNetIdentity<User>();
 
 builder.Services.AddAuthentication(options =>
 {

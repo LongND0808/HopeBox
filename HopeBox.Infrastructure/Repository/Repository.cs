@@ -32,9 +32,21 @@ namespace HopeBox.Infrastructure.Repository
             await _context.SaveChangesAsync();
         }
 
+        public async Task UpdateRangeAsync(IEnumerable<T> entities)
+        {
+            _context.Set<T>().UpdateRange(entities);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task DeleteAsync(T entity)
         {
             _context.Set<T>().Remove(entity);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteRangeAsync(IEnumerable<T> entities)
+        {
+            _context.Set<T>().RemoveRange(entities);
             await _context.SaveChangesAsync();
         }
 
@@ -203,18 +215,6 @@ namespace HopeBox.Infrastructure.Repository
             }
 
             return await query.CountAsync();
-        }
-
-        public async Task UpdateRangeAsync(IEnumerable<T> entities)
-        {
-            _context.Set<T>().UpdateRange(entities);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task DeleteRangeAsync(IEnumerable<T> entities)
-        {
-            _context.Set<T>().RemoveRange(entities);
-            await _context.SaveChangesAsync();
         }
     }
 }

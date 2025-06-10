@@ -63,7 +63,6 @@ namespace HopeBox.Core.Service
             {
                 var model = _converter.ToModel(dto);
                 await _repository.AddAsync(model);
-                await _repository.SaveChangesAsync();
                 return new BaseResponseDto<bool> { Status = 201, Message = "Add successful", ResponseData = true };
             }
             catch (Exception ex)
@@ -78,7 +77,6 @@ namespace HopeBox.Core.Service
             {
                 var model = _converter.ToModel(dto);
                 await _repository.UpdateAsync(model);
-                await _repository.SaveChangesAsync();
                 return new BaseResponseDto<bool> { Status = 200, Message = "Update successful", ResponseData = true };
             }
             catch (Exception ex)
@@ -98,7 +96,6 @@ namespace HopeBox.Core.Service
                 }
 
                 await _repository.DeleteAsync(entity);
-                await _repository.SaveChangesAsync();
                 return new BaseResponseDto<bool> { Status = 200, Message = "Delete successful", ResponseData = true };
             }
             catch (Exception ex)

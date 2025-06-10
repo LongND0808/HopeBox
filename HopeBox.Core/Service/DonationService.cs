@@ -118,7 +118,6 @@ namespace HopeBox.Core.Service
                 donation.TransactionId = dto.vnp_TransactionNo;
                 donation.Status = DonationStatus.Paid;
                 await _repository.UpdateAsync(donation);
-                await _repository.SaveChangesAsync();
 
                 var userInfo = await _userRepository.GetOneAsyncUntracked<dynamic>(
                     filter: f => f.Id == donation.UserId,
@@ -213,7 +212,6 @@ namespace HopeBox.Core.Service
 
             donation.TransactionId = transactionId;
             await _repository.UpdateAsync(donation);
-            await _repository.SaveChangesAsync();
 
             return new BaseResponseDto<bool>
             {
@@ -238,7 +236,6 @@ namespace HopeBox.Core.Service
 
             donation.TradingCode = tradingCode;
             await _repository.UpdateAsync(donation);
-            await _repository.SaveChangesAsync();
 
             return new BaseResponseDto<bool>
             {

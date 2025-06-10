@@ -1,9 +1,16 @@
 <template>
   <div class="login-container">
     <div class="login-box">
-      <h2 class="title">Đăng Nhập</h2>
+      <div class="tab-switch">
+        <button :class="{ active: activeTab === 'user' }" @click="activeTab = 'user'">
+          Người Dùng
+        </button>
+        <button :class="{ active: activeTab === 'admin' }" @click="activeTab = 'admin'">
+          Quản Lý
+        </button>
+      </div>
 
-      <div v-if="error" class="error-message">{{ error }}</div>
+      <h2 class="title">Đăng Nhập {{ activeTab === 'admin' ? 'Quản Lý' : 'Người Dùng' }}</h2>
 
       <form @submit.prevent="handleLogin">
         <div class="form-group">
@@ -26,7 +33,6 @@
         <div class="signup-link">
           <nuxt-link to="/activate-account">Kích hoạt tài khoản</nuxt-link>
         </div>
-
       </form>
     </div>
   </div>
@@ -34,10 +40,12 @@
 
 <script>
   import axios from 'axios'
+  import { showSuccessAlert, showErrorAlert } from '@/utils/alertHelper'
 
   export default {
     data() {
       return {
+        activeTab: 'user',
         form: {
           username: '',
           password: ''
@@ -49,10 +57,14 @@
     methods: {
       async handleLogin() {
         this.loading = true
-        this.error = ''
         try {
+          const endpoint =
+            this.activeTab === 'admin'
+              ? 'https://localhost:7213/api/Authentication/admin-login'
+              : 'https://localhost:7213/api/Authentication/login'
+
           const response = await axios.post(
-            'https://localhost:7213/api/Authentication/login',
+            endpoint,
             {
               loginEmail: this.form.username,
               password: this.form.password
@@ -61,16 +73,20 @@
           )
 
           if (response.data.status === 200) {
-            this.$router.push('/')
+            await showSuccessAlert('Đăng nhập thành công', response.data.message || 'Chào mừng bạn quay lại!')
+            if (this.activeTab === 'admin') {
+              this.$router.push('/management')
+            } else {
+              this.$router.push('/')
+            }
           } else {
-            this.error = response.data.message || 'Đăng nhập thất bại.'
+            await showErrorAlert('Đăng nhập thất bại', response.data.message || 'Vui lòng kiểm tra lại thông tin.')
           }
         } catch (err) {
-          if (err.response && err.response.data && err.response.data.message) {
-            this.error = err.response.data.message
-          } else {
-            this.error = 'Đã xảy ra lỗi khi đăng nhập.'
-          }
+          await showErrorAlert(
+            'Lỗi hệ thống',
+            err.response?.data?.message || 'Đã xảy ra lỗi không xác định khi đăng nhập.'
+          )
         } finally {
           this.loading = false
         }
@@ -98,12 +114,34 @@
     width: 100%;
   }
 
+  .tab-switch {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+  }
+
+  .tab-switch button {
+    flex: 1;
+    padding: 10px;
+    background-color: #eee;
+    border: none;
+    border-radius: 10px 10px 0 0;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  .tab-switch button.active {
+    background-color: white;
+    color: black;
+  }
+
   .title {
     text-align: center;
-    font-size: 28px;
+    font-size: 26px;
     font-weight: 700;
     color: #232323;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
   }
 
   .form-group {

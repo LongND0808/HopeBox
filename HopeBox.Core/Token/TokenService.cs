@@ -86,7 +86,6 @@ namespace HopeBox.Core.Token
             };
 
             await _refreshTokenRepository.AddAsync(refreshTokenEntity);
-            await _refreshTokenRepository.SaveChangesAsync();
 
             return refreshToken;
         }

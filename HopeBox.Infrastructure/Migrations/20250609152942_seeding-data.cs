@@ -23,27 +23,27 @@ namespace HopeBox.Infrastructure.Migrations
                 table: "AspNetUsers",
                 columns: new[]
                 {
-               "Id", "UserName", "NormalizedUserName", "Email", "NormalizedEmail", "EmailConfirmed",
-               "PasswordHash", "SecurityStamp", "ConcurrencyStamp", "PhoneNumber", "PhoneNumberConfirmed",
-               "FullName", "DateOfBirth", "Gender", "AvatarUrl", "Point", "UserStatus",
-               "AccessFailedCount", "LockoutEnabled", "LockoutEnd", "TwoFactorEnabled"
-                            },
-                            values: new object[,]
-                            {
-               {
-                   userAdminId, "Nguyễn Đăng Long", "NGUYEN DANG LONG", "admin@hopebox.org", "ADMIN@HOPEBOX.ORG", true,
-                   new PasswordHasher<IdentityUser<Guid>>().HashPassword(null, "Admin@123"),
-                   Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "08684532345", true,
-                   "Nguyễn Đăng Long", new DateTime(1990,1,1), 1, "images/user/admin.jpg", 100, 1,
-                   0, false, null, false
-               },
-               {
-                   userCustomerId, "Nguyễn Hoàng Thắng", "NGUYEN HOANG THANG", "customer@hopebox.org", "CUSTOMER@HOPEBOX.ORG", true,
-                   new PasswordHasher<IdentityUser<Guid>>().HashPassword(null, "Customer@123"),
-                   Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "08684531111", true,
-                   "Nguyễn Hoàng Thắng", new DateTime(1995, 5, 15), 1, null, 50, 1,
-                   0, false, null, false
-               }
+                   "Id", "UserName", "NormalizedUserName", "Email", "NormalizedEmail", "EmailConfirmed",
+                   "PasswordHash", "SecurityStamp", "ConcurrencyStamp", "PhoneNumber", "PhoneNumberConfirmed",
+                   "FullName", "DateOfBirth", "Gender", "AvatarUrl", "Point", "UserStatus",
+                   "AccessFailedCount", "LockoutEnabled", "LockoutEnd", "TwoFactorEnabled"
+                },
+                values: new object[,]
+                {
+                   {
+                       userAdminId, "Nguyễn Đăng Long", "NGUYEN DANG LONG", "admin@hopebox.org", "ADMIN@HOPEBOX.ORG", true,
+                       new PasswordHasher<IdentityUser<Guid>>().HashPassword(null, "Admin@123"),
+                       Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "08684532345", true,
+                       "Nguyễn Đăng Long", new DateTime(1990,1,1), 1, "images/user/admin.jpg", 100, 1,
+                       0, false, null, false
+                   },
+                   {
+                       userCustomerId, "Nguyễn Hoàng Thắng", "NGUYEN HOANG THANG", "customer@hopebox.org", "CUSTOMER@HOPEBOX.ORG", true,
+                       new PasswordHasher<IdentityUser<Guid>>().HashPassword(null, "Customer@123"),
+                       Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "08684531111", true,
+                       "Nguyễn Hoàng Thắng", new DateTime(1995, 5, 15), 1, null, 50, 1,
+                       0, false, null, false
+                   }
                 });
 
             migrationBuilder.InsertData(

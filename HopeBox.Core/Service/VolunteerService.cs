@@ -38,7 +38,6 @@ namespace HopeBox.Core.Service
                 };
 
                 await _repository.AddAsync(volunteer);
-                await _repository.SaveChangesAsync();
 
                 var dto = _converter.ToDTO(volunteer);
 
