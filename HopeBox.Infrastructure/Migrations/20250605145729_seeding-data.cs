@@ -216,8 +216,17 @@ namespace HopeBox.Infrastructure.Migrations
                 table: "Events",
                 columns: new[]
                 {
-                    "Id", "Title", "Description", "Detail", "BannerImage", "StartDate", "EndDate", "Location",
+                    "Id", "Title", "Description", "Detail", "BannerImage",
+                    "StartDate", "EndDate", "Location",
+                    "Latitude", "Longitude", "FormattedAddress",
                     "TargetAmount", "CurrentAmount", "Status", "CreatedBy", "OrganizationId"
+                },
+                    columnTypes: new[]
+                {
+                    "uniqueidentifier", "nvarchar(200)", "nvarchar(2000)", "nvarchar(max)",
+                    "nvarchar(max)", "datetime2", "datetime2", "nvarchar(1000)",
+                    "decimal(10,8)", "decimal(11,8)", "nvarchar(500)",
+                    "decimal(18,2)", "decimal(18,2)", "int", "uniqueidentifier", "uniqueidentifier"
                 },
                 values: new object[,]
                 {
@@ -230,6 +239,9 @@ namespace HopeBox.Infrastructure.Migrations
                         new DateTime(2025, 7, 12, 8, 0, 0),
                         new DateTime(2025, 7, 12, 16, 0, 0),
                         "Trường Tiểu học A, Thị trấn Trạm Trôi, Huyện Hoài Đức, Hà Nội",
+                        21.0285, 
+                        105.8542, 
+                        "Hoài Đức, Hà Nội, Việt Nam",
                         50000000m,
                         0m,
                         (int)EventStatus.Ongoing,
@@ -245,6 +257,9 @@ namespace HopeBox.Infrastructure.Migrations
                         new DateTime(2025, 7, 20, 8, 0, 0),
                         new DateTime(2025, 7, 20, 17, 0, 0),
                         "Nhà Văn hóa Thiếu nhi Đà Nẵng, 2 Phan Đăng Lưu, Hải Châu, Đà Nẵng",
+                        16.0544, 
+                        108.2022, 
+                        "Hải Châu, Đà Nẵng, Việt Nam",
                         0m,
                         0m,
                         (int)EventStatus.Ongoing,

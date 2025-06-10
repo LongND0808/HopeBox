@@ -380,6 +380,11 @@ namespace HopeBox.Infrastructure.Migrations
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Location = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+
+                    Latitude = table.Column<double>(type: "decimal(10,8)", nullable: true),
+                    Longitude = table.Column<double>(type: "decimal(11,8)", nullable: true),
+                    FormattedAddress = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+
                     TargetAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     CurrentAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
@@ -402,6 +407,7 @@ namespace HopeBox.Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
+
 
             migrationBuilder.CreateTable(
                 name: "Donations",
