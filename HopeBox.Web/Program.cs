@@ -6,10 +6,12 @@ using HopeBox.Core.IdentityModelService;
 using HopeBox.Core.IService;
 using HopeBox.Core.Service;
 using HopeBox.Core.Token;
+using HopeBox.Domain.Configuration;
 using HopeBox.Domain.Converter;
 using HopeBox.Domain.Models;
 using HopeBox.Infrastructure.DataContext;
 using HopeBox.Infrastructure.Repository;
+using HopeBox.Infrastructure.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +34,15 @@ builder.Services.AddScoped<IHopeBoxDataContext, HopeBoxDataContext>();
 
 builder.Services.AddScoped(typeof(IConverter<,>), typeof(HopeBox.Domain.Converter.Converter<,>));
 
+builder.Services.Configure<OpenMapConfig>(
+    builder.Configuration.GetSection("OpenMap"));
+
+builder.Services.AddHttpClient<IOpenMapService, OpenMapService>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(30);
+    client.DefaultRequestHeaders.Add("User-Agent", "HopeBox/1.0");
+});
+
 #region Add Repository
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 #endregion
@@ -47,6 +58,7 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IDonationService, DonationService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICauseService, CauseService>();
+builder.Services.AddScoped<IOpenMapService, OpenMapService>();
 #endregion
 
 #region Add Converter
