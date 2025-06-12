@@ -731,9 +731,6 @@ namespace HopeBox.Infrastructure.Migrations
                     b.Property<Guid>("CauseId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("EventId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime>("JoinDate")
                         .HasColumnType("datetime2");
 
@@ -746,8 +743,6 @@ namespace HopeBox.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CauseId");
-
-                    b.HasIndex("EventId");
 
                     b.HasIndex("UserId");
 
@@ -1130,8 +1125,6 @@ namespace HopeBox.Infrastructure.Migrations
             modelBuilder.Entity("HopeBox.Domain.Models.Event", b =>
                 {
                     b.Navigation("Photos");
-
-                    b.Navigation("Volunteers");
                 });
 
             modelBuilder.Entity("HopeBox.Domain.Models.ReliefItem", b =>

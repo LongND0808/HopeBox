@@ -523,8 +523,7 @@ namespace HopeBox.Infrastructure.Migrations
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CauseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     JoinDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    EventId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -539,12 +538,6 @@ namespace HopeBox.Infrastructure.Migrations
                         name: "FK_Volunteers_Causes_CauseId",
                         column: x => x.CauseId,
                         principalTable: "Causes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Volunteers_Events_EventId",
-                        column: x => x.EventId,
-                        principalTable: "Events",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -744,11 +737,6 @@ namespace HopeBox.Infrastructure.Migrations
                 name: "IX_Volunteers_CauseId",
                 table: "Volunteers",
                 column: "CauseId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Volunteers_EventId",
-                table: "Volunteers",
-                column: "EventId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Volunteers_UserId",

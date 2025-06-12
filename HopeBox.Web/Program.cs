@@ -67,7 +67,7 @@ builder.Services.AddScoped<ICauseService, CauseService>();
 builder.Services.AddScoped(typeof(IConverter<,>), typeof(HopeBox.Domain.Converter.Converter<,>));
 #endregion
 
-
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);

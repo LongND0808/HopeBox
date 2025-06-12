@@ -53,8 +53,6 @@ namespace HopeBox.Domain.Models
 
         public virtual Organization? Organization { get; set; }
 
-        public virtual ICollection<Volunteer>? Volunteers { get; set; }
-
         public virtual ICollection<Media>? Photos { get; set; }
     }
 }
