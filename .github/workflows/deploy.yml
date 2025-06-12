@@ -1,4 +1,4 @@
-name: Deploy Nuxt App to Cloudflare Workers
+name: Deploy Nuxt SSR to Cloudflare Workers
 
 on:
   push:
@@ -22,7 +22,7 @@ jobs:
         run: npm install
         working-directory: ./HopeBox.UI
 
-      - name: Build Nuxt App
+      - name: Build Nuxt App (SSR for Cloudflare Workers)
         run: npm run build
         working-directory: ./HopeBox.UI
 
@@ -30,7 +30,8 @@ jobs:
         run: npm install -g wrangler
 
       - name: Deploy to Cloudflare Workers
-        run: wrangler deploy
         working-directory: ./HopeBox.UI
+        run: wrangler deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
