@@ -13,7 +13,7 @@ namespace HopeBox.Domain.Models
 
         public Guid CauseId { get; set; }
 
-        public DateTime JoinDate { get; set; }
+        public DateTime? JoinDate { get; set; }
 
         public VolunteerStatus Status { get; set; }
 

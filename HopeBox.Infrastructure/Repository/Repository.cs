@@ -14,6 +14,40 @@ namespace HopeBox.Infrastructure.Repository
             _context = context;
         }
 
+        public async Task<T?> GetByIdAsync(object id)
+        {
+            return await _context.Set<T>().FindAsync(id);
+        }
+
+        public async Task<T?> GetByIdAsync(object id, Expression<Func<IQueryable<T>, IQueryable<T>>>? include = null)
+        {
+            if (include == null)
+            {
+                return await _context.Set<T>().FindAsync(id);
+            }
+
+            var keyProperty = _context.Model.FindEntityType(typeof(T))?.FindPrimaryKey()?.Properties.FirstOrDefault();
+            if (keyProperty == null)
+            {
+                throw new InvalidOperationException($"Cannot find primary key for entity type {typeof(T).Name}");
+            }
+
+            var parameter = Expression.Parameter(typeof(T), "x");
+            var property = Expression.Property(parameter, keyProperty.Name);
+            var constant = Expression.Constant(id);
+            var equal = Expression.Equal(property, constant);
+            var lambda = Expression.Lambda<Func<T, bool>>(equal, parameter);
+
+            IQueryable<T> query = _context.Set<T>();
+
+            if (include != null)
+            {
+                query = include.Compile()(query);
+            }
+
+            return await query.Where(lambda).FirstOrDefaultAsync();
+        }
+
         public async Task AddAsync(T entity)
         {
             await _context.Set<T>().AddAsync(entity);

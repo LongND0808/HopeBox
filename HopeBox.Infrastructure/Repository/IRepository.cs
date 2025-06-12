@@ -5,6 +5,8 @@ namespace HopeBox.Infrastructure.Repository
 {
     public interface IRepository<T> where T : class
     {
+        Task<T?> GetByIdAsync(object id);
+        Task<T?> GetByIdAsync(object id, Expression<Func<IQueryable<T>, IQueryable<T>>>? include = null);
         Task<T?> GetOneAsync(
             Expression<Func<T, bool>>? filter = null,
             Expression<Func<IQueryable<T>, IOrderedQueryable<T>>>? orderBy = null,

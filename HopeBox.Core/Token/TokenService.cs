@@ -1,6 +1,7 @@
 ﻿using Duende.IdentityModel;
 using HopeBox.Domain.Models;
 using HopeBox.Infrastructure.Repository;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -15,12 +16,14 @@ namespace HopeBox.Core.Token
         private readonly IRepository<RefreshToken> _refreshTokenRepository;
         private readonly IConfiguration _configuration;
         private readonly UserManager<User> _userManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public TokenService(IRepository<RefreshToken> refreshTokenRepository, IConfiguration configuration, UserManager<User> userManager)
+        public TokenService(IRepository<RefreshToken> refreshTokenRepository, IConfiguration configuration, UserManager<User> userManager, IHttpContextAccessor httpContextAccessor)
         {
             _refreshTokenRepository = refreshTokenRepository;
             _configuration = configuration;
             _userManager = userManager;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<string> CreateAccessTokenAsync(User user)
@@ -61,6 +64,80 @@ namespace HopeBox.Core.Token
             var tokenString = tokenHandler.WriteToken(securityToken);
 
             return tokenString;
+        }
+
+        public string? ValidateTokenUser(string token)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(token))
+                {
+                    return null;
+                }
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var secretKey = Encoding.ASCII.GetBytes(_configuration["JWT:Secret"]);
+                tokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(secretKey),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ClockSkew = TimeSpan.Zero
+                }, out SecurityToken validatedToken);
+
+                var jwtToken = (JwtSecurityToken)validatedToken;
+                var userIdClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == JwtClaimTypes.Id);
+                if (userIdClaim == null)
+                {
+                    return null;
+                }
+
+                return userIdClaim.Value;
+            }
+            catch (SecurityTokenExpiredException)
+            {
+                return null;
+            }
+            catch (SecurityTokenInvalidSignatureException)
+            {
+                return null;
+            }
+            catch (SecurityTokenException)
+            {
+                return null;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public string? GetCurrentAccessToken()
+        {
+            var context = _httpContextAccessor.HttpContext;
+            if (context == null) return null;
+
+            var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
+            if (authHeader != null && authHeader.StartsWith("Bearer "))
+            {
+                return authHeader.Substring("Bearer ".Length).Trim();
+            }
+
+            if (context.Request.Cookies.TryGetValue("accessToken", out var cookieToken))
+            {
+                return cookieToken;
+            }
+
+            return null;
+        }
+        public string? GetCurrentUserId()
+        {
+            var token = GetCurrentAccessToken();
+            if (token != null)
+            {
+                return ValidateTokenUser(token);
+            }
+            return null;
         }
 
         public async Task<string> CreateRefreshTokenAsync(User user)

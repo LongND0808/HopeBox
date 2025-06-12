@@ -27,14 +27,28 @@
                                 </div>
                                 <div class="event-category-post">
                                     <div class="event-category">Thiện Nguyện</div>
-                                    <div class="event-author">By: {{ event.createdByName }}, <span>{{ event.organizationName }}</span></div>
+                                    <div class="event-author">By: {{ event.createdByName }}, <span>{{
+                                            event.organizationName }}</span></div>
                                 </div>
                                 <h3 class="event-title">{{ event.title }}.</h3>
                                 <p>{{ event.description }}</p>
                                 <p class="mb-34">{{ event.detail }}</p>
+
                                 <div class="map-content">
-                                    <iframe
-                                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3151.8402891185374!2d144.95373631590425!3d-37.81720974201477!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad65d4c2b349649%3A0xb6899234e561db11!2sEnvato!5e0!3m2!1sen!2ssg!4v1607294780661!5m2!1sen!2ssg"></iframe>
+                                    <div v-if="event.latitude && event.longitude" id="openmap"
+                                        style="height: 400px; width: 100%; border-radius: 8px;">
+                                    </div>
+                                    <div v-else-if="event.location" class="map-placeholder"
+                                        style="height: 400px; display: flex; align-items: center; justify-content: center; background: #f5f5f5; border-radius: 8px;">
+                                        <div class="text-center">
+                                            <i class="fas fa-map-marker-alt fa-3x text-muted mb-3"></i>
+                                            <h5>Vị trí: {{ event.location }}</h5>
+                                            <p class="text-muted">Đang tải bản đồ...</p>
+                                            <button @click="searchAndDisplayLocation" class="btn btn-primary btn-sm">
+                                                Hiển thị trên bản đồ
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                                 <!-- <h3>Other Information of Event</h3>
                                 <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem
@@ -155,31 +169,192 @@ export default {
         id: { type: String, required: false }
     },
     data() {
-        return { event: null };
+        return { 
+            event: null,
+            map: null,
+            openMapApiKey: 'IqlcvXxfiNb80OBsA5PTRDDEUHlQ7qSS'
+        };
     },
     mounted() {
         this.fetchEventDetails();
+        this.loadOpenMapScript();
     },
     methods: {
         async fetchEventDetails() {
             try {
-                const response = await axios.get('https://localhost:7213/api/Event/get-by-nearest-event');
+                const response = await axios.get(`https://localhost:7213/api/Event/get-by-nearest-event`);
                 this.event = response.data.responseData;
+                
+                // Khởi tạo bản đồ sau khi có dữ liệu event
+                if (this.event && this.event.latitude && this.event.longitude) {
+                    this.$nextTick(() => {
+                        this.initializeMap();
+                    });
+                }
             } catch (err) {
                 console.error("Lỗi khi gọi API:", err);
             }
         },
+
+        loadOpenMapScript() {
+            // Kiểm tra nếu script đã được load
+            if (window.maplibregl) {
+                return;
+            }
+
+            // Load CSS
+            const cssLink = document.createElement('link');
+            cssLink.rel = 'stylesheet';
+            cssLink.href = 'https://unpkg.com/@openmapvn/openmapvn-gl@latest/dist/maplibre-gl.css';
+            document.head.appendChild(cssLink);
+
+            // Load JavaScript
+            const script = document.createElement('script');
+            script.src = 'https://unpkg.com/@openmapvn/openmapvn-gl@latest/dist/maplibre-gl.js';
+            script.onload = () => {
+                // Script đã load, khởi tạo bản đồ nếu có dữ liệu
+                if (this.event && this.event.latitude && this.event.longitude) {
+                    this.initializeMap();
+                }
+            };
+            document.head.appendChild(script);
+        },
+
+        initializeMap() {
+            if (!window.maplibregl || !this.event || !this.event.latitude || !this.event.longitude) {
+                return;
+            }
+
+            try {
+                // Khởi tạo bản đồ OpenMap
+                this.map = new maplibregl.Map({
+                    container: 'openmap',
+                    style: `https://maptiles.openmap.vn/styles/day-v1/style.json?apikey=${this.openMapApiKey}`,
+                    center: [this.event.longitude, this.event.latitude], // [lng, lat]
+                    zoom: 15,
+                    maplibreLogo: true
+                });
+
+                // Thêm marker cho vị trí sự kiện
+                const marker = new maplibregl.Marker({
+                    color: '#e74c3c' // Màu đỏ cho marker
+                })
+                .setLngLat([this.event.longitude, this.event.latitude])
+                .addTo(this.map);
+
+                // Thêm popup với thông tin sự kiện
+                const popup = new maplibregl.Popup({
+                    offset: 25,
+                    closeButton: true,
+                    closeOnClick: false
+                })
+                .setLngLat([this.event.longitude, this.event.latitude])
+                .setHTML(`
+                    <div style="padding: 10px; max-width: 250px;">
+                        <h6 style="margin: 0 0 8px 0; font-weight: bold;">${this.event.title}</h6>
+                        <p style="margin: 0 0 5px 0; font-size: 14px;">
+                            <i class="fas fa-map-marker-alt"></i> ${this.event.formattedAddress || this.event.location}
+                        </p>
+                        <p style="margin: 0 0 5px 0; font-size: 14px;">
+                            <i class="fas fa-calendar"></i> ${this.formatDate(this.event.startDate)}
+                        </p>
+                        <p style="margin: 0; font-size: 14px;">
+                            <i class="fas fa-clock"></i> ${this.formatTimeRange(this.event.startDate, this.event.endDate)}
+                        </p>
+                    </div>
+                `)
+                .addTo(this.map);
+
+                // Thêm controls
+                this.map.addControl(new maplibregl.NavigationControl(), 'top-right');
+                this.map.addControl(new maplibregl.FullscreenControl(), 'top-right');
+
+                console.log('OpenMap initialized successfully');
+            } catch (error) {
+                console.error('Error initializing OpenMap:', error);
+            }
+        },
+
+        async searchAndDisplayLocation() {
+            if (!this.event || !this.event.location) return;
+
+            try {
+                // Gọi API để tìm kiếm vị trí
+                const response = await this.$axios.get('/api/Event/search-places', {
+                    params: { keyword: this.event.location }
+                });
+
+                if (response.data.status === 200 && response.data.responseData.length > 0) {
+                    const firstPlace = response.data.responseData[0];
+                    
+                    // Lấy chi tiết địa điểm
+                    const detailResponse = await axios.get(`https://localhost:7213/api/Event/place-detail/${firstPlace.id}`);
+                    
+                    if (detailResponse.data.status === 200) {
+                        const placeDetail = detailResponse.data.responseData;
+                        
+                        // Cập nhật event với tọa độ mới
+                        this.event.latitude = placeDetail.latitude;
+                        this.event.longitude = placeDetail.longitude;
+                        this.event.formattedAddress = placeDetail.label;
+                        
+                        // Khởi tạo bản đồ
+                        this.$nextTick(() => {
+                            this.initializeMap();
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Error searching location:', error);
+            }
+        },
+
         formatDate(dateStr) {
             if (!dateStr) return '';
             const date = new Date(dateStr);
             return date.toLocaleDateString('vi-VN');
         },
+
         formatTimeRange(start, end) {
             if (!start || !end) return '';
             const s = new Date(start);
             const e = new Date(end);
             return `${s.getHours()}:${s.getMinutes().toString().padStart(2, '0')} - ${e.getHours()}:${e.getMinutes().toString().padStart(2, '0')}`;
         }
+    },
+
+    beforeDestroy() {
+        // Cleanup map khi component bị destroy
+        if (this.map) {
+            this.map.remove();
+        }
     }
 };
 </script>
+
+<style scoped>
+.map-content {
+    margin: 30px 0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.map-placeholder {
+    border: 2px dashed #ddd;
+}
+
+.map-placeholder .btn {
+    margin-top: 10px;
+}
+
+/* Tùy chỉnh popup của OpenMap */
+:deep(.maplibregl-popup-content) {
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+:deep(.maplibregl-popup-tip) {
+    border-top-color: #fff;
+}
+</style>

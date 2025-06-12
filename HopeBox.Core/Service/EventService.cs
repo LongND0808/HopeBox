@@ -7,25 +7,30 @@ using HopeBox.Domain.ResponseDto;
 using HopeBox.Infrastructure.Repository;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace HopeBox.Core.Service
 {
     public class EventService : IEventService
-    {    
+    {
         protected readonly IRepository<Event> _repository;
         protected readonly IConverter<Event, EventDto> _converter;
+        protected readonly IOpenMapService _openMapService;
+        protected readonly ILogger<EventService> _logger;
 
-        public EventService(IRepository<Event> repository, IConverter<Event, EventDto> converter)
+        public EventService(
+            IRepository<Event> repository,
+            IConverter<Event, EventDto> converter,
+            IOpenMapService openMapService,
+            ILogger<EventService> logger)
         {
             _repository = repository;
             _converter = converter;
+            _openMapService = openMapService;
+            _logger = logger;
         }
 
         #region GetNearestEvent
-        /// <summary>
-        /// Lấy các sự kiện sắp diễn ra gần nhất.
-        /// Và bỏ quá qua các sự kiện đã kết thúc.
-        /// </summary>
         public async Task<BaseResponseDto<EventDto>> GetNearestEventAsync()
         {
             try
@@ -34,8 +39,9 @@ namespace HopeBox.Core.Service
 
                 var nearestEvent = (await _repository.GetListAsyncUntracked<Event>(
                     filter: e => e.EndDate >= today,
-                    include: query => query.Include(e => e.Creator)
-                                            .Include(e => e.Organization),
+                    include: query => query.AsQueryable()
+                                           .Include(e => e.Creator)
+                                           .Include(e => e.Organization),
                     orderBy: q => q.OrderBy(e => e.StartDate)
                 )).FirstOrDefault();
 
@@ -48,9 +54,8 @@ namespace HopeBox.Core.Service
                         ResponseData = null
                     };
                 }
-                var dto = _converter.ToDTO(nearestEvent);
-                dto.CreatedByName = nearestEvent.Creator?.FullName ?? "Unknown";
-                dto.OrganizationName = nearestEvent.Organization?.Name ?? "Unknown";
+
+                var dto = await ConvertEventToDtoWithLocationAsync(nearestEvent);
 
                 return new BaseResponseDto<EventDto>
                 {
@@ -61,6 +66,7 @@ namespace HopeBox.Core.Service
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred while getting nearest event");
                 return new BaseResponseDto<EventDto>
                 {
                     Status = 500,
@@ -72,11 +78,6 @@ namespace HopeBox.Core.Service
         #endregion
 
         #region GetEventsByFilter
-        /// <summary>
-        /// Sử dụng để lấy danh sách các sự kiện theo bộ lọc (Title).
-        /// Điểm cần lưu ý là bộ lọc này sẽ trả về các sự kiện đã kết thúc, vì vậy cần phải kiểm tra ngày kết thúc của sự kiện trong quá trình hiển thị.
-        /// Chỉ lấy các sự kiện có tiêu đề chứa từ khóa tìm kiếm.
-        /// </summary>
         public async Task<BaseResponseDto<BasePagingResponseDto<EventDto>>> GetEventsByFilterAsync(EventFilterRequestDto request)
         {
             try
@@ -93,20 +94,20 @@ namespace HopeBox.Core.Service
 
                 var entities = await _repository.GetListAsyncUntracked<Event>(
                     filter: filter,
-                    include: query => query.Include(e => e.Creator)
+                    include: query => query.AsQueryable()
+                                           .Include(e => e.Creator)
                                            .Include(e => e.Organization),
                     pageSize: request.PageSize,
                     pageNumber: request.PageIndex,
                     orderBy: q => q.OrderByDescending(e => e.StartDate)
                 );
 
-                var dtos = entities.Select(e =>
+                var dtos = new List<EventDto>();
+                foreach (var entity in entities)
                 {
-                    var dto = _converter.ToDTO(e);
-                    dto.CreatedByName = e.Creator?.FullName ?? "Unknown";
-                    dto.OrganizationName = e.Organization?.Name ?? "Unknown";
-                    return dto;
-                }).ToList();
+                    var dto = await ConvertEventToDtoWithLocationAsync(entity);
+                    dtos.Add(dto);
+                }
 
                 var pagingResponse = new BasePagingResponseDto<EventDto>
                 {
@@ -124,6 +125,7 @@ namespace HopeBox.Core.Service
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred while getting events by filter");
                 return new BaseResponseDto<BasePagingResponseDto<EventDto>>
                 {
                     Status = 500,
@@ -131,6 +133,301 @@ namespace HopeBox.Core.Service
                     ResponseData = null
                 };
             }
+        }
+        #endregion
+
+        #region GetEventWithLocation
+        public async Task<BaseResponseDto<EventDto>> GetEventWithLocationAsync(Guid eventId)
+        {
+            try
+            {
+                var eventEntity = await _repository.GetByIdAsync(eventId,
+                    include: query => query.AsQueryable()
+                                           .Include(e => e.Creator)
+                                           .Include(e => e.Organization));
+
+                if (eventEntity == null)
+                {
+                    return new BaseResponseDto<EventDto>
+                    {
+                        Status = 404,
+                        Message = "Event not found",
+                        ResponseData = null
+                    };
+                }
+
+                var dto = await ConvertEventToDtoWithLocationAsync(eventEntity);
+
+                return new BaseResponseDto<EventDto>
+                {
+                    Status = 200,
+                    Message = "Success",
+                    ResponseData = dto
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting event with location: {EventId}", eventId);
+                return new BaseResponseDto<EventDto>
+                {
+                    Status = 500,
+                    Message = ex.Message,
+                    ResponseData = null
+                };
+            }
+        }
+        #endregion
+
+        #region GetEventsNearLocation
+        public async Task<BaseResponseDto<List<EventDto>>> GetEventsNearLocationAsync(double latitude, double longitude, double radiusKm)
+        {
+            try
+            {
+                var events = await _repository.GetListAsyncUntracked<Event>(
+                    filter: e => e.Latitude.HasValue && e.Longitude.HasValue &&
+                                Math.Sqrt(
+                                    Math.Pow(111.32 * (e.Latitude.Value - latitude), 2) +
+                                    Math.Pow(111.32 * (longitude - e.Longitude.Value) * Math.Cos(latitude * Math.PI / 180), 2)
+                                ) <= radiusKm,
+                    include: query => query.AsQueryable()
+                                           .Include(e => e.Creator)
+                                           .Include(e => e.Organization),
+                    orderBy: q => q.OrderBy(e => e.StartDate)
+                );
+
+                var dtos = new List<EventDto>();
+                foreach (var eventEntity in events)
+                {
+                    var dto = await ConvertEventToDtoWithLocationAsync(eventEntity);
+                    dtos.Add(dto);
+                }
+
+                return new BaseResponseDto<List<EventDto>>
+                {
+                    Status = 200,
+                    Message = $"Found {dtos.Count} events within {radiusKm}km",
+                    ResponseData = dtos
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting events near location: {Lat}, {Lng}", latitude, longitude);
+                return new BaseResponseDto<List<EventDto>>
+                {
+                    Status = 500,
+                    Message = ex.Message,
+                    ResponseData = null
+                };
+            }
+        }
+        #endregion
+
+        #region UpdateEventCoordinates
+        public async Task<BaseResponseDto<bool>> UpdateEventCoordinatesAsync(Guid eventId, double latitude, double longitude)
+        {
+            try
+            {
+                var eventEntity = await _repository.GetByIdAsync(eventId);
+                if (eventEntity == null)
+                {
+                    return new BaseResponseDto<bool>
+                    {
+                        Status = 404,
+                        Message = "Event not found",
+                        ResponseData = false
+                    };
+                }
+
+                var isValid = await _openMapService.ValidateCoordinatesAsync(latitude, longitude);
+                if (!isValid)
+                {
+                    return new BaseResponseDto<bool>
+                    {
+                        Status = 400,
+                        Message = "Invalid coordinates",
+                        ResponseData = false
+                    };
+                }
+
+                var formattedAddress = await _openMapService.GetAddressFromCoordinatesAsync(latitude, longitude);
+
+                eventEntity.Latitude = latitude;
+                eventEntity.Longitude = longitude;
+                eventEntity.FormattedAddress = formattedAddress;
+
+                await _repository.UpdateAsync(eventEntity);
+
+                return new BaseResponseDto<bool>
+                {
+                    Status = 200,
+                    Message = "Event coordinates updated successfully",
+                    ResponseData = true
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while updating event coordinates: {EventId}", eventId);
+                return new BaseResponseDto<bool>
+                {
+                    Status = 500,
+                    Message = ex.Message,
+                    ResponseData = false
+                };
+            }
+        }
+        #endregion
+
+        #region SearchPlaces
+        public async Task<BaseResponseDto<List<OpenMapPlaceSuggestionDto>>> SearchPlacesAsync(string keyword, string? sessionToken = null)
+        {
+            try
+            {
+                var suggestions = await _openMapService.AutocompleteAsync(keyword, sessionToken);
+
+                return new BaseResponseDto<List<OpenMapPlaceSuggestionDto>>
+                {
+                    Status = 200,
+                    Message = $"Found {suggestions.Count} place suggestions",
+                    ResponseData = suggestions
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while searching places with keyword: {Keyword}", keyword);
+                return new BaseResponseDto<List<OpenMapPlaceSuggestionDto>>
+                {
+                    Status = 500,
+                    Message = ex.Message,
+                    ResponseData = null
+                };
+            }
+        }
+        #endregion
+
+        #region GetPlaceDetail
+        public async Task<BaseResponseDto<OpenMapPlaceDetailDto>> GetPlaceDetailAsync(string placeId, string? sessionToken = null)
+        {
+            try
+            {
+                var placeDetail = await _openMapService.GetPlaceDetailAsync(placeId, sessionToken);
+
+                if (placeDetail == null)
+                {
+                    return new BaseResponseDto<OpenMapPlaceDetailDto>
+                    {
+                        Status = 404,
+                        Message = "Place not found",
+                        ResponseData = null
+                    };
+                }
+
+                return new BaseResponseDto<OpenMapPlaceDetailDto>
+                {
+                    Status = 200,
+                    Message = "Success",
+                    ResponseData = placeDetail
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting place detail: {PlaceId}", placeId);
+                return new BaseResponseDto<OpenMapPlaceDetailDto>
+                {
+                    Status = 500,
+                    Message = ex.Message,
+                    ResponseData = null
+                };
+            }
+        }
+        #endregion
+
+        #region UpdateEventLocationByPlaceId
+        public async Task<BaseResponseDto<bool>> UpdateEventLocationByPlaceIdAsync(Guid eventId, string placeId)
+        {
+            try
+            {
+                var eventEntity = await _repository.GetByIdAsync(eventId);
+                if (eventEntity == null)
+                {
+                    return new BaseResponseDto<bool>
+                    {
+                        Status = 404,
+                        Message = "Event not found",
+                        ResponseData = false
+                    };
+                }
+
+                var placeDetail = await _openMapService.GetPlaceDetailAsync(placeId);
+                if (placeDetail == null)
+                {
+                    return new BaseResponseDto<bool>
+                    {
+                        Status = 404,
+                        Message = "Place not found",
+                        ResponseData = false
+                    };
+                }
+
+                eventEntity.Location = placeDetail.Label;
+                eventEntity.Latitude = placeDetail.Latitude;
+                eventEntity.Longitude = placeDetail.Longitude;
+                eventEntity.FormattedAddress = placeDetail.Label;
+
+                await _repository.UpdateAsync(eventEntity);
+
+                return new BaseResponseDto<bool>
+                {
+                    Status = 200,
+                    Message = "Event location updated successfully",
+                    ResponseData = true
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while updating event location by place ID: {EventId}, {PlaceId}", eventId, placeId);
+                return new BaseResponseDto<bool>
+                {
+                    Status = 500,
+                    Message = ex.Message,
+                    ResponseData = false
+                };
+            }
+        }
+        #endregion
+
+        #region Private Helper Methods
+        private async Task<EventDto> ConvertEventToDtoWithLocationAsync(Event eventEntity)
+        {
+            var dto = _converter.ToDTO(eventEntity);
+            dto.CreatedByName = eventEntity.Creator?.FullName ?? "Unknown";
+            dto.OrganizationName = eventEntity.Organization?.Name ?? "Unknown";
+
+            if ((!eventEntity.Latitude.HasValue || !eventEntity.Longitude.HasValue) &&
+                !string.IsNullOrEmpty(eventEntity.Location))
+            {
+                var (lat, lng, formattedAddress) = await _openMapService.GetCoordinatesFromAddressAsync(eventEntity.Location);
+
+                if (lat.HasValue && lng.HasValue)
+                {
+                    dto.Latitude = lat;
+                    dto.Longitude = lng;
+                    dto.FormattedAddress = formattedAddress;
+
+                    try
+                    {
+                        eventEntity.Latitude = lat;
+                        eventEntity.Longitude = lng;
+                        eventEntity.FormattedAddress = formattedAddress;
+                        await _repository.UpdateAsync(eventEntity);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, "Failed to cache coordinates for event: {EventId}", eventEntity.Id);
+                    }
+                }
+            }
+
+            return dto;
         }
         #endregion
     }
