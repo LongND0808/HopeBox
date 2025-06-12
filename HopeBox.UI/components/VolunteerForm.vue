@@ -7,7 +7,8 @@
                         <div class="section-title">
                             <h5 class="subtitle">Join With Us</h5>
                             <h2 class="title">If You Interest! You Can Join With Us <span>As A Volunteer.</span></h2>
-                            <p>Tham gia cùng chúng tôi để tạo ra những thay đổi tích cực trong cộng đồng. Hãy đăng ký làm tình nguyện viên cho các chiến dịch mà bạn quan tâm.</p>
+                            <p>Tham gia cùng chúng tôi để tạo ra những thay đổi tích cực trong cộng đồng. Hãy đăng ký
+                                làm tình nguyện viên cho các chiến dịch mà bạn quan tâm.</p>
                         </div>
                     </div>
 
@@ -27,7 +28,7 @@
                                         <div class="summary-section" v-if="cause.summary">
                                             <p class="summary"><strong>Tóm tắt:</strong> {{ cause.summary }}</p>
                                         </div>
-                                        
+
                                         <!-- Hiển thị trạng thái đăng ký -->
                                         <div class="volunteer-status" v-if="cause.volunteerStatus">
                                             <span class="status-badge" :class="getStatusClass(cause.volunteerStatus)">
@@ -38,11 +39,9 @@
                                     <div class="causes-footer volunteer-footer">
                                         <button
                                             class="btn-theme btn-gradient btn-slide no-border volunteer-register-btn"
-                                            type="button" 
-                                            @click="registerVolunteer(cause)"
+                                            type="button" @click="registerVolunteer(cause)"
                                             :disabled="isRegistering || cause.volunteerStatus === 'registered'"
-                                            :class="{ 'disabled': cause.volunteerStatus === 'registered' }"
-                                        >
+                                            :class="{ 'disabled': cause.volunteerStatus === 'registered' }">
                                             <span v-if="isRegistering && selectedCauseId === cause.id">
                                                 <i class="fa fa-spinner fa-spin"></i> Đang đăng ký...
                                             </span>
@@ -75,25 +74,16 @@
             </div>
         </div>
 
-        <!-- Success/Error Modal -->
-        <div class="modal fade" id="notificationModal" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">
-                            <i :class="notification.type === 'success' ? 'fa fa-check-circle text-success' : 'fa fa-exclamation-circle text-danger'"></i>
-                            {{ notification.type === 'success' ? 'Thành công' : 'Lỗi' }}
-                        </h5>
-                        <button type="button" class="close" data-dismiss="modal">
-                            <span>&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <p>{{ notification.message }}</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                    </div>
+        <!-- Thay thế modal bằng notification overlay -->
+        <div v-if="notification.show" class="notification-overlay" @click="hideNotification">
+            <div class="notification-content" :class="notification.type" @click.stop>
+                <div class="notification-header">
+                    <i :class="notification.type === 'success' ? 'fa fa-check-circle' : 'fa fa-exclamation-circle'"></i>
+                    <span>{{ notification.type === 'success' ? 'Thành công' : 'Lỗi' }}</span>
+                    <button class="close-btn" @click="hideNotification">&times;</button>
+                </div>
+                <div class="notification-body">
+                    {{ notification.message }}
                 </div>
             </div>
         </div>
@@ -102,6 +92,7 @@
 
 <script>
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 export default {
     data() {
@@ -111,6 +102,7 @@ export default {
             isRegistering: false,
             selectedCauseId: null,
             notification: {
+                show: false,
                 type: '',
                 message: ''
             }
@@ -125,7 +117,7 @@ export default {
                 this.loading = true;
                 const response = await axios.get('https://localhost:7213/api/Cause/get-all');
                 this.causedata = response.data.responseData || [];
-            
+
                 await this.checkVolunteerStatus();
             } catch (error) {
                 console.error('Lỗi khi lấy dữ liệu chiến dịch:', error);
@@ -154,13 +146,6 @@ export default {
 
         async registerVolunteer(cause) {
             try {
-                const token = this.getAuthToken();
-                if (!token) {
-                    this.showNotification('error', 'Vui lòng đăng nhập để đăng ký làm tình nguyện viên.');
-                    this.$router.push('/login');
-                    return;
-                }
-
                 this.isRegistering = true;
                 this.selectedCauseId = cause.id;
 
@@ -172,8 +157,8 @@ export default {
                     'https://localhost:7213/api/Volunteer/register-volunteer',
                     requestData,
                     {
+                        withCredentials: true,
                         headers: {
-                            'Authorization': `Bearer ${token}`,
                             'Content-Type': 'application/json'
                         }
                     }
@@ -181,7 +166,7 @@ export default {
 
                 if (response.data.status === 201) {
                     cause.volunteerStatus = 'registered';
-                    
+
                     const registeredCauses = JSON.parse(localStorage.getItem('registeredCauses') || '[]');
                     if (!registeredCauses.includes(cause.id)) {
                         registeredCauses.push(cause.id);
@@ -195,11 +180,11 @@ export default {
 
             } catch (error) {
                 console.error('Lỗi khi đăng ký tình nguyện viên:', error);
-                
+
                 if (error.response) {
                     const status = error.response.status;
                     const message = error.response.data?.message || 'Có lỗi xảy ra';
-                    
+
                     switch (status) {
                         case 401:
                             this.showNotification('error', 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
@@ -224,15 +209,21 @@ export default {
             }
         },
 
-        getAuthToken() {
-            return localStorage.getItem('accessToken') || 
-                   sessionStorage.getItem('accessToken') ||
-                   this.$store?.getters?.authToken;
+        showNotification(type, message) {
+            this.notification = {
+                show: true,
+                type,
+                message
+            };
+
+            // Tự động ẩn sau 3 giây
+            setTimeout(() => {
+                this.hideNotification();
+            }, 3000);
         },
 
-        showNotification(type, message) {
-            this.notification = { type, message };
-            $('#notificationModal').modal('show');
+        hideNotification() {
+            this.notification.show = false;
         },
 
         getStatusClass(status) {
@@ -265,6 +256,76 @@ export default {
 </script>
 
 <style scoped>
+.notification-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.notification-content {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    min-width: 300px;
+    max-width: 500px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    animation: slideIn 0.3s ease-out;
+}
+
+.notification-content.success {
+    border-left: 4px solid #28a745;
+}
+
+.notification-content.error {
+    border-left: 4px solid #dc3545;
+}
+
+.notification-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.notification-header i {
+    margin-right: 10px;
+    font-size: 20px;
+}
+
+.notification-header .fa-check-circle {
+    color: #28a745;
+}
+
+.notification-header .fa-exclamation-circle {
+    color: #dc3545;
+}
+
+.close-btn {
+    margin-left: auto;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
 @media (max-width: 768px) {
     .volunteer-register-btn {
         font-size: 14px;
