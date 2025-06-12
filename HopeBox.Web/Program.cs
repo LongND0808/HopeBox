@@ -118,7 +118,8 @@ builder.Services.AddCors(options =>
             "http://localhost:3000",
             "https://hopebox.pages.dev")
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 });
 
