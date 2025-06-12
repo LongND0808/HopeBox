@@ -10,7 +10,7 @@
                                     <img src="/images/logo/logo.png" alt="Logo">
                                 </nuxt-link>
                                 <p>
-                                    HopeBox - Chung tay kết nối và hỗ trợ cộng đồng. Cùng nhau tạo nên những điều tốt đẹp cho cuộc sống.
+                                    HopeBox - Chung tay kết nối và hỗ trợ cộng đồng. Cùng nhau tạo nên những điều tốt đẹp cho cuộc sống!
                                 </p>
                                 <div class="widget-total-raised">
                                     <h4 class="raised-title">Tổng số tiền đã quyên góp:</h4>
