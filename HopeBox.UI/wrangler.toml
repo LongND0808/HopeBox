@@ -1,0 +1,12 @@
+name = "hopebox"
+type = "javascript"
+account_id = "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"
+workers_dev = true
+compatibility_date = "2024-06-01"
+
+[site]
+entry-point = ".output"
+
+[build]
+command = "npm run build"
+cwd = "."

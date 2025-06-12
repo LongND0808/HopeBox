@@ -1,4 +1,4 @@
-name: Deploy Vue App to Cloudflare Pages
+name: Deploy Nuxt App to Cloudflare Workers
 
 on:
   push:
@@ -8,6 +8,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -21,16 +22,15 @@ jobs:
         run: npm install
         working-directory: ./HopeBox.UI
 
-      - name: Build Vue App
+      - name: Build Nuxt App
         run: npm run build
         working-directory: ./HopeBox.UI
 
-      - name: Deploy to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: "hopebox"
-          directory: "HopeBox.UI/.output/public/"
-##          directory: "HopeBox.UI/dist"
-          gitHubToken: ${{ secrets.GH_TOKEN }}
+      - name: Install Wrangler CLI
+        run: npm install -g wrangler
+
+      - name: Deploy to Cloudflare Workers
+        run: wrangler deploy
+        working-directory: ./HopeBox.UI
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
