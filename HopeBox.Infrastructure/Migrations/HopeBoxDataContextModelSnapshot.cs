@@ -731,7 +731,7 @@ namespace HopeBox.Infrastructure.Migrations
                     b.Property<Guid>("CauseId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("JoinDate")
+                    b.Property<DateTime?>("JoinDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Status")
@@ -1052,11 +1052,6 @@ namespace HopeBox.Infrastructure.Migrations
                         .HasForeignKey("CauseId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("HopeBox.Domain.Models.Event", null)
-                        .WithMany("Volunteers")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("HopeBox.Domain.Models.User", "User")
                         .WithMany()

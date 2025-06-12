@@ -108,7 +108,7 @@
                         message: this.donation.message
                     };
 
-                    const res = await axios.post('https://localhost:7213/api/Donation/create-donation', payload, {
+                    const res = await axios.post('https://hopebox-api.roz.io.vn/api/Donation/create-donation', payload, {
                         withCredentials: true
                     });
 
@@ -119,7 +119,7 @@
                         throw new Error("Không lấy được ID donation từ server.");
                     }
 
-                    const paymentRes = await axios.get(`https://localhost:7213/api/Donation/create-payment-url?donationId=${donationId}`);
+                    const paymentRes = await axios.get(`https://hopebox-api.roz.io.vn/api/Donation/create-payment-url?donationId=${donationId}`);
                     const paymentUrl = paymentRes.data?.responseData;
 
                     if (!paymentUrl) {

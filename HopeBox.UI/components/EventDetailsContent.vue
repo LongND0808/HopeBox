@@ -182,7 +182,7 @@ export default {
     methods: {
         async fetchEventDetails() {
             try {
-                const response = await axios.get(`https://localhost:7213/api/Event/get-by-nearest-event`);
+                const response = await axios.get(`https://hopebox-api.roz.io.vn/api/Event/get-by-nearest-event`);
                 this.event = response.data.responseData;
                 
                 // Khởi tạo bản đồ sau khi có dữ liệu event
@@ -288,7 +288,7 @@ export default {
                     const firstPlace = response.data.responseData[0];
                     
                     // Lấy chi tiết địa điểm
-                    const detailResponse = await axios.get(`https://localhost:7213/api/Event/place-detail/${firstPlace.id}`);
+                    const detailResponse = await axios.get(`https://hopebox-api.roz.io.vn/api/Event/place-detail/${firstPlace.id}`);
                     
                     if (detailResponse.data.status === 200) {
                         const placeDetail = detailResponse.data.responseData;

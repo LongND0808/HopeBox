@@ -52,7 +52,7 @@
             async handleActivate() {
                 try {
                     const response = await axios.post(
-                        'https://localhost:7213/api/Authentication/confirm-email',
+                        'https://hopebox-api.roz.io.vn/api/Authentication/confirm-email',
                         this.form
                     )
 
@@ -74,7 +74,7 @@
 
                 try {
                     const response = await axios.post(
-                        'https://localhost:7213/api/Authentication/send-confirmation-code',
+                        'https://hopebox-api.roz.io.vn/api/Authentication/send-confirmation-code',
                         { email: this.form.confirmEmail }
                     )
 

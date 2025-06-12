@@ -133,7 +133,7 @@ export default {
   methods: {
     async fetchCauses() {
       try {
-        const res = await axios.get('https://localhost:7213/api/Cause/get-all', {
+        const res = await axios.get('https://hopebox-api.roz.io.vn/api/Cause/get-all', {
           withCredentials: true
         });
         if (res.data.status === 200) {
@@ -146,7 +146,7 @@ export default {
     },
     async fetchUsers() {
       try {
-        const res = await axios.get('https://localhost:7213/api/User/get-all', {
+        const res = await axios.get('https://hopebox-api.roz.io.vn/api/User/get-all', {
           withCredentials: true
         });
         if (res.data.status === 200) {
@@ -159,7 +159,7 @@ export default {
     },
     async fetchOrganizations() {
       try {
-        const res = await axios.get('https://localhost:7213/api/Organization/get-all', {
+        const res = await axios.get('https://hopebox-api.roz.io.vn/api/Organization/get-all', {
           withCredentials: true
         });
         if (res.data.status === 200) {
@@ -250,8 +250,8 @@ export default {
         };
 
         const url = this.editingCause
-          ? 'https://localhost:7213/api/Cause/update'
-          : 'https://localhost:7213/api/Cause/add';
+          ? 'https://hopebox-api.roz.io.vn/api/Cause/update'
+          : 'https://hopebox-api.roz.io.vn/api/Cause/add';
 
         const res = await axios.post(url, payload, {
           withCredentials: true
@@ -279,7 +279,7 @@ export default {
       if (result.isConfirmed) {
         try {
           const res = await axios.post(
-            'https://localhost:7213/api/Cause/delete',
+            'https://hopebox-api.roz.io.vn/api/Cause/delete',
             id,
             {
               headers: { 'Content-Type': 'application/json' },

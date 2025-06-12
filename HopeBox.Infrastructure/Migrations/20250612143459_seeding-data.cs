@@ -358,60 +358,61 @@ namespace HopeBox.Infrastructure.Migrations
                 });
 
             // Insert Events
+
             migrationBuilder.InsertData(
                 table: "Events",
                 columns: new[]
                 {
-                    "Id", "Title", "Description", "Detail", "BannerImage", "StartDate", "EndDate", "Location",
+                    "Id", "Title", "Description", "Detail", "BannerImage",
+                    "StartDate", "EndDate", "Location",
+                    "Latitude", "Longitude", "FormattedAddress",
                     "TargetAmount", "CurrentAmount", "Status", "CreatedBy", "OrganizationId"
+                },
+                    columnTypes: new[]
+                {
+                    "uniqueidentifier", "nvarchar(200)", "nvarchar(2000)", "nvarchar(max)",
+                    "nvarchar(max)", "datetime2", "datetime2", "nvarchar(1000)",
+                    "decimal(10,8)", "decimal(11,8)", "nvarchar(500)",
+                    "decimal(18,2)", "decimal(18,2)", "int", "uniqueidentifier", "uniqueidentifier"
                 },
                 values: new object[,]
                 {
                     {
-                        eventCharityId, "Ngày hội Trao Quà Cho Trẻ Em Nghèo Hà Nội",
-                        "Ngày hội Trao Quà Cho Trẻ Em Nghèo Hà Nội là chương trình thiện nguyện đầy ý nghĩa, nhằm mang đến niềm vui và sự động viên thiết thực cho các em nhỏ có hoàn cảnh khó khăn tại các vùng ngoại thành Hà Nội.",
-                        "Sự kiện diễn ra vào ngày 12/7/2025 tại Trường Tiểu học A, Hoài Đức, Hà Nội, dự kiến chào đón hơn 500 em nhỏ. Mỗi em sẽ nhận một phần quà bao gồm sách vở, đồ dùng học tập, sữa, bánh kẹo và một suất ăn trưa dinh dưỡng. Chương trình còn tổ chức các tiết mục văn nghệ, trò chơi vận động, đố vui nhận thưởng.",
-                        "https://images.baodantoc.vn/uploads/2021/Tháng_12/Ngày_3/TRUNG/Tặng_quà/A1_OK.jpg",
-                        new DateTime(2025, 7, 12, 8, 0, 0), new DateTime(2025, 7, 12, 16, 0, 0),
+                        Guid.NewGuid(),
+                        "Ngày hội Trao Quà Cho Trẻ Em Nghèo Hà Nội",
+                        "Ngày hội Trao Quà Cho Trẻ Em Nghèo Hà Nội là chương trình thiện nguyện đầy ý nghĩa, nhằm mang đến niềm vui và sự động viên thiết thực cho các em nhỏ có hoàn cảnh khó khăn tại các vùng ngoại thành Hà Nội. Sự kiện không chỉ là dịp các em nhận được sách vở, quà tặng và bữa ăn dinh dưỡng mà còn là nơi các em giao lưu, tham gia các hoạt động văn nghệ, trò chơi tập thể cùng hơn 200 tình nguyện viên và các nhà hảo tâm.",
+                        "Sự kiện “Ngày hội Trao Quà Cho Trẻ Em Nghèo Hà Nội” sẽ diễn ra vào ngày 12/7/2025 tại Trường Tiểu học A, Hoài Đức, Hà Nội, dự kiến chào đón hơn 500 em nhỏ thuộc các hộ gia đình khó khăn trên địa bàn. Tại đây, mỗi em sẽ được nhận một phần quà bao gồm sách vở, đồ dùng học tập, sữa, bánh kẹo và một suất ăn trưa dinh dưỡng. Ngoài hoạt động trao quà, chương trình còn tổ chức các tiết mục văn nghệ do chính các em và tình nguyện viên biểu diễn, các trò chơi vận động, đố vui nhận thưởng, giúp các em giao lưu, tự tin hơn và có thêm nhiều kỷ niệm đẹp. Ban tổ chức bố trí đội ngũ y tế hỗ trợ, đảm bảo an toàn và sức khỏe cho tất cả người tham dự. Sự kiện cũng tạo cơ hội cho cộng đồng cùng chung tay chia sẻ, lan tỏa yêu thương và tiếp thêm động lực để các em nhỏ vượt qua khó khăn, vươn lên trong học tập cũng như cuộc sống.",
+                        "https://images.baodantoc.vn/uploads/2021/Th%C3%A1ng_12/Ng%C3%A0y%203/TRUNG/T%E1%BA%B7ng%20qu%C3%A0/A1%20-%20OK.jpg",
+                        new DateTime(2025, 7, 12, 8, 0, 0),
+                        new DateTime(2025, 7, 12, 16, 0, 0),
                         "Trường Tiểu học A, Thị trấn Trạm Trôi, Huyện Hoài Đức, Hà Nội",
-                        50000000m, 10000000m, (int)EventStatus.Ongoing, userAdminId, orgId1
+                        21.0285,
+                        105.8542,
+                        "Hoài Đức, Hà Nội, Việt Nam",
+                        50000000m,
+                        0m,
+                        (int)EventStatus.Ongoing,
+                        userManagerId1,
+                        orgId1
                     },
                     {
-                        eventBloodDriveId, "Ngày hội Hiến Máu Nhân Đạo Đà Nẵng",
-                        "Ngày hội Hiến Máu Nhân Đạo Đà Nẵng kêu gọi cộng đồng chung tay giúp đỡ những bệnh nhân cần máu.",
-                        "Thời gian từ 8h sáng đến 17h chiều ngày 20/7/2025 tại Nhà Văn hóa Thiếu nhi Đà Nẵng. Mỗi người tham gia hiến máu sẽ được nhận quà tặng, giấy chứng nhận và phần ăn nhẹ. Đội ngũ y tế túc trực, hỗ trợ tư vấn sức khỏe.",
+                        Guid.NewGuid(),
+                        "Ngày hội Hiến Máu Nhân Đạo Đà Nẵng",
+                        "Ngày hội Hiến Máu Nhân Đạo Đà Nẵng - Một hành trình ý nghĩa lan tỏa yêu thương, kêu gọi toàn thể cộng đồng Đà Nẵng cùng chung tay giúp đỡ những bệnh nhân cần máu. Sự kiện diễn ra tại Nhà Văn hóa Thiếu nhi Đà Nẵng với không gian rộng rãi, trang thiết bị hiện đại, tạo điều kiện cho người tham gia có trải nghiệm tốt nhất.",
+                        "Thời gian diễn ra từ 8h sáng đến 17h chiều ngày 20/7/2025. Mỗi người tham gia hiến máu sẽ được nhận quà tặng, giấy chứng nhận và phần ăn nhẹ. Ban tổ chức bố trí đội ngũ y tế túc trực, hỗ trợ tư vấn sức khỏe, theo dõi sát sao toàn bộ quá trình hiến máu. Đây là sự kiện thường niên, mong muốn kết nối các tình nguyện viên, nhóm máu hiếm và các tổ chức xã hội tại Đà Nẵng.",
                         "https://media-cdn-v2.laodong.vn/storage/newsportal/2022/12/11/1126243/484Fa6554cc4959accd5.jpg",
-                        new DateTime(2025, 7, 20, 8, 0, 0), new DateTime(2025, 7, 20, 17, 0, 0),
+                        new DateTime(2025, 7, 20, 8, 0, 0),
+                        new DateTime(2025, 7, 20, 17, 0, 0),
                         "Nhà Văn hóa Thiếu nhi Đà Nẵng, 2 Phan Đăng Lưu, Hải Châu, Đà Nẵng",
-                        0m, 0m, (int)EventStatus.Ongoing, userAdminId, orgId1
-                    },
-                    {
-                        eventWorkshopId, "Hội Thảo Kỹ Năng Sống Hue",
-                        "Hội thảo kỹ năng sống dành cho học sinh trung học, giúp các em tự tin và phát triển kỹ năng mềm.",
-                        "Hội thảo diễn ra ngày 15/8/2025 tại Trung tâm Văn hóa Huế, với các buổi đào tạo về giao tiếp, quản lý thời gian và định hướng nghề nghiệp. Dự kiến có 300 học sinh tham gia.",
-                        "https://images.hueculture.vn/workshop.jpg",
-                        new DateTime(2025, 8, 15, 9, 0, 0), new DateTime(2025, 8, 15, 17, 0, 0),
-                        "Trung tâm Văn hóa Huế, 123 Lê Lợi, Huế",
-                        20000000m, 5000000m, (int)EventStatus.Upcoming, userAdminId, orgId2
+                        16.0544,
+                        108.2022,
+                        "Hải Châu, Đà Nẵng, Việt Nam",
+                        0m,
+                        0m,
+                        (int)EventStatus.Ongoing,
+                        userManagerId1,
+                        orgId1
                     }
-                });
-
-            // Insert Medias
-            migrationBuilder.InsertData(
-                table: "Medias",
-                columns: new[] { "Id", "Url", "Type", "CauseId", "EventId" },
-                values: new object[,]
-                {
-                    { mediaIds[0], "https://cdn.hope.org/media/water.jpg", (int)MediaType.Image, causeWaterId, null },
-                    { mediaIds[1], "https://cdn.hope.org/media/food.jpg", (int)MediaType.Image, causeFoodId, null },
-                    { mediaIds[2], "https://cdn.hope.org/media/medicine.jpg", (int)MediaType.Image, causeMedicineId, null },
-                    { mediaIds[3], "https://cdn.hope.org/media/education.jpg", (int)MediaType.Image, causeEducationId, null },
-                    { mediaIds[4], "https://cdn.hope.org/media/shelter.jpg", (int)MediaType.Image, causeShelterId, null },
-                    { mediaIds[5], "https://cdn.hope.org/media/clothing.jpg", (int)MediaType.Image, causeClothingId, null },
-                    { mediaIds[6], "https://cdn.hope.org/media/health.jpg", (int)MediaType.Image, causeHealthId, null },
-                    { mediaIds[7], "https://cdn.hope.org/media/community.jpg", (int)MediaType.Image, causeCommunityId, null },
-                    { mediaIds[8], "https://cdn.hope.org/media/charity_event.jpg", (int)MediaType.Image, null, eventCharityId },
-                    { mediaIds[9], "https://cdn.hope.org/media/blood_drive.jpg", (int)MediaType.Image, null, eventBloodDriveId }
                 });
 
             // Insert Blogs
@@ -500,11 +501,11 @@ namespace HopeBox.Infrastructure.Migrations
             // Insert Volunteers
             migrationBuilder.InsertData(
                 table: "Volunteers",
-                columns: new[] { "Id", "UserId", "CauseId", "JoinDate", "Status", "EventId" },
+                columns: new[] { "Id", "UserId", "CauseId", "JoinDate", "Status" },
                 values: new object[,]
                 {
-                    { volunteer1Id, userVolunteerId, causeWaterId, DateTime.UtcNow.AddDays(-10), (int)VolunteerStatus.Approved, eventCharityId },
-                    { volunteer2Id, userCustomer2Id, causeEducationId, DateTime.UtcNow.AddDays(-5), (int)VolunteerStatus.Pending, eventWorkshopId }
+                    { volunteer1Id, userVolunteerId, causeWaterId, DateTime.UtcNow.AddDays(-10), (int)VolunteerStatus.Approved },
+                    { volunteer2Id, userCustomer2Id, causeEducationId, DateTime.UtcNow.AddDays(-5), (int)VolunteerStatus.Pending }
                 });
 
             // Insert Feedbacks

@@ -80,18 +80,18 @@ export default {
 
         async checkLoginStatus() {
             try {
-                await axios.get('https://localhost:7213/api/Authentication/me', {
+                await axios.get('https://hopebox-api.roz.io.vn/api/Authentication/me', {
                     withCredentials: true
                 })
                 this.isLoggedIn = true
             } catch (err) {
                 if (err.response && err.response.status === 401) {
                     try {
-                        await axios.post('https://localhost:7213/api/Authentication/refresh-token', {}, {
+                        await axios.post('https://hopebox-api.roz.io.vn/api/Authentication/refresh-token', {}, {
                             withCredentials: true
                         })
 
-                        const retry = await axios.get('https://localhost:7213/api/Authentication/me', {
+                        const retry = await axios.get('https://hopebox-api.roz.io.vn/api/Authentication/me', {
                             withCredentials: true
                         })
 
@@ -108,7 +108,7 @@ export default {
 
         async handleLogout() {
             try {
-                await axios.post('https://localhost:7213/api/Authentication/logout', {}, {
+                await axios.post('https://hopebox-api.roz.io.vn/api/Authentication/logout', {}, {
                     withCredentials: true
                 })
             } catch (error) {

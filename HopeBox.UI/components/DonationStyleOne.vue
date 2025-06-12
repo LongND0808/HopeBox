@@ -70,7 +70,7 @@ export default {
   },
   mounted() {
     axios
-      .get('https://localhost:7213/api/Cause/get-cause-highest-target')
+      .get('https://hopebox-api.roz.io.vn/api/Cause/get-cause-highest-target')
       .then(async (response) => {
         const cause = response.data.responseData;
         const list = Array.isArray(cause) ? cause : [cause]; // đảm bảo là mảng

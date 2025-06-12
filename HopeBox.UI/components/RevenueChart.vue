@@ -46,7 +46,7 @@
     methods: {
       async fetchRevenueData() {
         try {
-          const res = await axios.get('https://localhost:7213/api/Cause/get-cause-revenue', {
+          const res = await axios.get('https://hopebox-api.roz.io.vn/api/Cause/get-cause-revenue', {
             withCredentials: true
           })
 

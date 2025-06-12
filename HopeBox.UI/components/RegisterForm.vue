@@ -95,7 +95,7 @@
           const { confirmPassword, ...formData } = this.form
 
           const response = await axios.post(
-            'https://localhost:7213/api/Authentication/register',
+            'https://hopebox-api.roz.io.vn/api/Authentication/register',
             formData
           )
 

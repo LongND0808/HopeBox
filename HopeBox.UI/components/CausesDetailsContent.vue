@@ -93,7 +93,7 @@
     methods: {
       async fetchCauseDetails() {
         try {
-          const response = await axios.get(`https://localhost:7213/api/Cause/get-by-id?id=${this.id}`);
+          const response = await axios.get(`https://hopebox-api.roz.io.vn/api/Cause/get-by-id?id=${this.id}`);
           this.cause = response.data.responseData;
         } catch (err) {
           console.error("Lỗi khi gọi API:", err);

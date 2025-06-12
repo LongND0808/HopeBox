@@ -52,7 +52,7 @@ export default {
   methods: {
     async logout() {
       try {
-        await axios.post('https://localhost:7213/api/Authentication/logout', {}, {
+        await axios.post('https://hopebox-api.roz.io.vn/api/Authentication/logout', {}, {
           withCredentials: true
         })
         this.$router.push('/')

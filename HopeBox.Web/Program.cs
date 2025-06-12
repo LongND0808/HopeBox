@@ -27,7 +27,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<HopeBoxDataContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("HopeBox")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("HopeBox")));
 
 builder.Services.AddSingleton<IConfig, Config>();
 builder.Services.AddScoped<IHopeBoxDataContext, HopeBoxDataContext>();
@@ -147,11 +147,11 @@ using (var scope = app.Services.CreateScope())
 
     try
     {
-        //dbContext.Database.EnsureDeleted();
-        //logger.LogWarning("Database deleted successfully.");
+        dbContext.Database.EnsureDeleted();
+        logger.LogWarning("Database deleted successfully.");
 
-        //dbContext.Database.Migrate();
-        //logger.LogInformation("Database migration applied successfully.");
+        dbContext.Database.Migrate();
+        logger.LogInformation("Database migration applied successfully.");
     }
     catch (Exception ex)
     {

@@ -13,7 +13,7 @@
             <nuxt-link to="/blog">Blog</nuxt-link>
         </li>
         <li class="has-submenu">
-            <nuxt-link to="/event-details">Khác</nuxt-link>
+            <nuxt-link>Khác</nuxt-link>
             <ul class="submenu-nav">
                 <li>
                     <nuxt-link to="/event-details">Sự Kiện</nuxt-link>

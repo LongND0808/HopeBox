@@ -100,7 +100,7 @@ export default {
   },
   async mounted() {
     try {
-      const response = await axios.get('https://localhost:7213/api/Blog/get-all');
+      const response = await axios.get('https://hopebox-api.roz.io.vn/api/Blog/get-all');
       if (response.data && response.data.status === 200) {
         const blogsRaw = response.data.responseData;
 
@@ -108,7 +108,7 @@ export default {
           blogsRaw.map(async (blog) => {
             let authorName = 'Ẩn danh';
             try {
-              const userRes = await axios.get(`https://localhost:7213/api/User/get-by-id?id=${blog.createdBy}`);
+              const userRes = await axios.get(`https://hopebox-api.roz.io.vn/api/User/get-by-id?id=${blog.createdBy}`);
               if (userRes.data && userRes.data.responseData) {
                 authorName = userRes.data.responseData.fullName || authorName;
               }

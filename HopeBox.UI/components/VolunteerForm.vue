@@ -114,7 +114,7 @@ export default {
         async fetchCauseData() {
             try {
                 this.loading = true;
-                const response = await axios.get('https://localhost:7213/api/Cause/get-all');
+                const response = await axios.get('https://hopebox-api.roz.io.vn/api/Cause/get-all');
                 this.causedata = response.data.responseData || [];
 
                 await this.checkVolunteerStatus();
@@ -153,7 +153,7 @@ export default {
                 };
 
                 const response = await axios.post(
-                    'https://localhost:7213/api/Volunteer/register-volunteer',
+                    'https://hopebox-api.roz.io.vn/api/Volunteer/register-volunteer',
                     requestData,
                     {
                         withCredentials: true,

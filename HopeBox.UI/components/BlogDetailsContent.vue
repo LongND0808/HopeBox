@@ -122,12 +122,12 @@ export default {
         return;
       }
       try {
-        const response = await axios.get(`https://localhost:7213/api/Blog/get-by-id?id=${id}`);
+        const response = await axios.get(`https://hopebox-api.roz.io.vn/api/Blog/get-by-id?id=${id}`);
         if (response.data && response.data.status === 200) {
           const blog = response.data.responseData;
           // Lấy tên tác giả nếu muốn
           try {
-            const authorRes = await axios.get(`https://localhost:7213/api/User/get-by-id?id=${blog.createdBy}`);
+            const authorRes = await axios.get(`https://hopebox-api.roz.io.vn/api/User/get-by-id?id=${blog.createdBy}`);
             if (authorRes.data && authorRes.data.responseData) {
               blog.authorName = authorRes.data.responseData.fullName || 'Ẩn danh';
             } else {

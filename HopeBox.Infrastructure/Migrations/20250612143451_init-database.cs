@@ -337,6 +337,9 @@ namespace HopeBox.Infrastructure.Migrations
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Location = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    Latitude = table.Column<decimal>(type: "decimal(10,8)", nullable: true),
+                    Longitude = table.Column<decimal>(type: "decimal(11,8)", nullable: true),
+                    FormattedAddress = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     TargetAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     CurrentAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
@@ -483,6 +486,33 @@ namespace HopeBox.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Volunteers",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CauseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    JoinDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Volunteers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Volunteers_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Volunteers_Causes_CauseId",
+                        column: x => x.CauseId,
+                        principalTable: "Causes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Medias",
                 columns: table => new
                 {
@@ -503,40 +533,6 @@ namespace HopeBox.Infrastructure.Migrations
                         onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_Medias_Events_EventId",
-                        column: x => x.EventId,
-                        principalTable: "Events",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Volunteers",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CauseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    JoinDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    EventId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Volunteers", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Volunteers_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Volunteers_Causes_CauseId",
-                        column: x => x.CauseId,
-                        principalTable: "Causes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Volunteers_Events_EventId",
                         column: x => x.EventId,
                         principalTable: "Events",
                         principalColumn: "Id",
@@ -740,11 +736,6 @@ namespace HopeBox.Infrastructure.Migrations
                 column: "CauseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Volunteers_EventId",
-                table: "Volunteers",
-                column: "EventId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Volunteers_UserId",
                 table: "Volunteers",
                 column: "UserId");
@@ -808,13 +799,13 @@ namespace HopeBox.Infrastructure.Migrations
                 name: "Donations");
 
             migrationBuilder.DropTable(
+                name: "Events");
+
+            migrationBuilder.DropTable(
                 name: "ReliefItems");
 
             migrationBuilder.DropTable(
                 name: "ReliefPackages");
-
-            migrationBuilder.DropTable(
-                name: "Events");
 
             migrationBuilder.DropTable(
                 name: "Causes");

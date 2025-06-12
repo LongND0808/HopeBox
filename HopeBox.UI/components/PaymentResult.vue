@@ -42,7 +42,7 @@ export default {
         try {
             const query = this.$route.query;
 
-            const response = await axios.post(`https://localhost:7213/api/Donation/vnpay-return`, {
+            const response = await axios.post(`https://hopebox-api.roz.io.vn/api/Donation/vnpay-return`, {
                 vnp_TxnRef: query.vnp_TxnRef,
                 vnp_ResponseCode: query.vnp_ResponseCode,
                 vnp_TransactionNo: query.vnp_TransactionNo

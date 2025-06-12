@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HopeBox.Infrastructure.Migrations
 {
     [DbContext(typeof(HopeBoxDataContext))]
-    [Migration("20250612105931_init-database")]
+    [Migration("20250612143451_init-database")]
     partial class initdatabase
     {
         /// <inheritdoc />
@@ -262,9 +262,19 @@ namespace HopeBox.Infrastructure.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("FormattedAddress")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<decimal?>("Latitude")
+                        .HasColumnType("decimal(10,8)");
+
                     b.Property<string>("Location")
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
+
+                    b.Property<decimal?>("Longitude")
+                        .HasColumnType("decimal(11,8)");
 
                     b.Property<Guid>("OrganizationId")
                         .HasColumnType("uniqueidentifier");
@@ -724,10 +734,7 @@ namespace HopeBox.Infrastructure.Migrations
                     b.Property<Guid>("CauseId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("EventId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("JoinDate")
+                    b.Property<DateTime?>("JoinDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Status")
@@ -739,8 +746,6 @@ namespace HopeBox.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CauseId");
-
-                    b.HasIndex("EventId");
 
                     b.HasIndex("UserId");
 
@@ -1051,11 +1056,6 @@ namespace HopeBox.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("HopeBox.Domain.Models.Event", null)
-                        .WithMany("Volunteers")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("HopeBox.Domain.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -1122,8 +1122,6 @@ namespace HopeBox.Infrastructure.Migrations
             modelBuilder.Entity("HopeBox.Domain.Models.Event", b =>
                 {
                     b.Navigation("Photos");
-
-                    b.Navigation("Volunteers");
                 });
 
             modelBuilder.Entity("HopeBox.Domain.Models.Organization", b =>

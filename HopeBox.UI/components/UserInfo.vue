@@ -58,7 +58,7 @@
 
     async mounted() {
       try {
-        const res = await axios.get('https://localhost:7213/api/Authentication/me', {
+        const res = await axios.get('https://hopebox-api.roz.io.vn/api/Authentication/me', {
           withCredentials: true,
         })
         this.user = res.data.responseData

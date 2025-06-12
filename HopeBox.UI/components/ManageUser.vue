@@ -105,7 +105,7 @@ export default {
   methods: {
     async fetchUsers() {
       try {
-        const res = await axios.get('https://localhost:7213/api/User/get-all', {
+        const res = await axios.get('https://hopebox-api.roz.io.vn/api/User/get-all', {
           withCredentials: true
         });
         if (res.data.status === 200) {
@@ -118,7 +118,7 @@ export default {
     },
     async fetchOrganizations() {
       try {
-        const res = await axios.get('https://localhost:7213/api/Organization/get-all', {
+        const res = await axios.get('https://hopebox-api.roz.io.vn/api/Organization/get-all', {
           withCredentials: true
         });
         if (res.data.status === 200) {
@@ -180,8 +180,8 @@ export default {
         };
 
         const url = this.editingUser
-          ? 'https://localhost:7213/api/User/update'
-          : 'https://localhost:7213/api/User/add';
+          ? 'https://hopebox-api.roz.io.vn/api/User/update'
+          : 'https://hopebox-api.roz.io.vn/api/User/add';
 
         const res = await axios.post(url, payload, {
           withCredentials: true
@@ -209,7 +209,7 @@ export default {
       if (result.isConfirmed) {
         try {
           const res = await axios.post(
-            'https://localhost:7213/api/User/delete',
+            'https://hopebox-api.roz.io.vn/api/User/delete',
             id,
             {
               headers: { 'Content-Type': 'application/json' },

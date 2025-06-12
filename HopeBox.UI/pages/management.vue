@@ -68,22 +68,22 @@ export default {
   methods: {
     async fetchData() {
       try {
-        const causeRes = await axios.get('https://localhost:7213/api/Cause/get-count', { withCredentials: true })
+        const causeRes = await axios.get('https://hopebox-api.roz.io.vn/api/Cause/get-count', { withCredentials: true })
         if (causeRes.data?.status === 200) {
           this.stats.causes = causeRes.data.responseData
         }
 
-        const userRes = await axios.get('https://localhost:7213/api/User/get-count', { withCredentials: true })
+        const userRes = await axios.get('https://hopebox-api.roz.io.vn/api/User/get-count', { withCredentials: true })
         if (userRes.data?.status === 200) {
           this.stats.users = userRes.data.responseData
         }
 
-        const volunteerRes = await axios.get('https://localhost:7213/api/Volunteer/get-count', { withCredentials: true })
+        const volunteerRes = await axios.get('https://hopebox-api.roz.io.vn/api/Volunteer/get-count', { withCredentials: true })
         if (volunteerRes.data?.status === 200) {
           this.stats.volunteers = volunteerRes.data.responseData
         }
 
-        const donationRes = await axios.get('https://localhost:7213/api/Donation/get-count', { withCredentials: true })
+        const donationRes = await axios.get('https://hopebox-api.roz.io.vn/api/Donation/get-count', { withCredentials: true })
         if (donationRes.data?.status === 200) {
           this.stats.donations = donationRes.data.responseData
         }
