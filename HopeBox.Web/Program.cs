@@ -112,15 +112,15 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowLocalhost", policy =>
+    options.AddPolicy("AllowMultipleOrigins", policy =>
     {
-        policy.WithOrigins("http://localhost:3000")
-              .AllowCredentials()
+        policy.WithOrigins(
+            "http://localhost:3000",
+            "https://hopebox.pages.dev")
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
 });
-
 
 builder.Services.AddEndpointsApiExplorer();
 
@@ -132,7 +132,7 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowLocalhost");
+app.UseCors("AllowMultipleOrigins");
 
 app.UseAuthentication();
 
@@ -147,9 +147,6 @@ using (var scope = app.Services.CreateScope())
 
     try
     {
-        dbContext.Database.EnsureDeleted();
-        logger.LogWarning("Database deleted successfully.");
-
         dbContext.Database.Migrate();
         logger.LogInformation("Database migration applied successfully.");
     }
