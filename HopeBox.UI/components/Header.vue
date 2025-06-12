@@ -5,7 +5,7 @@
                 <div class="col-5 col-sm-3 col-lg-2 pr-0">
                     <div class="header-logo-area">
                         <nuxt-link to="/">
-                            <img class="logo-main" src="/images/logo/logo.png" alt="Logo" />
+                            <img class="logo-main" style="height: 75px;" src="/images/logo/logo.png" alt="Logo" />
                         </nuxt-link>
                     </div>
                 </div>
@@ -50,7 +50,7 @@
 
 <script>
 import axios from 'axios'
-import Navigation from '@/components/Navigation.vue'
+import Navigation from '@/components/Navigation'
 
 export default {
     components: { Navigation },

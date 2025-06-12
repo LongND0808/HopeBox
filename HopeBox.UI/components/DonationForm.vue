@@ -3,7 +3,7 @@
         <div class="section-title">
             <h5 class="subtitle line-theme-color mb-14">Đóng Góp</h5>
             <h2 class="title text-white">Quyên Góp Ngay</h2>
-            <img class="line-shape" src="/images/shape/line-t3.png" alt="image">
+            <img class="line-shape" src="/images/shape/line-t1.png" alt="image">
         </div>
         <form @submit.prevent="submitDonation">
             <div class="amount-info">
@@ -50,9 +50,8 @@
             <div class="btn-wrp">
                 <button type="submit" class="btn-theme btn-gradient btn-slide">
                     Quyên Góp Ngay
-                    <img class="icon icon-img" src="/images/icons/arrow-line-right2.png" alt="Icon">
                 </button>
-                <a href="#" class="btn-theme btn-gradient btn-border">Tổng tiền: {{ donation.amount }}₫ </a>
+                <a class="btn-theme btn-gradient btn-border">Tổng tiền: {{ donation.amount }}₫ </a>
             </div>
         </form>
         <div class="layer-style">

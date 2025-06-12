@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using HopeBox.Core.IAspModelService;
 using Duende.IdentityModel;
+using HopeBox.Core.Service;
 
 namespace HopeBox.Web.Controller
 {
@@ -26,6 +27,14 @@ namespace HopeBox.Web.Controller
         public virtual async Task<BaseResponseDto<IEnumerable<UserDto>>> GetAll()
         {
             var result = await _userService.GetAllAsync();
+            return result;
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("get-manager")]
+        public virtual async Task<BaseResponseDto<IEnumerable<UserDto>>> GetManager()
+        {
+            var result = await _userService.GetManagerAsync();
             return result;
         }
 
@@ -58,6 +67,14 @@ namespace HopeBox.Web.Controller
         {
             var result = await _userService.DeleteAsync(id);
             return result;
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("get-count")]
+        public virtual async Task<BaseResponseDto<int>> GetCount()
+        {
+            var result = await _userService.GetCountAsync();
+            return (result);
         }
     }
 }

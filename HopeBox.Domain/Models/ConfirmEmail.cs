@@ -6,7 +6,7 @@ namespace HopeBox.Domain.Models
     public class ConfirmEmail : BaseModel
     {
         [Required]
-        public Guid UserId { get; set; }
+        public Guid? UserId { get; set; }
 
         [Required]
         public DateTime RequestedAt { get; set; } 

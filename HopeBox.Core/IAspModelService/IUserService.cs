@@ -16,5 +16,7 @@ namespace HopeBox.Core.IAspModelService
         Task<BaseResponseDto<bool>> AddAsync(UserDto model);
         Task<BaseResponseDto<bool>> UpdateAsync(UserDto model);
         Task<BaseResponseDto<bool>> DeleteAsync(Guid id);
+        Task<BaseResponseDto<int>> GetCountAsync();
+        Task<BaseResponseDto<IEnumerable<UserDto>>> GetManagerAsync();
     }
 }

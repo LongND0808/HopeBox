@@ -6,6 +6,7 @@ namespace HopeBox.Core.IService
         where TModel : class
         where TDto : class
     {
+        Task<BaseResponseDto<int>> GetCountAsync();
         Task<BaseResponseDto<TDto>> GetByIdAsync(Guid id);
         Task<BaseResponseDto<IEnumerable<TDto>>> GetAllAsync();
         Task<BaseResponseDto<bool>> AddAsync(TDto model);

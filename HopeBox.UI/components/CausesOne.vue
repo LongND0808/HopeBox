@@ -90,15 +90,15 @@
                             infoList: [
                                 {
                                     infoTitle: "Mục tiêu",
-                                    amount: `${item.targetAmount}₫`
+                                    amount: `${(item.targetAmount / 1_000_000).toFixed(1)}tr ₫`
                                 },
                                 {
                                     infoTitle: "Đã góp",
-                                    amount: `${item.currentAmount}₫`
+                                    amount: `${(item.currentAmount / 1_000_000).toFixed(1)}tr ₫`
                                 },
                                 {
                                     infoTitle: "Còn thiếu",
-                                    amount: `${Math.max(item.targetAmount - item.currentAmount, 0)}₫`
+                                    amount: `${(Math.max(item.targetAmount - item.currentAmount, 0) / 1_000_000).toFixed(1)}tr ₫`
                                 }
                             ]
                         };

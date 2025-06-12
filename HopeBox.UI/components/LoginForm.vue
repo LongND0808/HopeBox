@@ -10,7 +10,7 @@
         </button>
       </div>
 
-      <h2 class="title">Đăng Nhập {{ activeTab === 'admin' ? 'Quản Lý' : 'Người Dùng' }}</h2>
+      <h2 class="title">Đăng Nhập {{ activeTab === 'admin' ? 'Quản Lý' : '' }}</h2>
 
       <form @submit.prevent="handleLogin">
         <div class="form-group">
@@ -73,7 +73,7 @@
           )
 
           if (response.data.status === 200) {
-            await showSuccessAlert('Đăng nhập thành công', response.data.message || 'Chào mừng bạn quay lại!')
+            await showSuccessAlert('Đăng nhập thành công', response.data.message || 'Chào mừng bạn!')
             if (this.activeTab === 'admin') {
               this.$router.push('/management')
             } else {
@@ -125,15 +125,16 @@
     padding: 10px;
     background-color: #eee;
     border: none;
-    border-radius: 10px 10px 0 0;
+    border-radius: 10px 10px 10px 10px;
     font-weight: bold;
     cursor: pointer;
     transition: 0.3s;
+    color: rgb(187, 187, 187);
   }
 
   .tab-switch button.active {
     background-color: white;
-    color: black;
+    color: #ff7a18;
   }
 
   .title {

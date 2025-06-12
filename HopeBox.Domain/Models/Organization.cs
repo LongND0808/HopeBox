@@ -19,7 +19,6 @@ namespace HopeBox.Domain.Models
         public string? Website { get; set; }
         public bool Verified { get; set; }
         public DateTime CreatedAt { get; set; }
-        public Guid UserId { get; set; }
-        public virtual User? User { get; set; }
+        public virtual IEnumerable<User>? User { get; set; }
     }
 }

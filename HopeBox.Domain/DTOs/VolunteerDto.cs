@@ -3,7 +3,7 @@ using static HopeBox.Common.Enum.Enumerate;
 
 namespace HopeBox.Domain.Dtos
 {
-    public class VolunteerDto
+    public class VolunteerDto : BaseModelDto
     {
         public Guid UserId { get; set; }
         public Guid CauseId { get; set; }

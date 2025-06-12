@@ -111,16 +111,6 @@ namespace HopeBox.Core.Service
 
         public async Task<BaseResponseDto<bool>> ConfirmEmail(ConfirmEmailRequestDto request)
         {
-            if (string.IsNullOrWhiteSpace(request.ConfirmEmail) || string.IsNullOrWhiteSpace(request.ConfirmCode))
-            {
-                return new BaseResponseDto<bool>
-                {
-                    Status = 400,
-                    Message = "Email and confirmation code cannot be empty.",
-                    ResponseData = false
-                };
-            }
-
             var user = await _userRepository.GetOneAsync(u => u.Email == request.ConfirmEmail);
             if (user == null)
             {

@@ -9,7 +9,8 @@ namespace HopeBox.Infrastructure.DataContext
     public partial class HopeBoxDataContext : IdentityDbContext<User, Role, Guid, IdentityUserClaim<Guid>,
         UserRole, IdentityUserLogin<Guid>, IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>, IHopeBoxDataContext
     {
-        public HopeBoxDataContext(DbContextOptions<HopeBoxDataContext> options) : base(options) {
+        public HopeBoxDataContext(DbContextOptions<HopeBoxDataContext> options) : base(options)
+        {
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         }
 
@@ -46,13 +47,16 @@ namespace HopeBox.Infrastructure.DataContext
 
             foreach (var entity in modelBuilder.Model.GetEntityTypes())
             {
-                var foreignKeys = entity.GetForeignKeys();
-                foreach (var foreignKey in foreignKeys)
+                foreach (var foreignKey in entity.GetForeignKeys())
                 {
-                    foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
+                    bool allColumnsNullable = foreignKey.Properties.All(p => p.IsNullable);
+
+                    foreignKey.DeleteBehavior = allColumnsNullable
+                        ? DeleteBehavior.SetNull
+                        : DeleteBehavior.Restrict;
                 }
             }
-
         }
+
     }
 }

@@ -15,5 +15,6 @@ namespace HopeBox.Core.IService
         Task<BaseResponseDto<IEnumerable<CauseDto>>> GetCauseOneAsync();
         Task<BaseResponseDto<CauseDto>> GetCauseHighestTargetAsync();
         Task<BaseResponseDto<BasePagingResponseDto<CauseDto>>> GetCauseByFilter(CauseFilterRequestDto request);
+        Task<BaseResponseDto<IEnumerable<CauseRevenueResponseDto>>> GetCauseRevenueAsync();
     }
 }

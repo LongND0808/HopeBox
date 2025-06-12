@@ -119,11 +119,23 @@ namespace HopeBox.Core.Service
                 donation.Status = DonationStatus.Paid;
                 await _repository.UpdateAsync(donation);
 
-                var userInfo = await _userRepository.GetOneAsyncUntracked<dynamic>(
-                    filter: f => f.Id == donation.UserId,
-                    selector: s => new {s.FullName, s.Email });
+                var cause = await _causeRepository.GetOneAsync(filter: f => f.Id == donation.CauseId);
 
-                if (userInfo == null)
+                cause.CurrentAmount += donation.Amount;
+
+                if(cause.CurrentAmount >= cause.TargetAmount)
+                {
+                    cause.Status = CauseStatus.Completed;
+                }
+
+                await _causeRepository.UpdateAsync(cause);
+
+                var user = await _userRepository.GetOneAsync(
+                    filter: f => f.Id == donation.UserId);
+
+                user.Point += (int) Math.Round(donation.Amount / 100000);
+
+                if (user == null)
                 {
                     return new BaseResponseDto<bool>
                     {
@@ -133,12 +145,9 @@ namespace HopeBox.Core.Service
                     };
                 }
 
-                var causeTitle = await _causeRepository.GetOneAsyncUntracked<string>(
-                    filter: f => f.Id == donation.CauseId, selector: s => s.Title);
-
                 string subject = "Hóa đơn quyên góp - HopeBox";
-                string body = GenerateInvoiceHtml(donation, userInfo.FullName, userInfo.Email, causeTitle);
-                await _emailService.SendEmailAsync(userInfo.Email, subject, body);
+                string body = GenerateInvoiceHtml(donation, user.FullName, user.Email, cause.Title);
+                await _emailService.SendEmailAsync(user.Email, subject, body);
 
 
                 return new BaseResponseDto<bool>

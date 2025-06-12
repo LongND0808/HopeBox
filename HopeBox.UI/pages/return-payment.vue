@@ -25,7 +25,7 @@ export default {
         OffCanvasMobileMenu: () => import('@/components/OffCanvasMobileMenu'),
         Breadcrumb: () => import('@/components/Breadcrumb'),
         Footer: () => import('@/components/Footer'),
-        PaymentResult: () => import('@/components/PaymentResult.vue'),
+        PaymentResult: () => import('@/components/PaymentResult'),
     },
     data() {
         return {

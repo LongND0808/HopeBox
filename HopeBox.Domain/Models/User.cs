@@ -19,7 +19,10 @@ namespace HopeBox.Domain.Models
 
         public UserStatus UserStatus { get; set; }
 
+        public Guid? OrganizationId { get; set; }
+
         public virtual ICollection<RefreshToken>? RefreshTokens { get; set; }
         public virtual ICollection<ConfirmEmail>? ConfirmEmails { get; set; }
+        public virtual Organization? Organization { get; set; }
     }
 }

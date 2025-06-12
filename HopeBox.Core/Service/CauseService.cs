@@ -7,21 +7,25 @@ using HopeBox.Domain.ResponseDto;
 using HopeBox.Infrastructure.Repository;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using static HopeBox.Common.Enum.Enumerate;
 using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace HopeBox.Core.Service
 {
     public class CauseService : BaseService<Cause, CauseDto>, ICauseService
     {
-        public CauseService(IRepository<Cause> repository, IConverter<Cause, CauseDto> converter)
+        private readonly IRepository<Donation> _donationRepository;
+        public CauseService(IRepository<Cause> repository, IConverter<Cause, CauseDto> converter, IRepository<Donation> donationRepository)
             : base(repository, converter)
         {
+            _donationRepository = donationRepository;
         }
 
         public async Task<BaseResponseDto<BasePagingResponseDto<CauseDto>>> GetCauseByFilter(
@@ -38,8 +42,10 @@ namespace HopeBox.Core.Service
 
                 if (request.CauseType.HasValue)
                 {
-                    filter = filter.And(f => (int) f.Type == request.CauseType.Value);
+                    filter = filter.And(f => (int)f.Type == request.CauseType.Value);
                 }
+
+                filter = filter.And(f => f.Status == CauseStatus.Ongoing);
 
                 var totalRecords = await _repository.GetCount(filter);
 
@@ -84,6 +90,7 @@ namespace HopeBox.Core.Service
             try
             {
                 var entity = await base._repository.GetOneAsyncUntracked<Cause>(
+                    filter: f => f.Status == CauseStatus.Ongoing,
                     orderBy: o => o.OrderByDescending(od => od.TargetAmount)
                 );
                 if (entity == null)
@@ -109,6 +116,7 @@ namespace HopeBox.Core.Service
             try
             {
                 var entities = await base._repository.GetListAsyncUntracked<Cause>(
+                    filter: f => f.Status == CauseStatus.Ongoing,
                     orderBy: o => o.OrderByDescending(od => od.TargetAmount),
                     pageSize: 3,
                     pageNumber: 1
@@ -119,6 +127,63 @@ namespace HopeBox.Core.Service
             catch (Exception ex)
             {
                 return new BaseResponseDto<IEnumerable<CauseDto>> { Status = 500, Message = ex.Message, ResponseData = null };
+            }
+        }
+
+        public async Task<BaseResponseDto<IEnumerable<CauseRevenueResponseDto>>> GetCauseRevenueAsync()
+        {
+            try
+            {
+                var donations = await _donationRepository.GetListAsyncUntracked<Donation>(
+                    filter: d => d.Status == DonationStatus.Paid
+                );
+
+                var grouped = donations
+                    .GroupBy(d => new { d.DonationDate.Year, d.DonationDate.Month })
+                    .Select(g => new
+                    {
+                        Year = g.Key.Year,
+                        Month = g.Key.Month,
+                        Total = g.Sum(d => d.Amount)
+                    })
+                    .ToList();
+
+                var allYears = grouped.Select(g => g.Year).Distinct().OrderBy(y => y);
+
+                var result = new List<CauseRevenueResponseDto>();
+
+                foreach (var year in allYears)
+                {
+                    var monthlyRevenue = new decimal[12];
+
+                    for (int month = 1; month <= 12; month++)
+                    {
+                        var monthData = grouped.FirstOrDefault(g => g.Year == year && g.Month == month);
+                        monthlyRevenue[month - 1] = monthData?.Total ?? 0;
+                    }
+
+                    result.Add(new CauseRevenueResponseDto
+                    {
+                        Year = year,
+                        MonthlyRevenue = monthlyRevenue
+                    });
+                }
+
+                return new BaseResponseDto<IEnumerable<CauseRevenueResponseDto>>
+                {
+                    Status = 200,
+                    Message = "Thống kê doanh thu theo năm thành công",
+                    ResponseData = result
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponseDto<IEnumerable<CauseRevenueResponseDto>>
+                {
+                    Status = 500,
+                    Message = $"Lỗi: {ex.Message}",
+                    ResponseData = null
+                };
             }
         }
     }

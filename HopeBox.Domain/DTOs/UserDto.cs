@@ -14,5 +14,6 @@ namespace HopeBox.Domain.Dtos
         public string? Address { get; set; }
         public string? AvatarUrl { get; set; }
         public UserStatus UserStatus { get; set; }
+        public Guid? OrganizationId { get; set; }
     }
 }

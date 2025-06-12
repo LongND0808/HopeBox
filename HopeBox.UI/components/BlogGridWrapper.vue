@@ -74,7 +74,7 @@
 </template>
 
 <script>
-import SidebarWrapper from '@/components/SidebarWrapper.vue';
+import SidebarWrapper from '@/components/SidebarWrapper';
 import axios from 'axios';
 
 export default {
@@ -113,7 +113,6 @@ export default {
                 authorName = userRes.data.responseData.fullName || authorName;
               }
             } catch {
-              // If there's an error fetching the author, keep it as 'Ẩn danh'
             }
             return { ...blog, authorName };
           })

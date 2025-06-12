@@ -4,6 +4,7 @@ using HopeBox.Domain.Dtos;
 using HopeBox.Core.IService;
 using HopeBox.Domain.ResponseDto;
 using HopeBox.Domain.RequestDto;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HopeBox.Web.Controller
 {
@@ -38,5 +39,14 @@ namespace HopeBox.Web.Controller
             var result = await _causeService.GetCauseByFilter(request);
             return (result);
         }
+
+        [HttpGet("get-cause-revenue")]
+        [Authorize(Roles = "Admin")]
+        public async Task<BaseResponseDto<IEnumerable<CauseRevenueResponseDto>>> GetCauseRevenue()
+        {
+            var result = await _causeService.GetCauseRevenueAsync();
+            return result;
+        }
+
     }
 }

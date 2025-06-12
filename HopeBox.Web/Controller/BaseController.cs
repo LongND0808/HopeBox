@@ -55,5 +55,13 @@ namespace HopeBox.Web.Controller
             var result = await _baseService.DeleteAsync(id);
             return (result);
         }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("get-count")]
+        public virtual async Task<BaseResponseDto<int>> GetCount()
+        {
+            var result = await _baseService.GetCountAsync();
+            return (result);
+        }
     }
 }

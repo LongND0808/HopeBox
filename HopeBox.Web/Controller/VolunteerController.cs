@@ -10,11 +10,11 @@ namespace HopeBox.Web.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class VolunteerController : ControllerBase
+    public class VolunteerController : BaseController<Volunteer, VolunteerDto>
     {
         protected readonly IVolunteerService _volunteerService;
 
-        public VolunteerController(IVolunteerService volunteerservice)
+        public VolunteerController(IBaseService<Volunteer, VolunteerDto> service, IVolunteerService volunteerservice) : base(service)
         {
             _volunteerService = volunteerservice;
         }

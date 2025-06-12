@@ -25,7 +25,7 @@ namespace HopeBox.Core.Email
 
             var emailConfig = _config.GetEmailConfiguration();
 
-            emailMessage.From.Add(new MailboxAddress("LongND0808", emailConfig.From));
+            emailMessage.From.Add(new MailboxAddress("HopeBox", emailConfig.From));
             emailMessage.To.Add(MailboxAddress.Parse(to));
             emailMessage.Subject = subject;
             emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = body };

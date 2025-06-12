@@ -16,16 +16,18 @@
                       <ul class="donate-info">
                         <li class="info-item">
                           <span class="info-title">Mục tiêu:</span>
-                          <span class="amount">{{ cause.targetAmount }}₫</span>
+                          <span class="amount">{{ (cause.targetAmount / 1_000_000).toFixed(1) }}tr ₫</span>
                         </li>
                         <li class="info-item">
                           <span class="info-title">Đóng góp:</span>
-                          <span class="amount">{{ cause.currentAmount }}₫</span>
+                          <span class="amount">{{ (cause.currentAmount / 1_000_000).toFixed(1) }}tr ₫</span>
                         </li>
                         <li class="info-item">
                           <span class="info-title">Còn thiếu:</span>
-                          <span class="amount">{{ cause.targetAmount - cause.currentAmount }}₫</span>
+                          <span class="amount">{{ ((cause.targetAmount - cause.currentAmount) / 1_000_000).toFixed(1)
+                            }}tr ₫</span>
                         </li>
+
                       </ul>
                     </div>
                     <div class="col-md-6">
@@ -51,7 +53,7 @@
               </div>
 
               <DonnerList />
-              <DonationForm />
+              <DonationForm :causeId="cause.id"/>
             </div>
             <SidebarWrapper />
           </div>
@@ -62,46 +64,46 @@
 </template>
 
 <script>
-import axios from 'axios';
+  import axios from 'axios';
 
-export default {
-  props: {
-    id: {
-      type: String,
-      required: true
-    }
-  },
-  data() {
-    return {
-      cause: null,
-    };
-  },
-  computed: {
-    progress() {
-      if (!this.cause || this.cause.targetAmount === 0) return 0;
-      return Math.min(
-        100,
-        Math.round((this.cause.currentAmount / this.cause.targetAmount) * 100)
-      );
-    }
-  },
-  mounted() {
-    this.fetchCauseDetails();
-  },
-  methods: {
-    async fetchCauseDetails() {
-      try {
-        const response = await axios.get(`https://localhost:7213/api/Cause/get-by-id?id=${this.id}`);
-        this.cause = response.data.responseData;
-      } catch (err) {
-        console.error("Lỗi khi gọi API:", err);
+  export default {
+    props: {
+      id: {
+        type: String,
+        required: true
       }
-    }
-  },
-  components: {
-    DonnerList: () => import('@/components/DonnerList'),
-    DonationForm: () => import('@/components/DonationForm'),
-    SidebarWrapper: () => import('@/components/SidebarWrapper'),
-  },
-};
+    },
+    data() {
+      return {
+        cause: null,
+      };
+    },
+    computed: {
+      progress() {
+        if (!this.cause || this.cause.targetAmount === 0) return 0;
+        return Math.min(
+          100,
+          Math.round((this.cause.currentAmount / this.cause.targetAmount) * 100)
+        );
+      }
+    },
+    mounted() {
+      this.fetchCauseDetails();
+    },
+    methods: {
+      async fetchCauseDetails() {
+        try {
+          const response = await axios.get(`https://localhost:7213/api/Cause/get-by-id?id=${this.id}`);
+          this.cause = response.data.responseData;
+        } catch (err) {
+          console.error("Lỗi khi gọi API:", err);
+        }
+      }
+    },
+    components: {
+      DonnerList: () => import('@/components/DonnerList'),
+      DonationForm: () => import('@/components/DonationForm'),
+      SidebarWrapper: () => import('@/components/SidebarWrapper'),
+    },
+  };
 </script>

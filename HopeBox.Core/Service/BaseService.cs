@@ -1,5 +1,6 @@
 ﻿using HopeBox.Core.IService;
 using HopeBox.Domain.Converter;
+using HopeBox.Domain.Dtos;
 using HopeBox.Domain.Models;
 using HopeBox.Domain.ResponseDto;
 using HopeBox.Infrastructure.Repository;
@@ -8,7 +9,7 @@ namespace HopeBox.Core.Service
 {
     public class BaseService<TModel, TDto> : IBaseService<TModel, TDto>
         where TModel : BaseModel
-        where TDto : class
+        where TDto : BaseModelDto
     {
         protected readonly IRepository<TModel> _repository;
         protected readonly IConverter<TModel, TDto> _converter;
@@ -23,7 +24,7 @@ namespace HopeBox.Core.Service
         {
             try
             {
-                var entity = await _repository.GetOneAsyncUntracked<TModel>(filter: f => f.Id == id);
+                var entity = await _repository.GetOneAsyncUntracked<TModel>(f => f.Id == id);
                 if (entity == null)
                 {
                     return new BaseResponseDto<TDto>
@@ -35,11 +36,21 @@ namespace HopeBox.Core.Service
                 }
 
                 var dto = _converter.ToDTO(entity);
-                return new BaseResponseDto<TDto> { Status = 200, Message = "Success", ResponseData = dto };
+                return new BaseResponseDto<TDto>
+                {
+                    Status = 200,
+                    Message = "Success",
+                    ResponseData = dto
+                };
             }
             catch (Exception ex)
             {
-                return new BaseResponseDto<TDto> { Status = 500, Message = ex.Message, ResponseData = null };
+                return new BaseResponseDto<TDto>
+                {
+                    Status = 500,
+                    Message = ex.Message,
+                    ResponseData = null
+                };
             }
         }
 
@@ -49,11 +60,22 @@ namespace HopeBox.Core.Service
             {
                 var entities = await _repository.GetListAsyncUntracked<TModel>();
                 var dtos = _converter.ToListDTO(entities);
-                return new BaseResponseDto<IEnumerable<TDto>> { Status = 200, Message = "Success", ResponseData = dtos };
+
+                return new BaseResponseDto<IEnumerable<TDto>>
+                {
+                    Status = 200,
+                    Message = "Success",
+                    ResponseData = dtos
+                };
             }
             catch (Exception ex)
             {
-                return new BaseResponseDto<IEnumerable<TDto>> { Status = 500, Message = ex.Message, ResponseData = null };
+                return new BaseResponseDto<IEnumerable<TDto>>
+                {
+                    Status = 500,
+                    Message = ex.Message,
+                    ResponseData = null
+                };
             }
         }
 
@@ -61,13 +83,25 @@ namespace HopeBox.Core.Service
         {
             try
             {
+                dto.Id = Guid.NewGuid();
                 var model = _converter.ToModel(dto);
                 await _repository.AddAsync(model);
-                return new BaseResponseDto<bool> { Status = 201, Message = "Add successful", ResponseData = true };
+
+                return new BaseResponseDto<bool>
+                {
+                    Status = 201,
+                    Message = "Add successful",
+                    ResponseData = true
+                };
             }
             catch (Exception ex)
             {
-                return new BaseResponseDto<bool> { Status = 500, Message = ex.Message, ResponseData = false };
+                return new BaseResponseDto<bool>
+                {
+                    Status = 500,
+                    Message = ex.Message,
+                    ResponseData = false
+                };
             }
         }
 
@@ -75,13 +109,47 @@ namespace HopeBox.Core.Service
         {
             try
             {
-                var model = _converter.ToModel(dto);
-                await _repository.UpdateAsync(model);
-                return new BaseResponseDto<bool> { Status = 200, Message = "Update successful", ResponseData = true };
+                var entity = await _repository.GetOneAsync(filter: f => f.Id == dto.Id);
+                if (entity == null)
+                {
+                    return new BaseResponseDto<bool>
+                    {
+                        Status = 404,
+                        Message = "User not found",
+                        ResponseData = false
+                    };
+                }
+
+                var dtoProps = dto.GetType().GetProperties();
+                var entityProps = entity.GetType().GetProperties();
+
+                foreach (var dtoProp in dtoProps)
+                {
+                    var entityProp = entityProps.FirstOrDefault(p => p.Name == dtoProp.Name && p.CanWrite);
+                    if (entityProp != null)
+                    {
+                        var dtoValue = dtoProp.GetValue(dto);
+                        entityProp.SetValue(entity, dtoValue);
+                    }
+                }
+
+                await _repository.UpdateAsync(entity);
+
+                return new BaseResponseDto<bool>
+                {
+                    Status = 200,
+                    Message = "Update successful",
+                    ResponseData = true
+                };
             }
             catch (Exception ex)
             {
-                return new BaseResponseDto<bool> { Status = 500, Message = ex.Message, ResponseData = false };
+                return new BaseResponseDto<bool>
+                {
+                    Status = 500,
+                    Message = ex.Message,
+                    ResponseData = false
+                };
             }
         }
 
@@ -89,18 +157,57 @@ namespace HopeBox.Core.Service
         {
             try
             {
-                var entity = await _repository.GetOneAsyncUntracked<TModel>(filter: f => (f as BaseModel).Id == id);
+                var entity = await _repository.GetOneAsyncUntracked<TModel>(f => f.Id == id);
                 if (entity == null)
                 {
-                    return new BaseResponseDto<bool> { Status = 404, Message = "Entity not found.", ResponseData = false };
+                    return new BaseResponseDto<bool>
+                    {
+                        Status = 404,
+                        Message = "Entity not found.",
+                        ResponseData = false
+                    };
                 }
 
                 await _repository.DeleteAsync(entity);
-                return new BaseResponseDto<bool> { Status = 200, Message = "Delete successful", ResponseData = true };
+                return new BaseResponseDto<bool>
+                {
+                    Status = 200,
+                    Message = "Delete successful",
+                    ResponseData = true
+                };
             }
             catch (Exception ex)
             {
-                return new BaseResponseDto<bool> { Status = 500, Message = ex.Message, ResponseData = false };
+                return new BaseResponseDto<bool>
+                {
+                    Status = 500,
+                    Message = ex.Message,
+                    ResponseData = false
+                };
+            }
+        }
+
+        public async Task<BaseResponseDto<int>> GetCountAsync()
+        {
+            try
+            {
+                var count = await _repository.GetCount();
+
+                return new BaseResponseDto<int>
+                {
+                    Status = 200,
+                    Message = "Success",
+                    ResponseData = count
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponseDto<int>
+                {
+                    Status = 500,
+                    Message = ex.Message,
+                    ResponseData = 0
+                };
             }
         }
     }

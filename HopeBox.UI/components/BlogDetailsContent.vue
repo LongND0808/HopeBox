@@ -99,7 +99,7 @@
 
 <script>
 import axios from 'axios';
-import SidebarWrapper from '@/components/SidebarWrapper.vue';
+import SidebarWrapper from '@/components/SidebarWrapper';
 
 export default {
   components: { SidebarWrapper },

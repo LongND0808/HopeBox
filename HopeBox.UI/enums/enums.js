@@ -6,7 +6,7 @@ export const Gender = {
 };
 
 export const GenderLabel = {
-  [Gender.UNKNOWN]: 'Không xác định',
+  [Gender.UNKNOWN]: 'Không xác định giới tính',
   [Gender.MALE]: 'Nam',
   [Gender.FEMALE]: 'Nữ',
   [Gender.OTHER]: 'Khác'
@@ -15,14 +15,16 @@ export const GenderLabel = {
 export const UserStatus = {
   ACTIVE: 1,
   INACTIVE: 2,
-  SUSPENDED: 3,
-  BANNED: 4,
-  DELETED: 5
+  PENDING: 3,
+  SUSPENDED: 4,
+  BANNED: 5,
+  DELETED: 6
 };
 
 export const UserStatusLabel = {
   [UserStatus.ACTIVE]: 'Hoạt động',
   [UserStatus.INACTIVE]: 'Không hoạt động',
+  [UserStatus.PENDING]: 'Chưa kích hoạt',
   [UserStatus.SUSPENDED]: 'Tạm khóa',
   [UserStatus.BANNED]: 'Cấm',
   [UserStatus.DELETED]: 'Đã xóa'

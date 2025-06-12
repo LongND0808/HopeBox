@@ -4,7 +4,7 @@
             <div class="section-title">
                 <h5 class="subtitle line-theme-color mb-14">Đang Xác Minh</h5>
                 <h2 class="title text-white">Vui Lòng Chờ...</h2>
-                <img class="line-shape" src="/images/shape/line-t3.png" alt="loading" />
+                <img class="line-shape" src="/images/shape/line-t1.png" alt="loading" />
             </div>
         </div>
         <div v-else>
@@ -12,7 +12,7 @@
                 <h5 class="subtitle line-theme-color mb-14">Kết Quả Thanh Toán</h5>
                 <h2 class="title text-white">{{ statusMessage }}</h2>
                 <p class="text-white">{{ detailMessage }}</p>
-                <img class="line-shape" src="/images/shape/line-t3.png" alt="line" />
+                <img class="line-shape" src="/images/shape/line-t1.png" alt="line" />
             </div>
             <nuxt-link to="/" class="btn-theme btn-gradient btn-slide mt-4">
                 Quay về trang chủ

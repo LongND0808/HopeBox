@@ -55,7 +55,10 @@
                                     </nuxt-link>
                                 </h5>
                             </div>
-                            <nuxt-link to="/donation" class="btn-theme btn-border-gradient gray-border btn-size-md">
+                            <nuxt-link :to="{
+                                            path: '/donation',
+                                            query: { causeId: causes.id }
+                                        }" class="btn-theme btn-border-gradient gray-border btn-size-md">
                                 <span>
                                     Quyên góp
                                     <img class="icon icon-img" src="/images/icons/arrow-line-right-gradient.png"
@@ -136,9 +139,18 @@
                             desc: item.description,
                             name: creatorName,
                             infoList: [
-                                { infoTitle: "Mục tiêu", amount: `${item.targetAmount}₫` },
-                                { infoTitle: "Đóng góp", amount: `${item.currentAmount}₫` },
-                                { infoTitle: "Còn thiếu", amount: `${Math.max(item.targetAmount - item.currentAmount, 0)}₫` }
+                                {
+                                    infoTitle: "Mục tiêu",
+                                    amount: `${(item.targetAmount / 1_000_000).toFixed(1)}tr ₫`
+                                },
+                                {
+                                    infoTitle: "Đóng góp",
+                                    amount: `${(item.currentAmount / 1_000_000).toFixed(1)}tr ₫`
+                                },
+                                {
+                                    infoTitle: "Còn thiếu",
+                                    amount: `${(Math.max(item.targetAmount - item.currentAmount, 0) / 1_000_000).toFixed(1)}tr ₫`
+                                }
                             ]
                         };
                     }));

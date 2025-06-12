@@ -1,6 +1,11 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
+// nuxt.config.ts
 export default defineNuxtConfig({
-  css: ["bootstrap/dist/css/bootstrap.min.css", "@/assets/scss/style.scss"],
+  css: [
+    'bootstrap/dist/css/bootstrap.min.css',
+    '@/assets/scss/style.scss',
+    '@fortawesome/fontawesome-free/css/all.min.css'
+  ],
+
   vite: {
     css: {
       preprocessorOptions: {
@@ -10,9 +15,13 @@ export default defineNuxtConfig({
       },
     },
   },
-  plugins: ["@/plugins/aos"],
+
+  plugins: ['@/plugins/aos'],
+
   ssr: true,
+
   nitro: {
-    preset: 'cloudflare-pages'
+    preset: 'cloudflare-pages',
+    logLevel: 'silent',
   }
 })

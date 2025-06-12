@@ -135,13 +135,17 @@ using (var scope = app.Services.CreateScope())
 
     try
     {
-        dbContext.Database.Migrate();
-        logger.LogInformation("Database migration applied successfully.");
+        //dbContext.Database.EnsureDeleted();
+        //logger.LogWarning("Database deleted successfully.");
+
+        //dbContext.Database.Migrate();
+        //logger.LogInformation("Database migration applied successfully.");
     }
     catch (Exception ex)
     {
-        logger.LogError(ex, "An error occurred while applying migrations.");
+        logger.LogError(ex, "An error occurred while resetting and migrating the database.");
     }
 }
+
 
 app.Run();
