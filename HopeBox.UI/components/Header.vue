@@ -2,14 +2,14 @@
     <header class="header-area header-default" :class="{'is-sticky': isSticky}">
         <div class="container">
             <div class="row align-items-center justify-content-between">
-                <div class="col-5 col-sm-3 col-lg-2 pr-0">
+                <div class="col-3 col-sm-2 col-lg-1 pr-0">
                     <div class="header-logo-area">
                         <nuxt-link to="/">
                             <img class="logo-main" style="height: 75px;" src="/images/logo/logo.png" alt="Logo" />
                         </nuxt-link>
                     </div>
                 </div>
-                <div class="col-7 col-sm-9 col-lg-10">
+                <div class="col-9 col-sm-10 col-lg-11">
                     <div class="header-align">
                         <div class="header-navigation-area">
                             <Navigation />
