@@ -620,7 +620,7 @@
 .btn-link {
     color: $theme-color;
     font-weight: $font-weight-bold;
-    text-decoration: none;
+    text-decoration: none !important;
     @include transition(0.3s);
     &:hover {
         color: $black;

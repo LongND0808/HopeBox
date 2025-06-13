@@ -23,5 +23,6 @@ export default defineNuxtConfig({
   nitro: {
     preset: 'cloudflare',
     logLevel: 'silent',
+    compatibilityDate: '2025-06-13',
   },
 })

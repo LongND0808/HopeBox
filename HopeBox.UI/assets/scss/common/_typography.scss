@@ -34,7 +34,7 @@ h6,
 
 a {
     color: $theme-color;
-    text-decoration: none;
+    text-decoration: none !important;
     @include transition(0.3s);
 
     &:hover,
@@ -43,7 +43,7 @@ a {
         box-shadow: none;
         color: darken($theme-color, 15%);
         outline: none;
-        text-decoration: none;
+        text-decoration: none !important;
     }
 
     img {
