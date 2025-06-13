@@ -1,4 +1,4 @@
-name = "hopeboxs"
+name = "hopebox"
 main = ".output/server/index.mjs"
 compatibility_date = "2024-06-01"
 workers_dev = true

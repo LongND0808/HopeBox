@@ -116,7 +116,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(
             "http://localhost:3000",
-            "https://hopebox.pages.dev")
+            "https://hopebox.pages.dev",
+            "https://hopebox.long2003-2014.workers.dev")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
