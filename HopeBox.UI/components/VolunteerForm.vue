@@ -92,6 +92,7 @@
 
 <script>
 import axios from 'axios';
+import { BASE_URL } from '@/utils/constants';
 
 export default {
     data() {
@@ -114,7 +115,7 @@ export default {
         async fetchCauseData() {
             try {
                 this.loading = true;
-                const response = await axios.get('https://hopebox-api.roz.io.vn/api/Cause/get-all');
+                const response = await axios.get(`${BASE_URL}/api/Cause/get-all`);
                 this.causedata = response.data.responseData || [];
 
                 await this.checkVolunteerStatus();
@@ -153,7 +154,7 @@ export default {
                 };
 
                 const response = await axios.post(
-                    'https://hopebox-api.roz.io.vn/api/Volunteer/register-volunteer',
+                    `${BASE_URL}/api/Volunteer/register-volunteer`,
                     requestData,
                     {
                         withCredentials: true,

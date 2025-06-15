@@ -61,6 +61,7 @@
 
 <script>
 import axios from 'axios';
+import { BASE_URL } from '@/utils/constants';
 
 export default {
   data() {
@@ -70,10 +71,10 @@ export default {
   },
   mounted() {
     axios
-      .get('https://hopebox-api.roz.io.vn/api/Cause/get-cause-highest-target')
+      .get(`${BASE_URL}/api/Cause/get-cause-highest-target`)
       .then(async (response) => {
         const cause = response.data.responseData;
-        const list = Array.isArray(cause) ? cause : [cause]; // đảm bảo là mảng
+        const list = Array.isArray(cause) ? cause : [cause];
 
         const causesWithUser = await Promise.all(
           list.map(async (item) => {

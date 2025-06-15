@@ -77,6 +77,7 @@
 import axios from 'axios';
 import { showSuccessAlertDark, showErrorAlertDark, showConfirmDialogDark } from '@/utils/alertHelper';
 import { UserStatus, UserStatusLabel, Gender, GenderLabel } from '@/enums/enums';
+import { BASE_URL } from '@/utils/constants';
 
 export default {
   data() {
@@ -105,7 +106,7 @@ export default {
   methods: {
     async fetchUsers() {
       try {
-        const res = await axios.get('https://hopebox-api.roz.io.vn/api/User/get-all', {
+        const res = await axios.get(`${BASE_URL}/api/User/get-all`, {
           withCredentials: true
         });
         if (res.data.status === 200) {
@@ -118,7 +119,7 @@ export default {
     },
     async fetchOrganizations() {
       try {
-        const res = await axios.get('https://hopebox-api.roz.io.vn/api/Organization/get-all', {
+        const res = await axios.get(`${BASE_URL}/api/Organization/get-all`, {
           withCredentials: true
         });
         if (res.data.status === 200) {
@@ -180,8 +181,8 @@ export default {
         };
 
         const url = this.editingUser
-          ? 'https://hopebox-api.roz.io.vn/api/User/update'
-          : 'https://hopebox-api.roz.io.vn/api/User/add';
+          ? `${BASE_URL}/api/User/update`
+          : `${BASE_URL}/api/User/add`;
 
         const res = await axios.post(url, payload, {
           withCredentials: true
@@ -209,7 +210,7 @@ export default {
       if (result.isConfirmed) {
         try {
           const res = await axios.post(
-            'https://hopebox-api.roz.io.vn/api/User/delete',
+            `${BASE_URL}/api/User/delete`,
             id,
             {
               headers: { 'Content-Type': 'application/json' },

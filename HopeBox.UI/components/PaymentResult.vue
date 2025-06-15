@@ -29,6 +29,7 @@
 <script>
 import axios from 'axios';
 import { showSuccessAlert, showErrorAlert } from '@/utils/alertHelper.js';
+import { BASE_URL } from '@/utils/constants';
 
 export default {
     data() {
@@ -42,7 +43,7 @@ export default {
         try {
             const query = this.$route.query;
 
-            const response = await axios.post(`https://hopebox-api.roz.io.vn/api/Donation/vnpay-return`, {
+            const response = await axios.post(`${BASE_URL}/api/Donation/vnpay-return`, {
                 vnp_TxnRef: query.vnp_TxnRef,
                 vnp_ResponseCode: query.vnp_ResponseCode,
                 vnp_TransactionNo: query.vnp_TransactionNo

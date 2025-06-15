@@ -51,6 +51,7 @@
 <script>
 import axios from 'axios'
 import Navigation from '@/components/Navigation'
+import { BASE_URL } from '@/utils/constants';
 
 export default {
     components: { Navigation },
@@ -80,18 +81,18 @@ export default {
 
         async checkLoginStatus() {
             try {
-                await axios.get('https://hopebox-api.roz.io.vn/api/Authentication/me', {
+                await axios.get(`${BASE_URL}/api/Authentication/me`, {
                     withCredentials: true
                 })
                 this.isLoggedIn = true
             } catch (err) {
                 if (err.response && err.response.status === 401) {
                     try {
-                        await axios.post('https://hopebox-api.roz.io.vn/api/Authentication/refresh-token', {}, {
+                        await axios.post(`${BASE_URL}/api/Authentication/refresh-token`, {}, {
                             withCredentials: true
                         })
 
-                        const retry = await axios.get('https://hopebox-api.roz.io.vn/api/Authentication/me', {
+                        const retry = await axios.get(`${BASE_URL}/api/Authentication/me`, {
                             withCredentials: true
                         })
 
@@ -108,7 +109,7 @@ export default {
 
         async handleLogout() {
             try {
-                await axios.post('https://hopebox-api.roz.io.vn/api/Authentication/logout', {}, {
+                await axios.post(`${BASE_URL}/api/Authentication/logout`, {}, {
                     withCredentials: true
                 })
             } catch (error) {

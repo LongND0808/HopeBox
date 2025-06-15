@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -16,11 +15,11 @@ namespace HopeBox.Infrastructure.Migrations
                 name: "AspNetRoles",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Code = table.Column<string>(type: "text", nullable: true),
-                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    NormalizedName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Code = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -31,16 +30,16 @@ namespace HopeBox.Infrastructure.Migrations
                 name: "Organizations",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: true),
-                    Email = table.Column<string>(type: "text", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
-                    Address = table.Column<string>(type: "text", nullable: true),
-                    City = table.Column<string>(type: "text", nullable: true),
-                    Description = table.Column<string>(type: "text", nullable: true),
-                    Website = table.Column<string>(type: "text", nullable: true),
-                    Verified = table.Column<bool>(type: "boolean", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    City = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Website = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Verified = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -51,10 +50,10 @@ namespace HopeBox.Infrastructure.Migrations
                 name: "ReliefItems",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    ItemName = table.Column<string>(type: "text", nullable: false),
-                    Unit = table.Column<int>(type: "integer", nullable: false),
-                    UnitPrice = table.Column<decimal>(type: "numeric", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ItemName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Unit = table.Column<int>(type: "int", nullable: false),
+                    UnitPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -65,13 +64,13 @@ namespace HopeBox.Infrastructure.Migrations
                 name: "Sponsors",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    LogoUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
-                    WebsiteUrl = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    LogoUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    WebsiteUrl = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -82,13 +81,13 @@ namespace HopeBox.Infrastructure.Migrations
                 name: "Testimonials",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Designation = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    Description = table.Column<string>(type: "character varying(100000)", maxLength: 100000, nullable: false),
-                    ImageUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Designation = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", maxLength: 100000, nullable: false),
+                    ImageUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -99,11 +98,11 @@ namespace HopeBox.Infrastructure.Migrations
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    RoleId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ClaimType = table.Column<string>(type: "text", nullable: true),
-                    ClaimValue = table.Column<string>(type: "text", nullable: true)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -120,29 +119,29 @@ namespace HopeBox.Infrastructure.Migrations
                 name: "AspNetUsers",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Point = table.Column<int>(type: "integer", nullable: false),
-                    FullName = table.Column<string>(type: "text", nullable: true),
-                    Address = table.Column<string>(type: "text", nullable: true),
-                    DateOfBirth = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    Gender = table.Column<int>(type: "integer", nullable: false),
-                    AvatarUrl = table.Column<string>(type: "text", nullable: true),
-                    UserStatus = table.Column<int>(type: "integer", nullable: false),
-                    OrganizationId = table.Column<Guid>(type: "uuid", nullable: true),
-                    UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(type: "boolean", nullable: false),
-                    PasswordHash = table.Column<string>(type: "text", nullable: true),
-                    SecurityStamp = table.Column<string>(type: "text", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "boolean", nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(type: "boolean", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    LockoutEnabled = table.Column<bool>(type: "boolean", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Point = table.Column<int>(type: "int", nullable: false),
+                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Gender = table.Column<int>(type: "int", nullable: false),
+                    AvatarUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserStatus = table.Column<int>(type: "int", nullable: false),
+                    OrganizationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -159,11 +158,11 @@ namespace HopeBox.Infrastructure.Migrations
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ClaimType = table.Column<string>(type: "text", nullable: true),
-                    ClaimValue = table.Column<string>(type: "text", nullable: true)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -180,10 +179,10 @@ namespace HopeBox.Infrastructure.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "text", nullable: false),
-                    ProviderKey = table.Column<string>(type: "text", nullable: false),
-                    ProviderDisplayName = table.Column<string>(type: "text", nullable: true),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false)
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -200,8 +199,8 @@ namespace HopeBox.Infrastructure.Migrations
                 name: "AspNetUserRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    RoleId = table.Column<Guid>(type: "uuid", nullable: false)
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -224,10 +223,10 @@ namespace HopeBox.Infrastructure.Migrations
                 name: "AspNetUserTokens",
                 columns: table => new
                 {
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    LoginProvider = table.Column<string>(type: "text", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Value = table.Column<string>(type: "text", nullable: true)
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -244,15 +243,15 @@ namespace HopeBox.Infrastructure.Migrations
                 name: "Blogs",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Title = table.Column<string>(type: "text", nullable: false),
-                    Content = table.Column<string>(type: "character varying(5000)", maxLength: 5000, nullable: false),
-                    Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
-                    ImageUrl = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
-                    IsPublished = table.Column<bool>(type: "boolean", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", maxLength: 5000, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    ImageUrl = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsPublished = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -269,23 +268,23 @@ namespace HopeBox.Infrastructure.Migrations
                 name: "Causes",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                    Detail = table.Column<string>(type: "character varying(5000)", maxLength: 5000, nullable: false),
-                    HeroImage = table.Column<string>(type: "text", nullable: true),
-                    Challenge = table.Column<string>(type: "character varying(5000)", maxLength: 5000, nullable: false),
-                    ChallengeImage = table.Column<string>(type: "text", nullable: true),
-                    Summary = table.Column<string>(type: "character varying(5000)", maxLength: 5000, nullable: false),
-                    SummaryImage = table.Column<string>(type: "text", nullable: true),
-                    Type = table.Column<int>(type: "integer", nullable: false),
-                    StartDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    TargetAmount = table.Column<decimal>(type: "numeric", nullable: false),
-                    CurrentAmount = table.Column<decimal>(type: "numeric", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
-                    OrganizationId = table.Column<Guid>(type: "uuid", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    Detail = table.Column<string>(type: "nvarchar(max)", maxLength: 5000, nullable: false),
+                    HeroImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Challenge = table.Column<string>(type: "nvarchar(max)", maxLength: 5000, nullable: false),
+                    ChallengeImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Summary = table.Column<string>(type: "nvarchar(max)", maxLength: 5000, nullable: false),
+                    SummaryImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TargetAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CurrentAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OrganizationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -308,12 +307,12 @@ namespace HopeBox.Infrastructure.Migrations
                 name: "ConfirmEmails",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    RequestedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    ExpiresAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    ConfirmCode = table.Column<string>(type: "character varying(8)", maxLength: 8, nullable: false),
-                    IsConfirmed = table.Column<bool>(type: "boolean", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RequestedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ConfirmCode = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
+                    IsConfirmed = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -330,22 +329,22 @@ namespace HopeBox.Infrastructure.Migrations
                 name: "Events",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    Description = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false),
-                    Detail = table.Column<string>(type: "character varying(10000)", maxLength: 10000, nullable: false),
-                    BannerImage = table.Column<string>(type: "text", nullable: true),
-                    StartDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    Location = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
-                    Latitude = table.Column<double>(type: "numeric(10,8)", nullable: true),
-                    Longitude = table.Column<double>(type: "numeric(11,8)", nullable: true),
-                    FormattedAddress = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    TargetAmount = table.Column<decimal>(type: "numeric", nullable: false),
-                    CurrentAmount = table.Column<decimal>(type: "numeric", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
-                    OrganizationId = table.Column<Guid>(type: "uuid", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
+                    Detail = table.Column<string>(type: "nvarchar(max)", maxLength: 10000, nullable: false),
+                    BannerImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Location = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    Latitude = table.Column<decimal>(type: "decimal(10,8)", nullable: true),
+                    Longitude = table.Column<decimal>(type: "decimal(11,8)", nullable: true),
+                    FormattedAddress = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    TargetAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CurrentAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OrganizationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -368,12 +367,12 @@ namespace HopeBox.Infrastructure.Migrations
                 name: "Notifications",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Title = table.Column<string>(type: "text", nullable: true),
-                    Message = table.Column<string>(type: "text", nullable: true),
-                    IsRead = table.Column<bool>(type: "boolean", nullable: false),
-                    SentAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsRead = table.Column<bool>(type: "bit", nullable: false),
+                    SentAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -390,11 +389,11 @@ namespace HopeBox.Infrastructure.Migrations
                 name: "RefreshTokens",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Token = table.Column<string>(type: "text", nullable: true),
-                    CreateTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    ExpiredTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Token = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExpiredTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -411,15 +410,15 @@ namespace HopeBox.Infrastructure.Migrations
                 name: "Donations",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CauseId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Amount = table.Column<decimal>(type: "numeric", nullable: false),
-                    DonationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    PaymentMethod = table.Column<int>(type: "integer", nullable: false),
-                    TransactionId = table.Column<string>(type: "text", nullable: true),
-                    TradingCode = table.Column<string>(type: "text", nullable: true),
-                    Status = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CauseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    DonationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PaymentMethod = table.Column<int>(type: "int", nullable: false),
+                    TransactionId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TradingCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -442,12 +441,12 @@ namespace HopeBox.Infrastructure.Migrations
                 name: "Feedbacks",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CauseId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Rating = table.Column<int>(type: "integer", nullable: false),
-                    Comment = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CauseId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Rating = table.Column<int>(type: "int", nullable: false),
+                    Comment = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -470,10 +469,10 @@ namespace HopeBox.Infrastructure.Migrations
                 name: "ReliefPackages",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    CauseId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: true)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CauseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -490,11 +489,11 @@ namespace HopeBox.Infrastructure.Migrations
                 name: "Volunteers",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CauseId = table.Column<Guid>(type: "uuid", nullable: false),
-                    JoinDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    Status = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CauseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    JoinDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -517,11 +516,11 @@ namespace HopeBox.Infrastructure.Migrations
                 name: "Medias",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Url = table.Column<string>(type: "text", nullable: true),
-                    Type = table.Column<int>(type: "integer", nullable: false),
-                    CauseId = table.Column<Guid>(type: "uuid", nullable: true),
-                    EventId = table.Column<Guid>(type: "uuid", nullable: true)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Url = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    CauseId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    EventId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -544,10 +543,10 @@ namespace HopeBox.Infrastructure.Migrations
                 name: "DonationReliefPackages",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    DonationId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ReliefPackageId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Quantity = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DonationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ReliefPackageId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -570,10 +569,10 @@ namespace HopeBox.Infrastructure.Migrations
                 name: "ReliefPackageItems",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    ReliefPackageId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ReliefItemId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Quantity = table.Column<double>(type: "double precision", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ReliefPackageId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ReliefItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Quantity = table.Column<double>(type: "float", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -601,7 +600,8 @@ namespace HopeBox.Infrastructure.Migrations
                 name: "RoleNameIndex",
                 table: "AspNetRoles",
                 column: "NormalizedName",
-                unique: true);
+                unique: true,
+                filter: "[NormalizedName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserClaims_UserId",
@@ -632,7 +632,8 @@ namespace HopeBox.Infrastructure.Migrations
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
-                unique: true);
+                unique: true,
+                filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Blogs_CreatedBy",

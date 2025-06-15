@@ -40,7 +40,9 @@
 
 <script>
   import axios from 'axios'
-  import { showSuccessAlert, showErrorAlert } from '@/utils/alertHelper'
+  import { showSuccessAlert, showErrorAlert } from '@/utils/alertHelper';
+  import { BASE_URL } from '@/utils/constants';
+
 
   export default {
     data() {
@@ -60,8 +62,8 @@
         try {
           const endpoint =
             this.activeTab === 'admin'
-              ? 'https://hopebox-api.roz.io.vn/api/Authentication/admin-login'
-              : 'https://hopebox-api.roz.io.vn/api/Authentication/login'
+              ? `${BASE_URL}/api/Authentication/admin-login`
+              : `${BASE_URL}/api/Authentication/login`
 
           const response = await axios.post(
             endpoint,

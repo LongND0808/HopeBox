@@ -41,7 +41,9 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from 'axios';
+import { BASE_URL } from '@/utils/constants';
+
 
 export default {
   data() {
@@ -52,7 +54,7 @@ export default {
   methods: {
     async logout() {
       try {
-        await axios.post('https://hopebox-api.roz.io.vn/api/Authentication/logout', {}, {
+        await axios.post(`${BASE_URL}/api/Authentication/logout`, {}, {
           withCredentials: true
         })
         this.$router.push('/')

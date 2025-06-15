@@ -34,6 +34,7 @@
 <script>
     import axios from 'axios'
     import { showSuccessAlert, showErrorAlert } from '@/utils/alertHelper.js'
+    import { BASE_URL } from '@/utils/constants'
 
     export default {
         data() {
@@ -52,7 +53,7 @@
             async handleActivate() {
                 try {
                     const response = await axios.post(
-                        'https://hopebox-api.roz.io.vn/api/Authentication/confirm-email',
+                        `${BASE_URL}/api/Authentication/confirm-email`,
                         this.form
                     )
 
@@ -74,7 +75,7 @@
 
                 try {
                     const response = await axios.post(
-                        'https://hopebox-api.roz.io.vn/api/Authentication/send-confirmation-code',
+                        `${BASE_URL}/api/Authentication/send-confirmation-code`,
                         { email: this.form.confirmEmail }
                     )
 

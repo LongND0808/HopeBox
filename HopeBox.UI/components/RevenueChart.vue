@@ -26,6 +26,8 @@
 <script>
   import axios from 'axios'
   import { Chart, registerables } from 'chart.js'
+  import { BASE_URL } from '@/utils/constants';
+
   Chart.register(...registerables)
 
   export default {
@@ -46,7 +48,7 @@
     methods: {
       async fetchRevenueData() {
         try {
-          const res = await axios.get('https://hopebox-api.roz.io.vn/api/Cause/get-cause-revenue', {
+          const res = await axios.get(`${BASE_URL}/api/Cause/get-cause-revenue`, {
             withCredentials: true
           })
 
@@ -56,7 +58,7 @@
 
             data.forEach(entry => {
               const year = entry.year
-              const revenue = entry.monthlyRevenue.map(val => val / 1_000_000) // triệu VNĐ
+              const revenue = entry.monthlyRevenue.map(val => val / 1_000_000)
               this.dataByYear[year] = revenue
               overallTotal += revenue.reduce((a, b) => a + b, 0)
             })

@@ -76,6 +76,7 @@
 <script>
 import SidebarWrapper from '@/components/SidebarWrapper';
 import axios from 'axios';
+import { BASE_URL } from '@/utils/constants';
 
 export default {
   components: {
@@ -100,7 +101,7 @@ export default {
   },
   async mounted() {
     try {
-      const response = await axios.get('https://hopebox-api.roz.io.vn/api/Blog/get-all');
+      const response = await axios.get(`${BASE_URL}/api/Blog/get-all`);
       if (response.data && response.data.status === 200) {
         const blogsRaw = response.data.responseData;
 
@@ -108,7 +109,7 @@ export default {
           blogsRaw.map(async (blog) => {
             let authorName = 'Ẩn danh';
             try {
-              const userRes = await axios.get(`https://hopebox-api.roz.io.vn/api/User/get-by-id?id=${blog.createdBy}`);
+              const userRes = await axios.get(`${BASE_URL}/api/User/get-by-id?id=${blog.createdBy}`);
               if (userRes.data && userRes.data.responseData) {
                 authorName = userRes.data.responseData.fullName || authorName;
               }

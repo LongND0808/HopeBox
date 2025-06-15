@@ -90,6 +90,7 @@
 <script>
     import axios from 'axios';
     import { CausesType, CausesTypeLabel } from '@/enums/enums.js';
+    import { BASE_URL } from '@/utils/constants';
 
     export default {
         props: {
@@ -113,7 +114,7 @@
         methods: {
             async fetchCauses() {
                 try {
-                    const response = await axios.post('https://hopebox-api.roz.io.vn/api/Cause/get-cause-by-filter', {
+                    const response = await axios.post(`${BASE_URL}/api/Cause/get-cause-by-filter`, {
                         name: this.searchName || null,
                         causeType: this.searchType || null,
                         pageIndex: this.currentPage,
@@ -126,7 +127,7 @@
                     const causesWithInfo = await Promise.all(responseData.pagedData.map(async (item) => {
                         let creatorName = 'Ẩn danh';
                         try {
-                            const userRes = await axios.get(`https://hopebox-api.roz.io.vn/api/User/get-by-id?id=${item.createdBy}`);
+                            const userRes = await axios.get(`${BASE_URL}/api/User/get-by-id?id=${item.createdBy}`);
                             creatorName = userRes.data.responseData.fullName;
                         } catch (err) {
                             console.warn('Không lấy được tên người tạo:', err);

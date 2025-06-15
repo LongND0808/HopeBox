@@ -64,7 +64,8 @@
 <script>
     import { PaymentMethod, PaymentMethodLabel } from '@/enums/enums.js';
     import axios from 'axios';
-    import { showSuccessAlert, showErrorAlert } from '@/utils/alertHelper.js'; // ✅ Import helper
+    import { showSuccessAlert, showErrorAlert } from '@/utils/alertHelper.js';
+import { BASE_URL } from '@/utils/constants';
 
     export default {
         props: {
@@ -108,7 +109,7 @@
                         message: this.donation.message
                     };
 
-                    const res = await axios.post('https://hopebox-api.roz.io.vn/api/Donation/create-donation', payload, {
+                    const res = await axios.post(`${BASE_URL}/api/Donation/create-donation`, payload, {
                         withCredentials: true
                     });
 
@@ -119,7 +120,7 @@
                         throw new Error("Không lấy được ID donation từ server.");
                     }
 
-                    const paymentRes = await axios.get(`https://hopebox-api.roz.io.vn/api/Donation/create-payment-url?donationId=${donationId}`);
+                    const paymentRes = await axios.get(`${BASE_URL}/api/Donation/create-payment-url?donationId=${donationId}`);
                     const paymentUrl = paymentRes.data?.responseData;
 
                     if (!paymentUrl) {

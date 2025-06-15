@@ -34,8 +34,9 @@
 
 
 <script>
-  import axios from 'axios'
-  import { Gender, GenderLabel } from '@/enums/enums.js'
+  import axios from 'axios';
+  import { Gender, GenderLabel } from '@/enums/enums.js';
+  import { BASE_URL } from '@/utils/constants';
 
   export default {
     data() {
@@ -58,7 +59,7 @@
 
     async mounted() {
       try {
-        const res = await axios.get('https://hopebox-api.roz.io.vn/api/Authentication/me', {
+        const res = await axios.get(`${BASE_URL}/api/Authentication/me`, {
           withCredentials: true,
         })
         this.user = res.data.responseData

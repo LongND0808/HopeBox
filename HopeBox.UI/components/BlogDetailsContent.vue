@@ -100,6 +100,8 @@
 <script>
 import axios from 'axios';
 import SidebarWrapper from '@/components/SidebarWrapper';
+import { BASE_URL } from '@/utils/constants'
+
 
 export default {
   components: { SidebarWrapper },
@@ -122,12 +124,11 @@ export default {
         return;
       }
       try {
-        const response = await axios.get(`https://hopebox-api.roz.io.vn/api/Blog/get-by-id?id=${id}`);
+        const response = await axios.get(`${BASE_URL}/api/Blog/get-by-id?id=${id}`);
         if (response.data && response.data.status === 200) {
           const blog = response.data.responseData;
-          // Lấy tên tác giả nếu muốn
           try {
-            const authorRes = await axios.get(`https://hopebox-api.roz.io.vn/api/User/get-by-id?id=${blog.createdBy}`);
+            const authorRes = await axios.get(`${BASE_URL}/api/User/get-by-id?id=${blog.createdBy}`);
             if (authorRes.data && authorRes.data.responseData) {
               blog.authorName = authorRes.data.responseData.fullName || 'Ẩn danh';
             } else {
@@ -136,10 +137,6 @@ export default {
           } catch {
             blog.authorName = 'Ẩn danh';
           }
-          // Nếu muốn có các trường như blockquote, extraImages, tags... thì bổ sung ở đây từ API hoặc gán mặc định
-          // blog.blockquote = blog.blockquote || 'Nội dung blockquote mặc định...'
-          // blog.extraImages = blog.extraImages || ['/images/blog/s1.jpg', ...]
-          // blog.tags = blog.tags || ['Donation', ...]
           this.blog = blog;
         } else {
           this.blog = null;

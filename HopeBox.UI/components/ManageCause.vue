@@ -92,6 +92,7 @@
 import axios from 'axios';
 import { showSuccessAlertDark, showErrorAlertDark, showConfirmDialogDark } from '@/utils/alertHelper';
 import { CausesStatus, CausesStatusLabel, CausesType, CausesTypeOptions, CausesTypeLabel } from '@/enums/enums';
+import { BASE_URL } from '@/utils/constants';
 
 export default {
   data() {
@@ -133,7 +134,7 @@ export default {
   methods: {
     async fetchCauses() {
       try {
-        const res = await axios.get('https://hopebox-api.roz.io.vn/api/Cause/get-all', {
+        const res = await axios.get(`${BASE_URL}/api/Cause/get-all`, {
           withCredentials: true
         });
         if (res.data.status === 200) {
@@ -146,7 +147,7 @@ export default {
     },
     async fetchUsers() {
       try {
-        const res = await axios.get('https://hopebox-api.roz.io.vn/api/User/get-all', {
+        const res = await axios.get(`${BASE_URL}/api/User/get-all`, {
           withCredentials: true
         });
         if (res.data.status === 200) {
@@ -159,7 +160,7 @@ export default {
     },
     async fetchOrganizations() {
       try {
-        const res = await axios.get('https://hopebox-api.roz.io.vn/api/Organization/get-all', {
+        const res = await axios.get(`${BASE_URL}/api/Organization/get-all`, {
           withCredentials: true
         });
         if (res.data.status === 200) {
@@ -231,7 +232,6 @@ export default {
       this.showModal = true;
     },
     onOrganizationChange() {
-      // Reset createdBy when organization changes
       this.form.createdBy = '';
     },
     async saveCause() {
@@ -250,8 +250,8 @@ export default {
         };
 
         const url = this.editingCause
-          ? 'https://hopebox-api.roz.io.vn/api/Cause/update'
-          : 'https://hopebox-api.roz.io.vn/api/Cause/add';
+          ? `${BASE_URL}/api/Cause/update`
+          : `${BASE_URL}/api/Cause/add`;
 
         const res = await axios.post(url, payload, {
           withCredentials: true
@@ -279,7 +279,7 @@ export default {
       if (result.isConfirmed) {
         try {
           const res = await axios.post(
-            'https://hopebox-api.roz.io.vn/api/Cause/delete',
+            `${BASE_URL}/api/Cause/delete`,
             id,
             {
               headers: { 'Content-Type': 'application/json' },

@@ -63,6 +63,7 @@
   import axios from 'axios'
   import { GenderLabel } from '@/enums/enums.js'
   import { showSuccessAlert, showErrorAlert } from '@/utils/alertHelper.js'
+import { BASE_URL } from '@/utils/constants';
 
   export default {
     data() {
@@ -95,7 +96,7 @@
           const { confirmPassword, ...formData } = this.form
 
           const response = await axios.post(
-            'https://hopebox-api.roz.io.vn/api/Authentication/register',
+            `${BASE_URL}/api/Authentication/register`,
             formData
           )
 

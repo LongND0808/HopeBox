@@ -60,6 +60,7 @@
 
 <script>
     import axios from 'axios';
+    import { BASE_URL } from '@/utils/constants';
 
     export default {
         data() {
@@ -68,14 +69,14 @@
             };
         },
         mounted() {
-            axios.get('https://hopebox-api.roz.io.vn/api/Cause/get-cause-one')
+            axios.get(`${BASE_URL}/api/Cause/get-cause-one`)
                 .then(async response => {
                     const causes = response.data.responseData;
 
                     const causesWithUser = await Promise.all(causes.map(async (item) => {
                         let userName = 'Ẩn danh';
                         try {
-                            const userRes = await axios.get(`https://hopebox-api.roz.io.vn/api/User/get-by-id?id=${item.createdBy}`);
+                            const userRes = await axios.get(`${BASE_URL}/api/User/get-by-id?id=${item.createdBy}`);
                             userName = userRes.data.responseData.fullName;
                         } catch (err) {
                             console.warn('Lỗi lấy tên người dùng:', err);

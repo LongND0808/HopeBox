@@ -27,7 +27,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<HopeBoxDataContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("HopeBox")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("HopeBox")));
 
 builder.Services.AddSingleton<IConfig, Config>();
 builder.Services.AddScoped<IHopeBoxDataContext, HopeBoxDataContext>();
