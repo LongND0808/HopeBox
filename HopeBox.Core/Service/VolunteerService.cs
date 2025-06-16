@@ -31,8 +31,6 @@ namespace HopeBox.Core.Service
         {
             try
             {
-                string userid = _tokenservice.GetCurrentUserId() ?? "";
-
                 if (request.CauseId == Guid.Empty)
                 {
                     return new BaseResponseDto<VolunteerDto>
@@ -43,7 +41,7 @@ namespace HopeBox.Core.Service
                     };
                 }
                 var existingVolunteer = await _repository.GetOneAsync(v =>
-                    v.UserId == Guid.Parse(userid) && v.CauseId == request.CauseId);
+                    v.UserId == request.UserId && v.CauseId == request.CauseId);
 
                 if (existingVolunteer != null)
                 {
@@ -56,7 +54,7 @@ namespace HopeBox.Core.Service
                 }
                 var volunteer = new Volunteer
                 {
-                    UserId = Guid.Parse(userid),
+                    UserId = request.UserId,
                     CauseId = request.CauseId,
                     Status = VolunteerStatus.Pending,
                     JoinDate = DateTime.Now

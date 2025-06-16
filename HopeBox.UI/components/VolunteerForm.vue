@@ -371,21 +371,40 @@ export default {
 
         async registerVolunteer(cause) {
             try {
+                // Xác nhận từ người dùng
                 const confirmResult = await showConfirmDialog(
                     'Xác nhận đăng ký',
                     `Bạn có chắc chắn muốn đăng ký làm tình nguyện viên cho chiến dịch "${cause.title}"?`,
                     'Đăng ký',
                     'Hủy'
                 );
-
-                if (!confirmResult.isConfirmed) {
-                    return;
-                }
+                if (!confirmResult.isConfirmed) return;
 
                 this.isProcessing = true;
                 this.selectedCauseId = cause.id;
 
+                let userId = this.userInfo?.id;
+                if (!userId) {
+                    try {
+                        const meRes = await axios.get('https://localhost:7213/api/Authentication/me', {
+                            withCredentials: true
+                        });
+                        if (meRes.data.status === 200) {
+                            userId = meRes.data.responseData.id;
+                            this.userInfo = meRes.data.responseData; // cache lại luôn
+                        } else {
+                            await showErrorAlert('Lỗi xác thực', 'Không thể lấy thông tin người dùng, vui lòng đăng nhập lại.');
+                            return;
+                        }
+                    } catch (e) {
+                        await showErrorAlert('Lỗi xác thực', 'Không thể lấy thông tin người dùng, vui lòng đăng nhập.');
+                        this.$router.push('/login');
+                        return;
+                    }
+                }
+
                 const requestData = {
+                    userId: userId,
                     causeId: cause.id
                 };
 
@@ -407,7 +426,7 @@ export default {
 
                     await showSuccessAlert(
                         'Đăng ký thành công!',
-                        response.data.message || 'Bạn đã đăng ký làm tình nguyện viên thành công. Chúng tôi sẽ liên hệ với bạn sớm nhất.'
+                        response.data.message || 'Bạn đã đăng ký làm tình nguyện viên thành công.'
                     );
                 } else {
                     await showErrorAlert(
