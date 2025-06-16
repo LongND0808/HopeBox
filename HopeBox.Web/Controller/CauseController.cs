@@ -1,10 +1,11 @@
-using HopeBox.Domain.Models;
-using Microsoft.AspNetCore.Mvc;
-using HopeBox.Domain.Dtos;
+using Duende.IdentityModel;
 using HopeBox.Core.IService;
-using HopeBox.Domain.ResponseDto;
+using HopeBox.Domain.Dtos;
+using HopeBox.Domain.Models;
 using HopeBox.Domain.RequestDto;
+using HopeBox.Domain.ResponseDto;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HopeBox.Web.Controller
 {
@@ -45,6 +46,36 @@ namespace HopeBox.Web.Controller
         public async Task<BaseResponseDto<IEnumerable<CauseRevenueResponseDto>>> GetCauseRevenue()
         {
             var result = await _causeService.GetCauseRevenueAsync();
+            return result;
+        }
+
+        [HttpPost("get-cause-by-filter-with-user-status")]
+        [Authorize]
+        public async Task<BaseResponseDto<BasePagingResponseDto<CauseWithVolunteerStatusDto>>> GetCauseByFilterWithUserStatus(
+    [FromBody] CauseFilterRequestDto request)
+        {
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Id);
+
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+            {
+                return new BaseResponseDto<BasePagingResponseDto<CauseWithVolunteerStatusDto>>
+                {
+                    Status = 401,
+                    Message = "Unauthorized",
+                    ResponseData = null
+                };
+            }
+
+            var requestWithUser = new CauseFilterWithUserRequestDto
+            {
+                Name = request.Name,
+                CauseType = request.CauseType,
+                PageIndex = request.PageIndex,
+                PageSize = request.PageSize,
+                UserId = userId
+            };
+
+            var result = await _causeService.GetCauseByFilterWithUserStatus(requestWithUser);
             return result;
         }
 
