@@ -24,6 +24,13 @@ namespace HopeBox.Web.Controller
             return StatusCode(result.Status, result);
         }
 
+        [HttpGet("get-upcoming-events")]
+        public virtual async Task<ActionResult<BaseResponseDto<List<EventDto>>>> GetUpcomingEvents()
+        {
+            var result = await _eventService.GetUpcomingEventsAsync();
+            return StatusCode(result.Status, result);
+        }
+
         [HttpGet("get-event-by-filter")]
         public async Task<IActionResult> GetEventsByFilter([FromQuery] EventFilterRequestDto request)
         {

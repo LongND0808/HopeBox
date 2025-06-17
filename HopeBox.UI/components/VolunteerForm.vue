@@ -371,7 +371,6 @@ export default {
 
         async registerVolunteer(cause) {
             try {
-                // Xác nhận từ người dùng
                 const confirmResult = await showConfirmDialog(
                     'Xác nhận đăng ký',
                     `Bạn có chắc chắn muốn đăng ký làm tình nguyện viên cho chiến dịch "${cause.title}"?`,

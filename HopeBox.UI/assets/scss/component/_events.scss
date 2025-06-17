@@ -205,35 +205,71 @@
 .events-list {
   .event-item {
     display: flex;
-    @media #{$xxs-device} {
-      display: block;
-    }
+    align-items: stretch;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    overflow: hidden;
+    margin-bottom: 24px;
+    min-height: 140px; // hoặc height: 140px nếu muốn cố định tuyệt đối
+  
     .thumb {
-      img {
-        min-width: 240px;
-        @media #{$xs-device} {
-          height: 100%;
-        }
+      width: 200px; // hoặc 160px
+      min-width: 150px;
+      height: 100%;
+      aspect-ratio: 4/3; // Đảm bảo luôn tỷ lệ ngang đẹp (có thể bỏ nếu cần strict theo height)
+      overflow: hidden;
+      position: relative;
+  
+      .thumb-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; // Không méo ảnh
+        object-position: center;
+        transition: transform 0.4s;
+        display: block;
       }
       .btn-theme {
-        img {
-          min-width: auto;
-          @media #{$xs-device} {
-            height: auto;
-          }
-        }
+        position: absolute;
+        left: 50%; top: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0; visibility: hidden;
+        transition: all 0.3s;
+        z-index: 2;
+      }
+      &:hover .btn-theme {
+        opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1.1);
       }
     }
     .content {
-      padding: 21px 30px 16px 44px;
-      @media #{$lg-device} {
-        padding: 25px 30px 15px 30px;
+      flex: 1;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 0;
+  
+      .event-info {
+        color: #888; font-size: 14px; margin-bottom: 6px;
+        span { color: #ff6b35; font-weight: 700; }
       }
-      @media #{$xxs-device} {
-        padding: 25px 30px 25px;
+      .event-name {
+        margin: 0;
+        font-size: 18px; font-weight: 700; line-height: 1.3;
+        a { color: #222; text-decoration: none; transition: color 0.18s; }
+        a:hover { color: #ff6b35; }
       }
     }
   }
+}
+
+@media (max-width: 991px) {
+  .event-item .thumb { width: 120px; min-width: 120px; }
+}
+@media (max-width: 575px) {
+  .event-item { flex-direction: column; height: auto; min-height: 0; }
+  .event-item .thumb { width: 100%; min-width: 0; aspect-ratio: 3/2; height: 130px; }
+  .event-item .content { padding: 14px 8px 16px 8px; }
 }
 
 .event-details-area {
