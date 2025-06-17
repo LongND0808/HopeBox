@@ -54,15 +54,15 @@
             </div>
             <div class="image-group">
               <label>Ảnh thách thức</label>
-              <img :src="form.challengeImage || '/images/placeholder.jpg'" alt="Challenge Image"
-                class="image-preview" @click="$refs.challengeInput.click()" />
+              <img :src="form.challengeImage || '/images/placeholder.jpg'" alt="Challenge Image" class="image-preview"
+                @click="$refs.challengeInput.click()" />
               <input type="file" ref="challengeInput" accept="image/*" style="display: none"
                 @change="handleChallengeImageUpload" />
             </div>
             <div class="image-group">
               <label>Ảnh tổng kết</label>
-              <img :src="form.summaryImage || '/images/placeholder.jpg'" alt="Summary Image"
-                class="image-preview" @click="$refs.summaryInput.click()" />
+              <img :src="form.summaryImage || '/images/placeholder.jpg'" alt="Summary Image" class="image-preview"
+                @click="$refs.summaryInput.click()" />
               <input type="file" ref="summaryInput" accept="image/*" style="display: none"
                 @change="handleSummaryImageUpload" />
             </div>
@@ -161,7 +161,8 @@
                   <td>{{ pkg.targetQuantity }}</td>
                   <td>
                     <button class="btn edit" @click="openPackageModal(pkg)"><i class="fas fa-edit"></i></button>
-                    <button class="btn delete" @click="confirmDeletePackage(pkg.id)"><i class="fas fa-trash"></i></button>
+                    <button class="btn delete" @click="confirmDeletePackage(pkg.id)"><i
+                        class="fas fa-trash"></i></button>
                   </td>
                 </tr>
               </tbody>
@@ -189,7 +190,8 @@
           </div>
           <div class="form-group">
             <label>Phí bổ sung (VND)</label>
-            <input v-model.number="packageForm.extraFee" type="number" placeholder="Phí bổ sung" min="0" @input="updateTotalPrice" />
+            <input v-model.number="packageForm.extraFee" type="number" placeholder="Phí bổ sung" min="0"
+              @input="updateTotalPrice" />
           </div>
           <div class="form-group">
             <label>Số lượng mục tiêu</label>
@@ -212,7 +214,8 @@
                     {{ reliefItem.itemName }} ({{ formatCurrency(reliefItem.unitPrice) }} / {{ reliefItem.unit }})
                   </option>
                 </select>
-                <input v-model.number="item.quantity" type="number" placeholder="Số lượng" min="1" @input="updateTotalPrice" />
+                <input v-model.number="item.quantity" type="number" placeholder="Số lượng" min="1"
+                  @input="updateTotalPrice" />
                 <button class="btn delete" @click="removePackageItem(index)"><i class="fas fa-trash"></i></button>
               </div>
               <button class="add-btn" @click="addPackageItem">+ Thêm vật phẩm</button>
@@ -234,226 +237,225 @@
 </template>
 
 <script>
-import axios from 'axios';
-import { showSuccessAlertDark, showErrorAlertDark, showConfirmDialogDark } from '@/utils/alertHelper';
-import { CausesStatus, CausesStatusLabel, CausesType, CausesTypeOptions, CausesTypeLabel } from '@/enums/enums';
+  import axios from 'axios';
+  import { showSuccessAlertDark, showErrorAlertDark, showConfirmDialogDark } from '@/utils/alertHelper';
+  import { CausesStatus, CausesStatusLabel, CausesType, CausesTypeOptions, CausesTypeLabel } from '@/enums/enums';
+  import { BASE_URL } from '@/utils/constants'
 
-const BASE_URL = 'https://localhost:7213';
-
-export default {
-  data() {
-    return {
-      causes: [],
-      users: [],
-      organizations: [],
-      reliefItems: [],
-      reliefPackages: [],
-      showModal: false,
-      showPackageModal: false,
-      editingCause: null,
-      editingPackage: null,
-      form: {
-        id: '',
-        title: '',
-        description: '',
-        detail: '',
-        heroImage: '',
-        challenge: '',
-        challengeImage: '',
-        summary: '',
-        summaryImage: '',
-        type: CausesType.WATER,
-        startDate: '',
-        endDate: '',
-        targetAmount: 0,
-        currentAmount: 0,
-        status: CausesStatus.PENDING,
-        createdBy: '',
-        organizationId: ''
-      },
-      packageForm: {
-        id: '',
-        causeId: '',
-        name: '',
-        description: '',
-        extraFee: 0,
-        totalPrice: 0,
-        image: '',
-        currentQuantity: 0,
-        targetQuantity: 1,
-        packageItems: []
-      },
-      CausesStatusLabel,
-      CausesTypeOptions
-    };
-  },
-  computed: {
-    filteredUsers() {
-      if (!this.form.organizationId) return [];
-      return this.users.filter(user => user.organizationId === this.form.organizationId);
-    }
-  },
-  methods: {
-    async fetchCauses() {
-      try {
-        const res = await axios.get(`${BASE_URL}/api/Cause/get-all`, {
-          withCredentials: true
-        });
-        if (res.data.status === 200) {
-          this.causes = res.data.responseData;
-        }
-      } catch (err) {
-        console.error('Lỗi tải danh sách chiến dịch:', err);
-        await showErrorAlertDark('Lỗi', 'Không thể tải danh sách chiến dịch.');
-      }
-    },
-    async fetchUsers() {
-      try {
-        const res = await axios.get(`${BASE_URL}/api/User/get-all`, {
-          withCredentials: true
-        });
-        if (res.data.status === 200) {
-          this.users = res.data.responseData;
-        }
-      } catch (err) {
-        console.error('Lỗi tải danh sách người dùng:', err);
-        await showErrorAlertDark('Lỗi', 'Không thể tải danh sách người dùng.');
-      }
-    },
-    async fetchOrganizations() {
-      try {
-        const res = await axios.get(`${BASE_URL}/api/Organization/get-all`, {
-          withCredentials: true
-        });
-        if (res.data.status === 200) {
-          this.organizations = res.data.responseData;
-        }
-      } catch (err) {
-        console.error('Lỗi tải danh sách tổ chức:', err);
-        await showErrorAlertDark('Lỗi', 'Không thể tải danh sách tổ chức.');
-      }
-    },
-    async fetchReliefItems() {
-      try {
-        const res = await axios.get(`${BASE_URL}/api/ReliefItem/get-all`, {
-          withCredentials: true
-        });
-        if (res.data.status === 200) {
-          this.reliefItems = res.data.responseData;
-        }
-      } catch (err) {
-        console.error('Lỗi tải danh sách vật phẩm cứu trợ:', err);
-        await showErrorAlertDark('Lỗi', 'Không thể tải danh sách vật phẩm cứu trợ.');
-      }
-    },
-    async fetchReliefPackages(causeId) {
-      try {
-        const res = await axios.get(`${BASE_URL}/api/ReliefPackage/get-relief-packages-by-cause-id?causeId=${causeId}`, {
-          withCredentials: true
-        });
-        if (res.data.status === 200) {
-          // Fetch package items for each package
-          this.reliefPackages = await Promise.all(res.data.responseData.map(async (pkg) => {
-            const itemsRes = await axios.get(`${BASE_URL}/api/ReliefPackageItem/get-by-package?packageId=${pkg.id}`, {
-              withCredentials: true
-            });
-            return {
-              ...pkg,
-              packageItems: itemsRes.data.status === 200 ? itemsRes.data.responseData : []
-            };
-          }));
-        }
-      } catch (err) {
-        console.error('Lỗi tải danh sách gói cứu trợ:', err);
-        await showErrorAlertDark('Lỗi', 'Không thể tải danh sách gói cứu trợ.');
-      }
-    },
-    async fetchReliefPackageItems(packageId) {
-      try {
-        const res = await axios.get(`${BASE_URL}/api/ReliefPackageItem/get-by-package?packageId=${packageId}`, {
-          withCredentials: true
-        });
-        if (res.data.status === 200) {
-          return res.data.responseData;
-        }
-        return [];
-      } catch (err) {
-        console.error('Lỗi tải danh sách vật phẩm gói cứu trợ:', err);
-        await showErrorAlertDark('Lỗi', 'Không thể tải vật phẩm gói cứu trợ.');
-        return [];
-      }
-    },
-    getOrganizationName(organizationId) {
-      const org = this.organizations.find(o => o.id === organizationId);
-      return org ? org.name : null;
-    },
-    getUserName(userId) {
-      const user = this.users.find(u => u.id === userId);
-      return user ? user.fullName : null;
-    },
-    openAddModal() {
-      this.editingCause = null;
-      this.form = {
-        id: '',
-        title: '',
-        description: '',
-        detail: '',
-        heroImage: '',
-        challenge: '',
-        challengeImage: '',
-        summary: '',
-        summaryImage: '',
-        type: CausesType.WATER,
-        startDate: '',
-        endDate: '',
-        targetAmount: 0,
-        currentAmount: 0,
-        status: CausesStatus.PENDING,
-        createdBy: '',
-        organizationId: ''
+  export default {
+    data() {
+      return {
+        causes: [],
+        users: [],
+        organizations: [],
+        reliefItems: [],
+        reliefPackages: [],
+        showModal: false,
+        showPackageModal: false,
+        editingCause: null,
+        editingPackage: null,
+        form: {
+          id: '',
+          title: '',
+          description: '',
+          detail: '',
+          heroImage: '',
+          challenge: '',
+          challengeImage: '',
+          summary: '',
+          summaryImage: '',
+          type: CausesType.WATER,
+          startDate: '',
+          endDate: '',
+          targetAmount: 0,
+          currentAmount: 0,
+          status: CausesStatus.PENDING,
+          createdBy: '',
+          organizationId: ''
+        },
+        packageForm: {
+          id: '',
+          causeId: '',
+          name: '',
+          description: '',
+          extraFee: 0,
+          totalPrice: 0,
+          image: '',
+          currentQuantity: 0,
+          targetQuantity: 1,
+          packageItems: []
+        },
+        CausesStatusLabel,
+        CausesTypeOptions
       };
-      this.reliefPackages = [];
-      this.showModal = true;
     },
-    async editCause(cause) {
-      this.editingCause = cause;
-      const startDate = cause.startDate
-        ? new Date(cause.startDate).toISOString().split('T')[0]
-        : '';
-      const endDate = cause.endDate
-        ? new Date(cause.endDate).toISOString().split('T')[0]
-        : '';
-      this.form = {
-        id: cause.id || '',
-        title: cause.title || '',
-        description: cause.description || '',
-        detail: cause.detail || '',
-        heroImage: cause.heroImage || '',
-        challenge: cause.challenge || '',
-        challengeImage: cause.challengeImage || '',
-        summary: cause.summary || '',
-        summaryImage: cause.summaryImage || '',
-        type: Number(cause.type) || CausesType.WATER,
-        startDate,
-        endDate,
-        targetAmount: Number(cause.targetAmount) || 0,
-        currentAmount: Number(cause.currentAmount) || 0,
-        status: Number(cause.status) || CausesStatus.PENDING,
-        createdBy: cause.createdBy || '',
-        organizationId: cause.organizationId || ''
-      };
-      await this.fetchReliefPackages(cause.id);
-      this.showModal = true;
-    },
-    async openPackageModal(pkg) {
-      this.editingPackage = pkg;
-      let packageItems = [];
-      if (pkg) {
-        // Fetch package items for the specific package
-        packageItems = await this.fetchReliefPackageItems(pkg.id);
+    computed: {
+      filteredUsers() {
+        if (!this.form.organizationId) return [];
+        return this.users.filter(user => user.organizationId === this.form.organizationId);
       }
-      this.packageForm = pkg
-        ? {
+    },
+    methods: {
+      async fetchCauses() {
+        try {
+          const res = await axios.get(`${BASE_URL}/api/Cause/get-all`, {
+            withCredentials: true
+          });
+          if (res.data.status === 200) {
+            this.causes = res.data.responseData;
+          }
+        } catch (err) {
+          console.error('Lỗi tải danh sách chiến dịch:', err);
+          await showErrorAlertDark('Lỗi', 'Không thể tải danh sách chiến dịch.');
+        }
+      },
+      async fetchUsers() {
+        try {
+          const res = await axios.get(`${BASE_URL}/api/User/get-all`, {
+            withCredentials: true
+          });
+          if (res.data.status === 200) {
+            this.users = res.data.responseData;
+          }
+        } catch (err) {
+          console.error('Lỗi tải danh sách người dùng:', err);
+          await showErrorAlertDark('Lỗi', 'Không thể tải danh sách người dùng.');
+        }
+      },
+      async fetchOrganizations() {
+        try {
+          const res = await axios.get(`${BASE_URL}/api/Organization/get-all`, {
+            withCredentials: true
+          });
+          if (res.data.status === 200) {
+            this.organizations = res.data.responseData;
+          }
+        } catch (err) {
+          console.error('Lỗi tải danh sách tổ chức:', err);
+          await showErrorAlertDark('Lỗi', 'Không thể tải danh sách tổ chức.');
+        }
+      },
+      async fetchReliefItems() {
+        try {
+          const res = await axios.get(`${BASE_URL}/api/ReliefItem/get-all`, {
+            withCredentials: true
+          });
+          if (res.data.status === 200) {
+            this.reliefItems = res.data.responseData;
+          }
+        } catch (err) {
+          console.error('Lỗi tải danh sách vật phẩm cứu trợ:', err);
+          await showErrorAlertDark('Lỗi', 'Không thể tải danh sách vật phẩm cứu trợ.');
+        }
+      },
+      async fetchReliefPackages(causeId) {
+        try {
+          const res = await axios.get(`${BASE_URL}/api/ReliefPackage/get-relief-packages-by-cause-id?causeId=${causeId}`, {
+            withCredentials: true
+          });
+          if (res.data.status === 200) {
+            // Fetch package items for each package
+            this.reliefPackages = await Promise.all(res.data.responseData.map(async (pkg) => {
+              const itemsRes = await axios.get(`${BASE_URL}/api/ReliefPackageItem/get-by-package?packageId=${pkg.id}`, {
+                withCredentials: true
+              });
+              return {
+                ...pkg,
+                packageItems: itemsRes.data.status === 200 ? itemsRes.data.responseData : []
+              };
+            }));
+          }
+        } catch (err) {
+          console.error('Lỗi tải danh sách gói cứu trợ:', err);
+          await showErrorAlertDark('Lỗi', 'Không thể tải danh sách gói cứu trợ.');
+        }
+      },
+      async fetchReliefPackageItems(packageId) {
+        try {
+          const res = await axios.get(`${BASE_URL}/api/ReliefPackageItem/get-by-package?packageId=${packageId}`, {
+            withCredentials: true
+          });
+          if (res.data.status === 200) {
+            return res.data.responseData;
+          }
+          return [];
+        } catch (err) {
+          console.error('Lỗi tải danh sách vật phẩm gói cứu trợ:', err);
+          await showErrorAlertDark('Lỗi', 'Không thể tải vật phẩm gói cứu trợ.');
+          return [];
+        }
+      },
+      getOrganizationName(organizationId) {
+        const org = this.organizations.find(o => o.id === organizationId);
+        return org ? org.name : null;
+      },
+      getUserName(userId) {
+        const user = this.users.find(u => u.id === userId);
+        return user ? user.fullName : null;
+      },
+      openAddModal() {
+        this.editingCause = null;
+        this.form = {
+          id: '',
+          title: '',
+          description: '',
+          detail: '',
+          heroImage: '',
+          challenge: '',
+          challengeImage: '',
+          summary: '',
+          summaryImage: '',
+          type: CausesType.WATER,
+          startDate: '',
+          endDate: '',
+          targetAmount: 0,
+          currentAmount: 0,
+          status: CausesStatus.PENDING,
+          createdBy: '',
+          organizationId: ''
+        };
+        this.reliefPackages = [];
+        this.showModal = true;
+      },
+      async editCause(cause) {
+        this.editingCause = cause;
+        const startDate = cause.startDate
+          ? new Date(cause.startDate).toISOString().split('T')[0]
+          : '';
+        const endDate = cause.endDate
+          ? new Date(cause.endDate).toISOString().split('T')[0]
+          : '';
+        this.form = {
+          id: cause.id || '',
+          title: cause.title || '',
+          description: cause.description || '',
+          detail: cause.detail || '',
+          heroImage: cause.heroImage || '',
+          challenge: cause.challenge || '',
+          challengeImage: cause.challengeImage || '',
+          summary: cause.summary || '',
+          summaryImage: cause.summaryImage || '',
+          type: Number(cause.type) || CausesType.WATER,
+          startDate,
+          endDate,
+          targetAmount: Number(cause.targetAmount) || 0,
+          currentAmount: Number(cause.currentAmount) || 0,
+          status: Number(cause.status) || CausesStatus.PENDING,
+          createdBy: cause.createdBy || '',
+          organizationId: cause.organizationId || ''
+        };
+        await this.fetchReliefPackages(cause.id);
+        this.showModal = true;
+      },
+      async openPackageModal(pkg) {
+        this.editingPackage = pkg;
+        let packageItems = [];
+        if (pkg) {
+          // Fetch package items for the specific package
+          packageItems = await this.fetchReliefPackageItems(pkg.id);
+        }
+        this.packageForm = pkg
+          ? {
             id: pkg.id || '',
             causeId: this.form.id || this.editingCause?.id || '',
             name: pkg.name || '',
@@ -469,7 +471,7 @@ export default {
               quantity: item.quantity
             }))
           }
-        : {
+          : {
             id: '',
             causeId: this.form.id || this.editingCause?.id || '',
             name: '',
@@ -481,546 +483,547 @@ export default {
             targetQuantity: 1,
             packageItems: []
           };
-      this.updateTotalPrice();
-      this.showPackageModal = true;
-    },
-    closePackageModal() {
-      this.showPackageModal = false;
-      this.editingPackage = null;
-      this.packageForm = {
-        id: '',
-        causeId: '',
-        name: '',
-        description: '',
-        extraFee: 0,
-        totalPrice: 0,
-        image: '',
-        currentQuantity: 0,
-        targetQuantity: 1,
-        packageItems: []
-      };
-      if (this.$refs.packageImageInput) {
-        this.$refs.packageImageInput.value = '';
-      }
-    },
-    addPackageItem() {
-      this.packageForm.packageItems.push({
-        reliefItemId: '',
-        quantity: 1
-      });
-    },
-    removePackageItem(index) {
-      this.packageForm.packageItems.splice(index, 1);
-      this.updateTotalPrice();
-    },
-    updateTotalPrice() {
-      const total = this.packageForm.packageItems.reduce((sum, item) => {
-        const reliefItem = this.reliefItems.find(ri => ri.id === item.reliefItemId);
-        return sum + (reliefItem ? reliefItem.unitPrice * item.quantity : 0);
-      }, 0);
-      this.packageForm.totalPrice = total + (this.packageForm.extraFee || 0);
-    },
-    async handlePackageImageUpload(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      try {
-        const formData = new FormData();
-        formData.append('file', file);
-
-        const res = await axios.post(
-          `${BASE_URL}/api/ReliefPackage/change-image?packageId=${encodeURIComponent(this.packageForm.id || '')}`,
-          formData,
-          {
-            headers: { 'Content-Type': 'multipart/form-data' },
-            withCredentials: true
-          }
-        );
-
-        if (res.data.status === 200) {
-          this.packageForm.image = res.data.responseData;
-          await showSuccessAlertDark('Thành công', 'Ảnh gói cứu trợ đã được cập nhật.');
-        } else {
-          await showErrorAlertDark('Lỗi', res.data.message);
-        }
-      } catch (err) {
-        await showErrorAlertDark('Lỗi', err.message);
-      }
-    },
-    async savePackage() {
-      if (!this.packageForm.name || !this.packageForm.targetQuantity) {
-        await showErrorAlertDark('Lỗi', 'Vui lòng nhập tên gói và số lượng mục tiêu.');
-        return;
-      }
-      try {
-        const selectedItems = this.packageForm.packageItems
-          .filter(item => item.reliefItemId && item.quantity > 0)
-          .reduce((acc, item) => {
-            acc[item.reliefItemId] = item.quantity;
-            return acc;
-          }, {});
-
-        const payload = {
-          id: this.packageForm.id || '00000000-0000-0000-0000-000000000000',
-          causeId: this.form.id || this.editingCause?.id || '00000000-0000-0000-0000-000000000000',
-          name: this.packageForm.name,
-          description: this.packageForm.description || null,
-          extraFee: this.packageForm.extraFee || 0,
-          totalPrice: this.packageForm.totalPrice || 0,
-          image: this.packageForm.image || null,
-          currentQuantity: this.packageForm.currentQuantity || 0,
-          targetQuantity: this.packageForm.targetQuantity || 1,
-          selectedItems
+        this.updateTotalPrice();
+        this.showPackageModal = true;
+      },
+      closePackageModal() {
+        this.showPackageModal = false;
+        this.editingPackage = null;
+        this.packageForm = {
+          id: '',
+          causeId: '',
+          name: '',
+          description: '',
+          extraFee: 0,
+          totalPrice: 0,
+          image: '',
+          currentQuantity: 0,
+          targetQuantity: 1,
+          packageItems: []
         };
-
-        const url = this.editingPackage
-          ? `${BASE_URL}/api/ReliefPackage/update-relief-package`
-          : `${BASE_URL}/api/ReliefPackage/create-relief-package`;
-
-        const res = await axios.post(url, payload, {
-          withCredentials: true
-        });
-
-        if ([200, 201].includes(res.data.status)) {
-          await this.fetchReliefPackages(this.form.id || this.editingCause?.id);
-          await showSuccessAlertDark('Thành công', res.data.message);
-          this.closePackageModal();
-        } else {
-          await showErrorAlertDark('Lỗi', res.data.message);
+        if (this.$refs.packageImageInput) {
+          this.$refs.packageImageInput.value = '';
         }
-      } catch (err) {
-        await showErrorAlertDark('Lỗi', err.message);
-      }
-    },
-    async confirmDeletePackage(id) {
-      const result = await showConfirmDialogDark(
-        'Bạn có chắc chắn?',
-        'Hành động này sẽ xóa gói cứu trợ!',
-        'Xóa',
-        'Hủy'
-      );
+      },
+      addPackageItem() {
+        this.packageForm.packageItems.push({
+          reliefItemId: '',
+          quantity: 1
+        });
+      },
+      removePackageItem(index) {
+        this.packageForm.packageItems.splice(index, 1);
+        this.updateTotalPrice();
+      },
+      updateTotalPrice() {
+        const total = this.packageForm.packageItems.reduce((sum, item) => {
+          const reliefItem = this.reliefItems.find(ri => ri.id === item.reliefItemId);
+          return sum + (reliefItem ? reliefItem.unitPrice * item.quantity : 0);
+        }, 0);
+        this.packageForm.totalPrice = total + (this.packageForm.extraFee || 0);
+      },
+      async handlePackageImageUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
 
-      if (result.isConfirmed) {
         try {
+          const formData = new FormData();
+          formData.append('file', file);
+
           const res = await axios.post(
-            `${BASE_URL}/api/ReliefPackage/delete-relief-package`,
-            id,
+            `${BASE_URL}/api/ReliefPackage/change-image?packageId=${encodeURIComponent(this.packageForm.id || '')}`,
+            formData,
             {
-              headers: { 'Content-Type': 'application/json' },
+              headers: { 'Content-Type': 'multipart/form-data' },
               withCredentials: true
             }
           );
+
           if (res.data.status === 200) {
+            this.packageForm.image = res.data.responseData;
+            await showSuccessAlertDark('Thành công', 'Ảnh gói cứu trợ đã được cập nhật.');
+          } else {
+            await showErrorAlertDark('Lỗi', res.data.message);
+          }
+        } catch (err) {
+          await showErrorAlertDark('Lỗi', err.message);
+        }
+      },
+      async savePackage() {
+        if (!this.packageForm.name || !this.packageForm.targetQuantity) {
+          await showErrorAlertDark('Lỗi', 'Vui lòng nhập tên gói và số lượng mục tiêu.');
+          return;
+        }
+        try {
+          const selectedItems = this.packageForm.packageItems
+            .filter(item => item.reliefItemId && item.quantity > 0)
+            .reduce((acc, item) => {
+              acc[item.reliefItemId] = item.quantity;
+              return acc;
+            }, {});
+
+          const payload = {
+            id: this.packageForm.id || '00000000-0000-0000-0000-000000000000',
+            causeId: this.form.id || this.editingCause?.id || '00000000-0000-0000-0000-000000000000',
+            name: this.packageForm.name,
+            description: this.packageForm.description || null,
+            extraFee: this.packageForm.extraFee || 0,
+            totalPrice: this.packageForm.totalPrice || 0,
+            image: this.packageForm.image || null,
+            currentQuantity: this.packageForm.currentQuantity || 0,
+            targetQuantity: this.packageForm.targetQuantity || 1,
+            selectedItems
+          };
+
+          const url = this.editingPackage
+            ? `${BASE_URL}/api/ReliefPackage/update-relief-package`
+            : `${BASE_URL}/api/ReliefPackage/create-relief-package`;
+
+          const res = await axios.post(url, payload, {
+            withCredentials: true
+          });
+
+          if ([200, 201].includes(res.data.status)) {
             await this.fetchReliefPackages(this.form.id || this.editingCause?.id);
-            await showSuccessAlertDark('Thành công', 'Gói cứu trợ đã được xóa.');
+            await showSuccessAlertDark('Thành công', res.data.message);
+            this.closePackageModal();
           } else {
             await showErrorAlertDark('Lỗi', res.data.message);
           }
         } catch (err) {
           await showErrorAlertDark('Lỗi', err.message);
         }
-      }
-    },
-    onOrganizationChange() {
-      this.form.createdBy = '';
-    },
-    async handleHeroImageUpload(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      try {
-        const formData = new FormData();
-        formData.append('file', file);
-
-        const causeId = this.form.id || this.editingCause?.id || '';
-
-        const res = await axios.post(
-          `${BASE_URL}/api/Cause/change-hero-image?causeId=${encodeURIComponent(causeId)}`,
-          formData,
-          {
-            headers: { 'Content-Type': 'multipart/form-data' },
-            withCredentials: true
-          }
+      },
+      async confirmDeletePackage(id) {
+        const result = await showConfirmDialogDark(
+          'Bạn có chắc chắn?',
+          'Hành động này sẽ xóa gói cứu trợ!',
+          'Xóa',
+          'Hủy'
         );
 
-        if (res.data.status === 200) {
-          this.form.heroImage = res.data.responseData;
-          await showSuccessAlertDark('Thành công', 'Ảnh tiêu điểm đã được cập nhật.');
-          await this.fetchCauses();
-        } else {
-          await showErrorAlertDark('Lỗi', res.data.message);
-        }
-      } catch (err) {
-        await showErrorAlertDark('Lỗi', err.message);
-      }
-    },
-    async handleChallengeImageUpload(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      try {
-        const formData = new FormData();
-        formData.append('file', file);
-
-        const causeId = this.form.id || this.editingCause?.id || '';
-
-        const res = await axios.post(
-          `${BASE_URL}/api/Cause/change-challenge-image?causeId=${encodeURIComponent(causeId)}`,
-          formData,
-          {
-            headers: { 'Content-Type': 'multipart/form-data' },
-            withCredentials: true
+        if (result.isConfirmed) {
+          try {
+            const res = await axios.post(
+              `${BASE_URL}/api/ReliefPackage/delete-relief-package`,
+              id,
+              {
+                headers: { 'Content-Type': 'application/json' },
+                withCredentials: true
+              }
+            );
+            if (res.data.status === 200) {
+              await this.fetchReliefPackages(this.form.id || this.editingCause?.id);
+              await showSuccessAlertDark('Thành công', 'Gói cứu trợ đã được xóa.');
+            } else {
+              await showErrorAlertDark('Lỗi', res.data.message);
+            }
+          } catch (err) {
+            await showErrorAlertDark('Lỗi', err.message);
           }
-        );
-
-        if (res.data.status === 200) {
-          this.form.challengeImage = res.data.responseData;
-          await showSuccessAlertDark('Thành công', 'Ảnh thách thức đã được cập nhật.');
-          await this.fetchCauses();
-        } else {
-          await showErrorAlertDark('Lỗi', res.data.message);
         }
-      } catch (err) {
-        await showErrorAlertDark('Lỗi', err.message);
-      }
-    },
-    async handleSummaryImageUpload(event) {
-      const file = event.target.files[0];
-      if (!file) return;
+      },
+      onOrganizationChange() {
+        this.form.createdBy = '';
+      },
+      async handleHeroImageUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
 
-      try {
-        const formData = new FormData();
-        formData.append('file', file);
-
-        const causeId = this.form.id || this.editingCause?.id || '';
-
-        const res = await axios.post(
-          `${BASE_URL}/api/Cause/change-summary-image?causeId=${encodeURIComponent(causeId)}`,
-          formData,
-          {
-            headers: { 'Content-Type': 'multipart/form-data' },
-            withCredentials: true
-          }
-        );
-
-        if (res.data.status === 200) {
-          this.form.summaryImage = res.data.responseData;
-          await showSuccessAlertDark('Thành công', 'Ảnh tổng kết đã được cập nhật.');
-          await this.fetchCauses();
-        } else {
-          await showErrorAlertDark('Lỗi', res.data.message);
-        }
-      } catch (err) {
-        await showErrorAlertDark('Lỗi', err.message);
-      }
-    },
-    async saveCause() {
-      if (!this.form.organizationId || !this.form.createdBy) {
-        await showErrorAlertDark('Lỗi', 'Vui lòng chọn tổ chức và người tạo.');
-        return;
-      }
-      try {
-        const payload = {
-          ...this.form,
-          id: this.form.id || null,
-          startDate: this.form.startDate ? new Date(this.form.startDate).toISOString() : null,
-          endDate: this.form.endDate ? new Date(this.form.endDate).toISOString() : null,
-          createdBy: this.form.createdBy || null,
-          organizationId: this.form.organizationId || null
-        };
-
-        const url = this.editingCause
-          ? `${BASE_URL}/api/Cause/update`
-          : `${BASE_URL}/api/Cause/add`;
-
-        const res = await axios.post(url, payload, {
-          withCredentials: true
-        });
-
-        if ([200, 201].includes(res.data.status)) {
-          await this.fetchCauses();
-          await showSuccessAlertDark('Thành công', res.data.message);
-          this.closeModal();
-        } else {
-          await showErrorAlertDark('Lỗi', res.data.message);
-        }
-      } catch (err) {
-        await showErrorAlertDark('Lỗi', err.message);
-      }
-    },
-    async confirmDelete(id) {
-      const result = await showConfirmDialogDark(
-        'Bạn có chắc chắn?',
-        'Hành động này sẽ xóa chiến dịch!',
-        'Xóa',
-        'Hủy'
-      );
-
-      if (result.isConfirmed) {
         try {
+          const formData = new FormData();
+          formData.append('file', file);
+
+          const causeId = this.form.id || this.editingCause?.id || '';
+
           const res = await axios.post(
-            `${BASE_URL}/api/Cause/delete`,
-            id,
+            `${BASE_URL}/api/Cause/change-hero-image?causeId=${encodeURIComponent(causeId)}`,
+            formData,
             {
-              headers: { 'Content-Type': 'application/json' },
+              headers: { 'Content-Type': 'multipart/form-data' },
               withCredentials: true
             }
           );
+
           if (res.data.status === 200) {
+            this.form.heroImage = res.data.responseData;
+            await showSuccessAlertDark('Thành công', 'Ảnh tiêu điểm đã được cập nhật.');
             await this.fetchCauses();
-            await showSuccessAlertDark('Đã xóa!', 'Chiến dịch đã bị xóa.');
           } else {
             await showErrorAlertDark('Lỗi', res.data.message);
           }
         } catch (err) {
           await showErrorAlertDark('Lỗi', err.message);
         }
+      },
+      async handleChallengeImageUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        try {
+          const formData = new FormData();
+          formData.append('file', file);
+
+          const causeId = this.form.id || this.editingCause?.id || '';
+
+          const res = await axios.post(
+            `${BASE_URL}/api/Cause/change-challenge-image?causeId=${encodeURIComponent(causeId)}`,
+            formData,
+            {
+              headers: { 'Content-Type': 'multipart/form-data' },
+              withCredentials: true
+            }
+          );
+
+          if (res.data.status === 200) {
+            this.form.challengeImage = res.data.responseData;
+            await showSuccessAlertDark('Thành công', 'Ảnh thách thức đã được cập nhật.');
+            await this.fetchCauses();
+          } else {
+            await showErrorAlertDark('Lỗi', res.data.message);
+          }
+        } catch (err) {
+          await showErrorAlertDark('Lỗi', err.message);
+        }
+      },
+      async handleSummaryImageUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        try {
+          const formData = new FormData();
+          formData.append('file', file);
+
+          const causeId = this.form.id || this.editingCause?.id || '';
+
+          const res = await axios.post(
+            `${BASE_URL}/api/Cause/change-summary-image?causeId=${encodeURIComponent(causeId)}`,
+            formData,
+            {
+              headers: { 'Content-Type': 'multipart/form-data' },
+              withCredentials: true
+            }
+          );
+
+          if (res.data.status === 200) {
+            this.form.summaryImage = res.data.responseData;
+            await showSuccessAlertDark('Thành công', 'Ảnh tổng kết đã được cập nhật.');
+            await this.fetchCauses();
+          } else {
+            await showErrorAlertDark('Lỗi', res.data.message);
+          }
+        } catch (err) {
+          await showErrorAlertDark('Lỗi', err.message);
+        }
+      },
+      async saveCause() {
+        if (!this.form.organizationId || !this.form.createdBy) {
+          await showErrorAlertDark('Lỗi', 'Vui lòng chọn tổ chức và người tạo.');
+          return;
+        }
+        try {
+          const payload = {
+            ...this.form,
+            id: this.form.id || null,
+            startDate: this.form.startDate ? new Date(this.form.startDate).toISOString() : null,
+            endDate: this.form.endDate ? new Date(this.form.endDate).toISOString() : null,
+            createdBy: this.form.createdBy || null,
+            organizationId: this.form.organizationId || null
+          };
+
+          const url = this.editingCause
+            ? `${BASE_URL}/api/Cause/update`
+            : `${BASE_URL}/api/Cause/add`;
+
+          const res = await axios.post(url, payload, {
+            withCredentials: true
+          });
+
+          if ([200, 201].includes(res.data.status)) {
+            await this.fetchCauses();
+            await showSuccessAlertDark('Thành công', res.data.message);
+            this.closeModal();
+          } else {
+            await showErrorAlertDark('Lỗi', res.data.message);
+          }
+        } catch (err) {
+          await showErrorAlertDark('Lỗi', err.message);
+        }
+      },
+      async confirmDelete(id) {
+        const result = await showConfirmDialogDark(
+          'Bạn có chắc chắn?',
+          'Hành động này sẽ xóa chiến dịch!',
+          'Xóa',
+          'Hủy'
+        );
+
+        if (result.isConfirmed) {
+          try {
+            const res = await axios.post(
+              `${BASE_URL}/api/Cause/delete`,
+              id,
+              {
+                headers: { 'Content-Type': 'application/json' },
+                withCredentials: true
+              }
+            );
+            if (res.data.status === 200) {
+              await this.fetchCauses();
+              await showSuccessAlertDark('Đã xóa!', 'Chiến dịch đã bị xóa.');
+            } else {
+              await showErrorAlertDark('Lỗi', res.data.message);
+            }
+          } catch (err) {
+            await showErrorAlertDark('Lỗi', err.message);
+          }
+        }
+      },
+      closeModal() {
+        this.showModal = false;
+        this.editingCause = null;
+        if (this.$refs.heroInput) this.$refs.heroInput.value = '';
+        if (this.$refs.challengeInput) this.$refs.challengeInput.value = '';
+        if (this.$refs.summaryInput) this.$refs.summaryInput.value = '';
+        this.reliefPackages = [];
+      },
+      getCauseTypeLabel(type) {
+        return CausesTypeLabel[type] || 'Không xác định';
+      },
+      getCauseStatusLabel(status) {
+        return CausesStatusLabel[status] || 'Không xác định';
+      },
+      formatCurrency(amount) {
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+      },
+      formatDate(date) {
+        return date ? new Date(date).toLocaleDateString('vi-VN') : 'N/A';
       }
     },
-    closeModal() {
-      this.showModal = false;
-      this.editingCause = null;
-      if (this.$refs.heroInput) this.$refs.heroInput.value = '';
-      if (this.$refs.challengeInput) this.$refs.challengeInput.value = '';
-      if (this.$refs.summaryInput) this.$refs.summaryInput.value = '';
-      this.reliefPackages = [];
-    },
-    getCauseTypeLabel(type) {
-      return CausesTypeLabel[type] || 'Không xác định';
-    },
-    getCauseStatusLabel(status) {
-      return CausesStatusLabel[status] || 'Không xác định';
-    },
-    formatCurrency(amount) {
-      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
-    },
-    formatDate(date) {
-      return date ? new Date(date).toLocaleDateString('vi-VN') : 'N/A';
+    async mounted() {
+      await Promise.all([this.fetchCauses(), this.fetchUsers(), this.fetchOrganizations(), this.fetchReliefItems()]);
     }
-  },
-  async mounted() {
-    await Promise.all([this.fetchCauses(), this.fetchUsers(), this.fetchOrganizations(), this.fetchReliefItems()]);
-  }
-};
+  };
 </script>
 
 <style scoped>
-.cause-management {
-  display: flex;
-}
+  .cause-management {
+    display: flex;
+  }
 
-.main-content {
-  margin-left: 250px;
-  padding: 30px;
-  background: #111226;
-  color: white;
-  width: 100%;
-  min-height: 100vh;
-}
+  .main-content {
+    margin-left: 250px;
+    padding: 30px;
+    background: #111226;
+    color: white;
+    width: 100%;
+    min-height: 100vh;
+  }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
 
-.add-btn {
-  background-color: #fbc658;
-  color: #111226;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-}
+  .add-btn {
+    background-color: #fbc658;
+    color: #111226;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+  }
 
-.cause-table, .package-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #1e1e2f;
-  border-radius: 8px;
-  overflow: hidden;
-  margin-top: 10px;
-}
+  .cause-table,
+  .package-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #1e1e2f;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 10px;
+  }
 
-.cause-table th,
-.cause-table td,
-.package-table th,
-.package-table td {
-  padding: 12px;
-  text-align: left;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
+  .cause-table th,
+  .cause-table td,
+  .package-table th,
+  .package-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
 
-.cause-table th,
-.package-table th {
-  background: #292b40;
-}
+  .cause-table th,
+  .package-table th {
+    background: #292b40;
+  }
 
-.btn {
-  border: none;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
+  .btn {
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-.edit {
-  background-color: #296695;
-  color: white;
-  margin-right: 6px;
-}
+  .edit {
+    background-color: #296695;
+    color: white;
+    margin-right: 6px;
+  }
 
-.edit:hover {
-  background-color: #22527a;
-}
+  .edit:hover {
+    background-color: #22527a;
+  }
 
-.delete {
-  background-color: #985237;
-  color: white;
-}
+  .delete {
+    background-color: #985237;
+    color: white;
+  }
 
-.delete:hover {
-  background-color: #7d422d;
-}
+  .delete:hover {
+    background-color: #7d422d;
+  }
 
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
 
-.modal {
-  background: #1e1e2f;
-  padding: 24px;
-  border-radius: 12px;
-  width: 50%;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  overflow-y: auto;
-}
+  .modal {
+    background: #1e1e2f;
+    padding: 24px;
+    border-radius: 12px;
+    width: 50%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+  }
 
-.modal h3 {
-  color: #f6d579;
-}
+  .modal h3 {
+    color: #f6d579;
+  }
 
-.image-container {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 20px;
-}
+  .image-container {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
 
-.image-group {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
+  .image-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
 
-.image-preview {
-  width: 100px;
-  height: 100px;
-  border-radius: 8px;
-  object-fit: cover;
-  cursor: pointer;
-  border: 2px solid #f6d579;
-}
+  .image-preview {
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+    object-fit: cover;
+    cursor: pointer;
+    border: 2px solid #f6d579;
+  }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
 
-.form-group label {
-  color: #e0e0e0;
-  font-weight: 500;
-}
+  .form-group label {
+    color: #e0e0e0;
+    font-weight: 500;
+  }
 
-.modal input,
-.modal select,
-.modal textarea {
-  padding: 10px;
-  border: none;
-  border-radius: 6px;
-  background: #292b40;
-  color: white;
-}
+  .modal input,
+  .modal select,
+  .modal textarea {
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    background: #292b40;
+    color: white;
+  }
 
-.modal textarea {
-  min-height: 80px;
-  resize: vertical;
-}
+  .modal textarea {
+    min-height: 80px;
+    resize: vertical;
+  }
 
-.package-items {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+  .package-items {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
 
-.package-item {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
+  .package-item {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
 
-.package-item select,
-.package-item input {
-  flex: 1;
-}
+  .package-item select,
+  .package-item input {
+    flex: 1;
+  }
 
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 10px;
-}
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+  }
 
-.btn-success {
-  background: #28a745;
-  color: white;
-}
+  .btn-success {
+    background: #28a745;
+    color: white;
+  }
 
-.btn-success:hover {
-  background: #218838;
-}
+  .btn-success:hover {
+    background: #218838;
+  }
 
-.btn-secondary {
-  background: #6c757d;
-  color: white;
-}
+  .btn-secondary {
+    background: #6c757d;
+    color: white;
+  }
 
-.btn-secondary:hover {
-  background: #5a6268;
-}
+  .btn-secondary:hover {
+    background: #5a6268;
+  }
 
-.modal::-webkit-scrollbar {
-  width: 8px;
-}
+  .modal::-webkit-scrollbar {
+    width: 8px;
+  }
 
-.modal::-webkit-scrollbar-track {
-  background: #1e1e2f;
-}
+  .modal::-webkit-scrollbar-track {
+    background: #1e1e2f;
+  }
 
-.modal::-webkit-scrollbar-thumb {
-  background: #4a4a6a;
-  border-radius: 4px;
-}
+  .modal::-webkit-scrollbar-thumb {
+    background: #4a4a6a;
+    border-radius: 4px;
+  }
 
-.modal::-webkit-scrollbar-thumb:hover {
-  background: #5a5a7a;
-}
+  .modal::-webkit-scrollbar-thumb:hover {
+    background: #5a5a7a;
+  }
 </style>
