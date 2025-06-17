@@ -12,5 +12,6 @@ namespace HopeBox.Core.IService
         Task<BaseResponseDto<bool>> AddAsync(TDto model);
         Task<BaseResponseDto<bool>> UpdateAsync(TDto model);
         Task<BaseResponseDto<bool>> DeleteAsync(Guid id);
+        Task<BaseResponseDto<bool>> DeleteAllAsync();
     }
 }

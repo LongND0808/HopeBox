@@ -57,6 +57,14 @@ namespace HopeBox.Web.Controller
         }
 
         [Authorize(Roles = "Admin")]
+        [HttpPost("delete-all")]
+        public virtual async Task<BaseResponseDto<bool>> DeleteAll()
+        {
+            var result = await _baseService.DeleteAllAsync();
+            return (result);
+        }
+
+        [Authorize(Roles = "Admin")]
         [HttpGet("get-count")]
         public virtual async Task<BaseResponseDto<int>> GetCount()
         {

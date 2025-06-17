@@ -210,5 +210,29 @@ namespace HopeBox.Core.Service
                 };
             }
         }
+
+        public async Task<BaseResponseDto<bool>> DeleteAllAsync()
+        {
+            try
+            {
+                var entities = await _repository.GetListAsync();
+                await _repository.DeleteRangeAsync(entities);
+                return new BaseResponseDto<bool>
+                {
+                    Status = 200,
+                    Message = "Delete successful",
+                    ResponseData = true
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponseDto<bool>
+                {
+                    Status = 500,
+                    Message = ex.Message,
+                    ResponseData = false
+                };
+            }
+        }
     }
 }
