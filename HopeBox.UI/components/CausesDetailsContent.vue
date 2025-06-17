@@ -6,10 +6,13 @@
           <div class="causes-details-column">
             <div class="causes-details-content">
               <div class="causes-details">
+                <div class="thumb">
+                  <img class="w-100" :src="cause.heroImage" alt="image">
+                </div>
                 <h3 class="cause-title">{{ cause.title }}</h3>
                 <div class="donate-info-wrp">
                   <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                       <ul class="donate-info">
                         <li class="info-item">
                           <span class="info-title">Mục tiêu:</span>
@@ -21,10 +24,10 @@
                         </li>
                         <li class="info-item">
                           <span class="info-title">Còn thiếu:</span>
-                          <span class="amount">
-                            {{ (cause.targetAmount - cause.currentAmount) < 0 ? '0 ₫' : ((cause.targetAmount -
-                              cause.currentAmount) / 1_000_000).toFixed(1) + 'tr ₫' }} </span>
+                          <span class="amount">{{ ((cause.targetAmount - cause.currentAmount) / 1_000_000).toFixed(1)
+                            }}tr ₫</span>
                         </li>
+
                       </ul>
                     </div>
                     <div class="col-md-6">
@@ -37,26 +40,22 @@
                       </div>
                     </div>
                   </div>
-
-                </div>
-
-                <div class="thumb">
-                  <img class="w-50 d-block mx-auto my-3" :src="cause.heroImage" alt="image">
                 </div>
                 <p>{{ cause.detail }}</p>
 
                 <h3>Vấn đề khó khăn</h3>
-                <img class="w-50 d-block mx-auto mb-3" :src="cause.challengeImage" alt="Challenge image">
+                <img class="w-100 mb-3" :src="cause.challengeImage" alt="Challenge image">
                 <p>{{ cause.challenge }}</p>
 
                 <h3>Tổng quan</h3>
-                <img class="w-50 d-block mx-auto mb-3" :src="cause.summaryImage" alt="Summary image">
+                <img class="w-100 mb-3" :src="cause.summaryImage" alt="Summary image">
                 <p>{{ cause.summary }}</p>
               </div>
 
-              <DonnerList :causeId="cause.id" />
+              <DonnerList />
               <DonationForm :causeId="cause.id" />
             </div>
+            <SidebarWrapper />
           </div>
         </div>
       </div>

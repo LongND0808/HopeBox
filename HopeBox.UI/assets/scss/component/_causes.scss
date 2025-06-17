@@ -228,6 +228,7 @@
             margin-right: auto;
         }
         .causes-details-content {
+            max-width: 700px;
             width: 100%;
             @media #{$lg-device} {
                 margin-bottom: 70px;
@@ -276,8 +277,7 @@
         display: flex;
         justify-content: space-between;
         margin-bottom: 0;
-        padding-left: 5%;
-        padding-right: 5%;
+        padding-right: 3px;
         @media #{$sm-device} {
             border-bottom: 1px solid #ededed;
             margin-bottom: 30px;
