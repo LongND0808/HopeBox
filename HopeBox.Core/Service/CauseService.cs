@@ -49,7 +49,7 @@ namespace HopeBox.Core.Service
                     filter = filter.And(f => (int)f.Type == request.CauseType.Value);
                 }
 
-                filter = filter.And(f => f.Status == CauseStatus.Ongoing);
+                filter = filter.And(f => f.Status == CauseStatus.Ongoing || f.Status == CauseStatus.Completed);
 
                 var totalRecords = await _repository.GetCount(filter);
 
