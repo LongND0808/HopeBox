@@ -79,5 +79,11 @@ namespace HopeBox.Web.Controller
             return result;
         }
 
+        [HttpGet("get-most-urgent-cause")]
+        public async Task<BaseResponseDto<CauseDto>> GetMostUrgentCause()
+        {
+            return await _causeService.GetMostUrgentCauseAsync();
+        }
+
     }
 }
