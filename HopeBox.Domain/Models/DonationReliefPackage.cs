@@ -14,11 +14,7 @@ namespace HopeBox.Domain.Models
 
         public Guid ReliefPackageId { get; set; }
 
-        [Range(1, int.MaxValue)]
         public int Quantity { get; set; }
-
-        [NotMapped]
-        public decimal TotalAmount => ReliefPackage != null ? ReliefPackage.TotalAmount * Quantity : 0;
 
         public virtual Donation? Donation { get; set; }
         public virtual ReliefPackage? ReliefPackage { get; set; }

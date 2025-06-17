@@ -2,6 +2,7 @@
 using HopeBox.Domain.Models;
 using HopeBox.Domain.RequestDto;
 using HopeBox.Domain.ResponseDto;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,5 +17,8 @@ namespace HopeBox.Core.IService
         Task<BaseResponseDto<CauseDto>> GetCauseHighestTargetAsync();
         Task<BaseResponseDto<BasePagingResponseDto<CauseDto>>> GetCauseByFilter(CauseFilterRequestDto request);
         Task<BaseResponseDto<IEnumerable<CauseRevenueResponseDto>>> GetCauseRevenueAsync();
+        Task<BaseResponseDto<string>> ChangeHeroImageAsync(Guid causeId, IFormFile file);
+        Task<BaseResponseDto<string>> ChangeChallengeImageAsync(Guid causeId, IFormFile file);
+        Task<BaseResponseDto<string>> ChangeSummaryImageAsync(Guid causeId, IFormFile file);
     }
 }

@@ -15,8 +15,15 @@ namespace HopeBox.Domain.Models
 
         public string? Description { get; set; }
 
-        [NotMapped]
-        public decimal TotalAmount => PackageItems?.Sum(i => i.TotalPrice) ?? 0;
+        public decimal ExtraFee { get; set; }
+
+        public decimal TotalPrice { get; set; }
+
+        public string? Image { get; set; }
+
+        public int CurrentQuantity { get; set; }
+
+        public int TargetQuantity { get; set; }
 
         public virtual Cause? Cause { get; set; }
         public virtual ICollection<ReliefPackageItem>? PackageItems { get; set; }

@@ -1,32 +1,28 @@
+﻿using HopeBox.Domain.Models;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using static HopeBox.Common.Enum.Enumerate;
 
-namespace HopeBox.Domain.Dtos
+namespace HopeBox.Domain.RequestDto
 {
-    public class DonationDto : BaseModelDto
+    public class CreateDonationRequestDto
     {
-        public Guid UserId { get; set; }
-
         public Guid CauseId { get; set; }
 
         public decimal DonationAmount { get; set; }
 
         public decimal Amount { get; set; }
 
-        public DateTime DonationDate { get; set; }
-
-        [Required]
         public PaymentMethod PaymentMethod { get; set; }
-
-        public string? TransactionId { get; set; }
-
-        public DonationStatus Status { get; set; }
 
         public bool IsAnonymous { get; set; }
 
         public string? Message { get; set; }
 
-        public string? TradingCode { get; set; }
+        public Dictionary<Guid, int> ReliefPackages { get; set; } = new();
     }
 }

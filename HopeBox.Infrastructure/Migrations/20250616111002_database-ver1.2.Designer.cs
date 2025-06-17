@@ -4,6 +4,7 @@ using HopeBox.Infrastructure.DataContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HopeBox.Infrastructure.Migrations
 {
     [DbContext(typeof(HopeBoxDataContext))]
-    partial class HopeBoxDataContextModelSnapshot : ModelSnapshot
+    [Migration("20250616111002_database-ver1.2")]
+    partial class databasever12
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -180,17 +183,8 @@ namespace HopeBox.Infrastructure.Migrations
                     b.Property<Guid>("CauseId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal>("DonationAmount")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<DateTime>("DonationDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsAnonymous")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Message")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PaymentMethod")
                         .HasColumnType("int");
@@ -463,6 +457,9 @@ namespace HopeBox.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Image")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ItemName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -493,9 +490,6 @@ namespace HopeBox.Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("ExtraFee")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<string>("Image")
                         .HasColumnType("nvarchar(max)");
 
@@ -505,9 +499,6 @@ namespace HopeBox.Infrastructure.Migrations
 
                     b.Property<int>("TargetQuantity")
                         .HasColumnType("int");
-
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 

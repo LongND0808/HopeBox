@@ -22,7 +22,7 @@ namespace HopeBox.Web.Controller
 
         [Authorize]
         [HttpPost("create-donation")]
-        public async Task<BaseResponseDto<string>> CreateDonation([FromBody] DonationDto donation)
+        public async Task<BaseResponseDto<string>> CreateDonation([FromBody] CreateDonationRequestDto donation)
         {
             var userId = User.FindFirst("id")?.Value;
 
@@ -36,46 +36,14 @@ namespace HopeBox.Web.Controller
                 };
             }
 
-            donation.UserId = Guid.Parse(userId);
-
-            var result = await _donationService.CreateDonation(donation);
+            var result = await _donationService.CreateDonation(userId, donation);
             return result;
-        }
-
-
-        [HttpGet("create-payment-url")]
-        public async Task<BaseResponseDto<string>> CreatePaymentUrl([FromQuery] Guid donationId)
-        {
-            string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "127.0.0.1";
-            var result = await _donationService.CreateVNPayPaymentUrlAsync(donationId, ipAddress);
-            return (result);
         }
 
         [HttpPost("vnpay-return")]
         public async Task<BaseResponseDto<bool>> VNPayReturn(VNPayReturnRequestDto dto)
         {
             var result = await _donationService.HandleVNPayReturnAsync(dto);
-            return (result);
-        }
-
-        [HttpGet("get-by-trading-code")]
-        public async Task<BaseResponseDto<DonationDto>> GetByTradingCode([FromQuery] string tradingCode)
-        {
-            var result = await _donationService.GetByTradingCodeAsync(tradingCode);
-            return (result);
-        }
-
-        [HttpPost("mark-paid")]
-        public async Task<BaseResponseDto<bool>> MarkAsPaid([FromBody] MarkPaidRequestDto request)
-        {
-            var result = await _donationService.MarkAsPaidAsync(request.DonationId, request.TransactionId);
-            return (result);
-        }
-
-        [HttpPost("update-trading-code")]
-        public async Task<BaseResponseDto<bool>> UpdateTradingCode([FromBody] UpdateTradingCodeRequestDto request)
-        {
-            var result = await _donationService.UpdateTradingCodeAsync(request.DonationId, request.TradingCode);
             return (result);
         }
     }

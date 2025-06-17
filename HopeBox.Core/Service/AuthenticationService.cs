@@ -368,7 +368,7 @@ namespace HopeBox.Core.Service
 
         private string GenerateVerificationCode(int length)
         {
-            var AllChars = (Constant.AllChars).ToCharArray();
+            var AllChars = (Constant.DigitChars).ToCharArray();
             var result = new StringBuilder(length);
             using (var rng = RandomNumberGenerator.Create())
             {

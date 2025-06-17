@@ -1,4 +1,5 @@
 ﻿using HopeBox.Core.IService;
+using HopeBox.Core.R2Storage;
 using HopeBox.Domain.Converter;
 using HopeBox.Domain.Dtos;
 using HopeBox.Domain.Models;
@@ -6,6 +7,7 @@ using HopeBox.Domain.RequestDto;
 using HopeBox.Domain.ResponseDto;
 using HopeBox.Infrastructure.Repository;
 using LinqKit;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using System;
@@ -22,10 +24,12 @@ namespace HopeBox.Core.Service
     public class CauseService : BaseService<Cause, CauseDto>, ICauseService
     {
         private readonly IRepository<Donation> _donationRepository;
-        public CauseService(IRepository<Cause> repository, IConverter<Cause, CauseDto> converter, IRepository<Donation> donationRepository)
+        private readonly IR2StorageService _r2StorageService;
+        public CauseService(IRepository<Cause> repository, IConverter<Cause, CauseDto> converter, IRepository<Donation> donationRepository, IR2StorageService r2StorageService)
             : base(repository, converter)
         {
             _donationRepository = donationRepository;
+            _r2StorageService = r2StorageService;
         }
 
         public async Task<BaseResponseDto<BasePagingResponseDto<CauseDto>>> GetCauseByFilter(
@@ -182,6 +186,117 @@ namespace HopeBox.Core.Service
                 {
                     Status = 500,
                     Message = $"Lỗi: {ex.Message}",
+                    ResponseData = null
+                };
+            }
+        }
+
+        public async Task<BaseResponseDto<string>> ChangeHeroImageAsync(Guid causeId, IFormFile file)
+        {
+            try
+            {
+                var cause = await _repository.GetByIdAsync(causeId);
+                if (cause == null)
+                {
+                    return new BaseResponseDto<string>
+                    {
+                        Status = 404,
+                        Message = "Chiến dịch không tồn tại",
+                        ResponseData = null
+                    };
+                }
+
+                var fileUrl = await _r2StorageService.UploadFileAsync(file, "cause-hero-images", causeId.ToString());
+                cause.HeroImage = fileUrl;
+                await _repository.UpdateAsync(cause);
+
+                return new BaseResponseDto<string>
+                {
+                    Status = 200,
+                    Message = "Tải ảnh tiêu điểm thành công",
+                    ResponseData = fileUrl + "?v=" + DateTime.Now.Microsecond.ToString()
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponseDto<string>
+                {
+                    Status = 500,
+                    Message = ex.Message,
+                    ResponseData = null
+                };
+            }
+        }
+
+        public async Task<BaseResponseDto<string>> ChangeChallengeImageAsync(Guid causeId, IFormFile file)
+        {
+            try
+            {
+                var cause = await _repository.GetByIdAsync(causeId);
+                if (cause == null)
+                {
+                    return new BaseResponseDto<string>
+                    {
+                        Status = 404,
+                        Message = "Chiến dịch không tồn tại",
+                        ResponseData = null
+                    };
+                }
+
+                var fileUrl = await _r2StorageService.UploadFileAsync(file, "cause-challenge-images", causeId.ToString());
+                cause.ChallengeImage = fileUrl;
+                await _repository.UpdateAsync(cause);
+
+                return new BaseResponseDto<string>
+                {
+                    Status = 200,
+                    Message = "Tải ảnh thách thức thành công",
+                    ResponseData = fileUrl + "?v=" + DateTime.Now.Microsecond.ToString()
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponseDto<string>
+                {
+                    Status = 500,
+                    Message = ex.Message,
+                    ResponseData = null
+                };
+            }
+        }
+
+        public async Task<BaseResponseDto<string>> ChangeSummaryImageAsync(Guid causeId, IFormFile file)
+        {
+            try
+            {
+                var cause = await _repository.GetByIdAsync(causeId);
+                if (cause == null)
+                {
+                    return new BaseResponseDto<string>
+                    {
+                        Status = 404,
+                        Message = "Chiến dịch không tồn tại",
+                        ResponseData = null
+                    };
+                }
+
+                var fileUrl = await _r2StorageService.UploadFileAsync(file, "cause-summary-images", causeId.ToString());
+                cause.SummaryImage = fileUrl;
+                await _repository.UpdateAsync(cause);
+
+                return new BaseResponseDto<string>
+                {
+                    Status = 200,
+                    Message = "Tải ảnh tổng kết thành công",
+                    ResponseData = fileUrl + "?v=" + DateTime.Now.Microsecond.ToString()
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponseDto<string>
+                {
+                    Status = 500,
+                    Message = ex.Message,
                     ResponseData = null
                 };
             }

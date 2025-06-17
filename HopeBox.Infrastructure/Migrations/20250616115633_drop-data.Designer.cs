@@ -4,6 +4,7 @@ using HopeBox.Infrastructure.DataContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HopeBox.Infrastructure.Migrations
 {
     [DbContext(typeof(HopeBoxDataContext))]
-    partial class HopeBoxDataContextModelSnapshot : ModelSnapshot
+    [Migration("20250616115633_drop-data")]
+    partial class dropdata
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -185,12 +188,6 @@ namespace HopeBox.Infrastructure.Migrations
 
                     b.Property<DateTime>("DonationDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsAnonymous")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Message")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PaymentMethod")
                         .HasColumnType("int");

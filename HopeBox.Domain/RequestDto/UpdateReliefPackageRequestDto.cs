@@ -1,9 +1,14 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace HopeBox.Domain.Dtos
+namespace HopeBox.Domain.RequestDto
 {
-    public class ReliefPackageDto : BaseModelDto
+    public class UpdateReliefPackageRequestDto
     {
+        public Guid Id { get; set; } 
         public Guid CauseId { get; set; }
         public string Name { get; set; } = string.Empty;
         public string? Description { get; set; }
@@ -12,5 +17,6 @@ namespace HopeBox.Domain.Dtos
         public string? Image { get; set; }
         public int CurrentQuantity { get; set; }
         public int TargetQuantity { get; set; }
+        public Dictionary<Guid, int> SelectedItems { get; set; }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using HopeBox.Domain.Dtos;
 using HopeBox.Domain.Models;
+using HopeBox.Domain.RequestDto;
 using HopeBox.Domain.ResponseDto;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,5 +20,7 @@ namespace HopeBox.Core.IAspModelService
         Task<BaseResponseDto<bool>> DeleteAsync(Guid id);
         Task<BaseResponseDto<int>> GetCountAsync();
         Task<BaseResponseDto<IEnumerable<UserDto>>> GetManagerAsync();
+        Task<BaseResponseDto<string>> ChangeAvatarAsync(Guid guid, IFormFile file);
+        Task<BaseResponseDto<bool>> UpdateUserInfoAsync(UpdateUserInfoRequestDto dto);
     }
 }

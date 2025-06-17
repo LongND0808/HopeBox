@@ -4,6 +4,7 @@ using HopeBox.Core.Email;
 using HopeBox.Core.IAspModelService;
 using HopeBox.Core.IdentityModelService;
 using HopeBox.Core.IService;
+using HopeBox.Core.R2Storage;
 using HopeBox.Core.Service;
 using HopeBox.Core.Token;
 using HopeBox.Domain.Configuration;
@@ -43,6 +44,8 @@ builder.Services.AddHttpClient<IOpenMapService, OpenMapService>(client =>
     client.DefaultRequestHeaders.Add("User-Agent", "HopeBox/1.0");
 });
 
+builder.Services.AddHttpContextAccessor();
+
 #region Add Repository
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 #endregion
@@ -59,6 +62,9 @@ builder.Services.AddScoped<IDonationService, DonationService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICauseService, CauseService>();
 builder.Services.AddScoped<IOpenMapService, OpenMapService>();
+builder.Services.AddScoped<IR2StorageService, R2StorageService>();
+builder.Services.AddScoped<IReliefPackageService, ReliefPackageService>();
+builder.Services.AddScoped<IReliefPackageItemService, ReliefPackageItemService>();
 #endregion
 
 #region Add Converter

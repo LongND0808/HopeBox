@@ -17,9 +17,6 @@ namespace HopeBox.Domain.Models
         [Range(1, double.MaxValue)]
         public double Quantity { get; set; }
 
-        [NotMapped]
-        public decimal TotalPrice => ReliefItem != null ? (decimal)Quantity * ReliefItem.UnitPrice : 0;
-
         public virtual ReliefPackage? ReliefPackage { get; set; }
         public virtual ReliefItem? ReliefItem { get; set; }
     }

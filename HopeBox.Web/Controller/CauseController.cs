@@ -5,6 +5,7 @@ using HopeBox.Core.IService;
 using HopeBox.Domain.ResponseDto;
 using HopeBox.Domain.RequestDto;
 using Microsoft.AspNetCore.Authorization;
+using HopeBox.Core.Service;
 
 namespace HopeBox.Web.Controller
 {
@@ -48,5 +49,28 @@ namespace HopeBox.Web.Controller
             return result;
         }
 
+        [HttpPost("change-hero-image")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ChangeHeroImage(string causeId, IFormFile file)
+        {
+            var result = await _causeService.ChangeHeroImageAsync(Guid.Parse(causeId), file);
+            return Ok(result);
+        }
+
+        [HttpPost("change-challenge-image")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ChangeChallengeImage(string causeId, IFormFile file)
+        {
+            var result = await _causeService.ChangeChallengeImageAsync(Guid.Parse(causeId), file);
+            return Ok(result);
+        }
+
+        [HttpPost("change-summary-image")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ChangeSummaryImage(string causeId, IFormFile file)
+        {
+            var result = await _causeService.ChangeSummaryImageAsync(Guid.Parse(causeId), file);
+            return Ok(result);
+        }
     }
 }
