@@ -146,12 +146,6 @@ namespace HopeBox.Core.Service
                     {
                         foreach (var (packageId, quantity) in donationDto.ReliefPackages)
                         {
-                            var package = await _reliefPackageRepository.GetOneAsync(
-                                filter: f => f.Id == packageId);
-
-                            package.CurrentQuantity += quantity;
-                            await _reliefPackageRepository.UpdateAsync(package);
-
                             var donationReliefPackage = new DonationReliefPackage
                             {
                                 DonationId = donation.Id,
@@ -162,7 +156,15 @@ namespace HopeBox.Core.Service
                         }
                     }
 
-                    string ipAddress = _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString() ?? "127.0.0.1";
+                    var ip = _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress;
+
+                    if (ip != null && ip.IsIPv4MappedToIPv6)
+                    {
+                        ip = ip.MapToIPv4();
+                    }
+
+                    string ipAddress = ip?.ToString() ?? "127.0.0.1";
+
                     string paymentUrl = await CreateVNPayPaymentUrlAsync(donation.Id, ipAddress);
 
                     await transaction.CommitAsync();
@@ -223,8 +225,8 @@ namespace HopeBox.Core.Service
                 { "vnp_Locale", "vn" },
                 { "vnp_ReturnUrl", returnUrl },
                 { "vnp_IpAddr", ipAddress ?? "127.0.0.1" },
-                { "vnp_CreateDate", DateTime.Now.ToString("yyyyMMddHHmmss") },
-                { "vnp_ExpireDate", DateTime.Now.AddMinutes(15).ToString("yyyyMMddHHmmss") }
+                { "vnp_CreateDate", DateTime.UtcNow.ToString("yyyyMMddHHmmss") },
+                { "vnp_ExpireDate", DateTime.UtcNow.AddMinutes(15).AddHours(7).ToString("yyyyMMddHHmmss") }
             };
 
             string queryString = string.Join("&", payParams.Select(kvp => $"{kvp.Key}={WebUtility.UrlEncode(kvp.Value)}"));
@@ -256,7 +258,38 @@ namespace HopeBox.Core.Service
                 {
                     donation.TransactionId = dto.vnp_TransactionNo;
                     donation.Status = DonationStatus.Paid;
+
                     await _repository.UpdateAsync(donation);
+
+                    var donationPackages = await _donationReliefPackageRepository.GetListAsyncUntracked<DonationReliefPackage>(
+                        f => f.DonationId == donation.Id);
+
+                    var reliefPackageIds = donationPackages
+                        .Select(dp => dp.ReliefPackageId)
+                        .Distinct()
+                        .ToList();
+
+                    var reliefPackages = await _reliefPackageRepository.GetListAsync(
+                        f => reliefPackageIds.Contains(f.Id));
+
+                    var reliefPackageDict = reliefPackages.ToDictionary(p => p.Id);
+
+                    foreach (var dp in donationPackages)
+                    {
+                        if (!reliefPackageDict.TryGetValue(dp.ReliefPackageId, out var pkg))
+                        {
+                            return new BaseResponseDto<bool>
+                            {
+                                Status = 404,
+                                Message = "Không tìm thấy gói cứu trợ.",
+                                ResponseData = false
+                            };
+                        }
+
+                        pkg.CurrentQuantity += dp.Quantity;
+                    }
+
+                    await _reliefPackageRepository.UpdateRangeAsync(reliefPackageDict.Values.ToList());
 
                     var cause = await _causeRepository.GetOneAsync(filter: f => f.Id == donation.CauseId);
                     cause.CurrentAmount += donation.Amount;
