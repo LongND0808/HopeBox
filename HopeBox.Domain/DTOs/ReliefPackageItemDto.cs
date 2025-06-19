@@ -7,5 +7,7 @@ namespace HopeBox.Domain.Dtos
         public Guid ReliefPackageId { get; set; }
         public Guid ReliefItemId { get; set; }
         public double Quantity { get; set; }
+        public decimal TotalPrice { get; set; }
+        public ReliefItemDto? ReliefItem { get; set; }
     }
 }

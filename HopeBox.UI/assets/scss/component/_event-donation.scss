@@ -1,0 +1,518 @@
+/*
+-----------------------------------------------------------------------
+    EventDonation Component Styles
+-----------------------------------------------------------------------
+*/
+@import '../common/mixins';
+// Variables
+$event-primary-color: #ff6b1f;
+$event-secondary-color: #ff7a36;
+$event-success-color: #28a745;
+$event-warning-color: #ffc107;
+$event-danger-color: #dc3545;
+$event-light-bg: #fef9f6;
+$event-white: #ffffff;
+$event-border-radius: 8px;
+$event-shadow: 0 2px 6px rgba(255, 168, 108, 0.2);
+
+// Events Form Area
+.events-area {
+    &.events-default-area {
+        padding: 100px 0;
+        background-color: $event-light-bg;
+        margin-bottom: 150px;
+        
+        @media (max-width: 991px) {
+            padding: 70px 0;
+        }
+        
+        @media (max-width: 767px) {
+            padding: 50px 0;
+            margin-bottom: 80px;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+            
+            .subtitle {
+                color: $event-primary-color;
+                font-size: 16px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                margin-bottom: 10px;
+            }
+            
+            .title {
+                font-size: 36px;
+                font-weight: 700;
+                color: #232323;
+                margin-bottom: 20px;
+                
+                @media (max-width: 767px) {
+                    font-size: 28px;
+                }
+                
+                span {
+                    color: $event-primary-color;
+                }
+            }
+            
+            p {
+                font-size: 16px;
+                color: #666;
+                max-width: 600px;
+                margin: 0 auto;
+                line-height: 1.6;
+            }
+        }
+    }
+}
+
+// Filter Controls (tái sử dụng từ VolunteerForm)
+.filter-controls {
+    background: $event-white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: $event-shadow;
+    margin-bottom: 40px;
+    
+    .form-control,
+    .form-select {
+        border: 2px solid #ffa86c;
+        border-radius: $event-border-radius;
+        padding: 12px 16px;
+        font-size: 15px;
+        box-shadow: $event-shadow;
+        transition: all 0.3s ease;
+        height: 48px;
+        
+        &:focus {
+            border-color: $event-secondary-color;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 122, 54, 0.2);
+        }
+        
+        &::placeholder {
+            color: #999;
+        }
+    }
+    
+    .btn-search {
+        background: linear-gradient(135deg, $event-secondary-color, $event-primary-color);
+        border: none;
+        color: $event-white;
+        font-weight: 600;
+        padding: 12px 24px;
+        border-radius: 25px;
+        font-size: 16px;
+        height: 48px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+        cursor: pointer;
+        
+        &:hover {
+            background: linear-gradient(135deg, $event-primary-color, $event-secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 31, 0.3);
+        }
+        
+        &:active {
+            transform: translateY(0);
+        }
+        
+        &::before {
+            content: "🔍";
+            margin-right: 8px;
+        }
+    }
+}
+
+// Loading State
+.loading-state {
+    text-align: center;
+    padding: 80px 0;
+    color: #999;
+    
+    .fa-spinner {
+        color: $event-primary-color;
+        margin-bottom: 20px;
+    }
+    
+    p {
+        font-size: 16px;
+        margin: 0;
+    }
+}
+
+// ===== EVENT ITEMS - STACK LAYOUT =====
+.event-item {
+    background: $event-white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    
+    &:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    // ===== THUMB (ẢNH Ở TRÊN) =====
+    .thumb {
+        width: 100%;
+        height: 220px;
+        overflow: hidden;
+        position: relative;
+        
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+    }
+    
+    &:hover .thumb img {
+        transform: scale(1.1);
+    }
+    
+    // ===== CONTENT (NỘI DUNG Ở GIỮA) =====
+    .content {
+        flex: 1;
+        padding: 25px;
+        display: flex;
+        flex-direction: column;
+        
+        // Donate Info
+        .donate-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            gap: 15px;
+            
+            .info-item {
+                font-family: $font-current-theme2;
+                background-color: $event-white;
+                
+                flex: 1;
+                padding: 7px 10px 6px 10px; // Giống padding gốc
+                text-align: left; // Thay đổi từ center sang left
+                border-radius: 0; // Bỏ border-radius để giống design
+                @include transition(0.1s);
+                
+                .info-title {
+                    display: block;
+                    color: #333; // Màu đậm hơn cho title
+                    font-size: 14px; // Tăng font size
+                    margin-bottom: 8px; // Tăng margin
+                    line-height: 1;
+                }
+                
+                .amount {
+                    display: block;
+                    @include gradient-text-two();
+                    font-size: 20px; // Tăng font size cho amount
+                    line-height: 1;
+                    
+                    @media (max-width: 767px) {
+                        font-size: 15px;
+                    }
+                }
+                
+                &:hover {
+                    @include gradient-bg-two();
+                    .info-title,
+                    .amount {
+                        color: $white;
+                        -webkit-text-fill-color: $white;
+                    }
+                }
+                
+                &:last-child {
+                    margin-right: 0;
+                }
+            }
+        }
+        
+        .title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #232323;
+            margin-bottom: 15px;
+            line-height: 1.4;
+            
+            a {
+                color: inherit;
+                text-decoration: none;
+                
+                &:hover {
+                    color: $event-primary-color;
+                }
+            }
+        }
+        
+        .description {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .event-time {
+            margin-bottom: 10px;
+            
+            p {
+                font-size: 13px;
+                color: #555;
+                margin-bottom: 5px;
+                
+                strong {
+                    color: #333;
+                }
+            }
+        }
+        
+        .event-cause {
+            p {
+                font-size: 13px;
+                color: #555;
+                margin-bottom: 0;
+                
+                strong {
+                    color: #333;
+                }
+            }
+        }
+    }
+    
+    // ===== FOOTER (ADMIN + BUTTON) =====
+    .events-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 25px 25px;
+        background-color: #fafafa;
+        
+        @media (max-width: 767px) {
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .admin {
+            flex: 1;
+
+            h5 {
+                font-size: 14px;
+                margin: 0;
+                color: #666;
+                display: flex;
+                align-items: center;
+                font-weight: 600; // Tăng font weight
+                
+                .icon-img {
+                    box-shadow: 0px 3px 7px 0px rgba(252, 102, 57, 0.08);
+                    height: 40px;
+                    line-height: 35px;
+                    text-align: center;
+                    display: block;
+                    border-radius: 50%;
+                    background-color: #fff;
+                    min-width: 40px;
+                    margin-right: 11px;
+                    width: 40px;
+                }
+                
+                .admin-info {
+                    display: flex;
+                    flex-direction: column;
+                    
+                    .admin-name {
+                        color: #333;
+                        font-weight: 600;
+                        margin-bottom: 2px;
+                    }
+                    
+                    .organization-name {
+                        color: #999;
+                        font-size: 12px;
+                        font-weight: normal;
+                    }
+                }
+            }
+        }
+        
+        .btn-theme {
+            padding: 12px 24px; // Tăng padding
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            flex-shrink: 0; // Không cho phép button co lại
+            
+            &:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(255, 107, 31, 0.3);
+            }
+            
+            @media (max-width: 767px) {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    }
+}
+
+// ===== RESPONSIVE DESIGN =====
+@media (max-width: 767px) {
+    .event-item {
+        .content {
+            .donate-info {
+                gap: 8px;
+                
+                .info-item {
+                    .info-title {
+                        font-size: 12px;
+                    }
+                    
+                    .amount {
+                        font-size: 16px;
+                    }
+                }
+            }
+        }
+        
+        .events-footer {
+            .admin {
+                h5 {
+                    .icon-img {
+                        width: 35px;
+                        height: 35px;
+                        margin-right: 10px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// ===== PAGINATION =====
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 50px;
+    margin-bottom: 80px;
+    @media (max-width: 767px) {
+        margin-bottom: 60px;
+    }
+    .pagination-button {
+        background-color: $event-white;
+        color: $event-primary-color;
+        border: 2px solid $event-primary-color;
+        border-radius: 50%;
+        width: 45px;
+        height: 45px;
+        font-weight: 600;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        &:hover:not(:disabled) {
+            background-color: $event-primary-color;
+            color: $event-white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 31, 0.4);
+        }
+        
+        &.active {
+            background-color: $event-primary-color;
+            color: $event-white;
+            box-shadow: 0 4px 15px rgba(255, 107, 31, 0.5);
+        }
+        
+        &:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            background-color: #f5f5f5;
+            border-color: #ddd;
+            color: #aaa;
+            transform: none !important;
+        }
+    }
+}
+
+// ===== NO EVENTS MESSAGE =====
+.no-events-message {
+    text-align: center;
+    padding: 80px 0;
+    color: #666;
+    
+    p {
+        font-size: 18px;
+        margin: 0;
+    }
+}
+
+// ===== RESPONSIVE DESIGN =====
+@media (max-width: 767px) {
+    .filter-controls {
+        padding: 20px;
+        
+        .col-md-2,
+        .col-md-4 {
+            margin-bottom: 15px;
+        }
+        
+        .btn-search {
+            width: 100%;
+        }
+    }
+    
+    .event-item {
+        margin-bottom: 30px;
+        
+        .thumb {
+            height: 200px;
+        }
+        
+        .content {
+            padding: 20px;
+            
+            .title {
+                font-size: 18px;
+            }
+            
+            .description {
+                font-size: 13px;
+            }
+        }
+    }
+    
+    .pagination-container {
+        gap: 5px;
+        
+        .pagination-button {
+            width: 40px;
+            height: 40px;
+            font-size: 14px;
+        }
+    }
+}

@@ -137,7 +137,7 @@
                                     người cần nó nhất.</p>
                                 <div class="btn-wrp">
                                     <nuxt-link to="/event-details" class="btn-theme btn-gradient btn-slide">
-                                        <span>Join Now <img class="icon icon-img"
+                                        <span>Tham Gia <img class="icon icon-img"
                                                 src="/images/icons/arrow-line-right2.png" alt="Icon"></span>
                                     </nuxt-link>
                                     <a class="btn-theme btn-border" href="tel:0123456789">

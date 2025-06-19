@@ -14,5 +14,9 @@ namespace HopeBox.Core.IService
         Task<BaseResponseDto<bool>> MarkAsPaidAsync(Guid donationId, string transactionId);
         Task<BaseResponseDto<bool>> UpdateTradingCodeAsync(Guid donationId, string tradingCode);
         Task<BaseResponseDto<string>> CreateDonation(DonationDto donation);
+        Task<BaseResponseDto<EventDonationResponseDto>> CreateEventDonationAsync(
+            Guid userId, EventDonationRequestDto request);
+        Task<BaseResponseDto<bool>> HandleEventVNPayReturnAsync(VNPayReturnRequestDto dto);
+        Task<BaseResponseDto<List<ReliefPackageDto>>> GetEventReliefPackagesAsync(Guid eventId);
     }
 }

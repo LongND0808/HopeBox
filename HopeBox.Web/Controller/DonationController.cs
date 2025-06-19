@@ -78,5 +78,41 @@ namespace HopeBox.Web.Controller
             var result = await _donationService.UpdateTradingCodeAsync(request.DonationId, request.TradingCode);
             return (result);
         }
+
+        [Authorize]
+        [HttpPost("create-event-donation")]
+        public async Task<ActionResult<BaseResponseDto<EventDonationResponseDto>>> CreateEventDonation(
+            [FromBody] EventDonationRequestDto request)
+        {
+            var userId = User.FindFirst("id")?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new BaseResponseDto<EventDonationResponseDto>
+                {
+                    Status = 401,
+                    Message = "User ID not found in access token",
+                    ResponseData = null
+                });
+            }
+
+            var result = await _donationService.CreateEventDonationAsync(Guid.Parse(userId), request);
+            return StatusCode(result.Status, result);
+        }
+
+        [HttpPost("event-vnpay-return")]
+        public async Task<ActionResult<BaseResponseDto<bool>>> EventVNPayReturn(
+            [FromBody] VNPayReturnRequestDto dto)
+        {
+            var result = await _donationService.HandleEventVNPayReturnAsync(dto);
+            return StatusCode(result.Status, result);
+        }
+
+        [HttpGet("get-event-relief-packages/{eventId}")]
+        public async Task<ActionResult<BaseResponseDto<List<ReliefPackageDto>>>> GetEventReliefPackages(Guid eventId)
+        {
+            var result = await _donationService.GetEventReliefPackagesAsync(eventId);
+            return StatusCode(result.Status, result);
+        }
     }
 }

@@ -48,11 +48,13 @@ namespace HopeBox.Domain.Models
 
         public Guid OrganizationId { get; set; }
 
+        public Guid? CauseId { get; set; }
+
         [ForeignKey(nameof(CreatedBy))]
         public virtual User? Creator { get; set; }
-
+        [ForeignKey(nameof(CauseId))]
+        public virtual Cause? Cause { get; set; }
         public virtual Organization? Organization { get; set; }
-
         public virtual ICollection<Media>? Photos { get; set; }
     }
 }

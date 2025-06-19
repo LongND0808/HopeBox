@@ -24,7 +24,10 @@
             </ul>
         </li>
         <li>
-            <nuxt-link to="/contact">Liên hệ</nuxt-link>
+            <nuxt-link to="/event-donation">Quyên Góp Sự Kiện</nuxt-link>
         </li>
+        <!-- <li>
+            <nuxt-link to="/contact">Liên hệ</nuxt-link>
+        </li> -->
     </ul>
 </template>

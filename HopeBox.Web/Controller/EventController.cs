@@ -1,5 +1,6 @@
 ﻿using HopeBox.Core.IService;
 using HopeBox.Domain.Dtos;
+using HopeBox.Domain.DTOs;
 using HopeBox.Domain.RequestDto;
 using HopeBox.Domain.ResponseDto;
 using Microsoft.AspNetCore.Mvc;
@@ -35,6 +36,21 @@ namespace HopeBox.Web.Controller
         public async Task<IActionResult> GetEventsByFilter([FromQuery] EventFilterRequestDto request)
         {
             var result = await _eventService.GetEventsByFilterAsync(request);
+            return StatusCode(result.Status, result);
+        }
+
+        [HttpGet("get-events-detail-by-filter")]
+        public async Task<ActionResult<BaseResponseDto<BasePagingResponseDto<EventDetailDto>>>> GetEventsDetailByFilter(
+    [FromQuery] EventFilterRequestDto request)
+        {
+            var result = await _eventService.GetEventsDetailByFilterAsync(request);
+            return StatusCode(result.Status, result);
+        }
+
+        [HttpGet("get-event-detail/{id}")]
+        public async Task<ActionResult<BaseResponseDto<EventDetailDto>>> GetEventDetailById(Guid id)
+        {
+            var result = await _eventService.GetEventDetailByIdAsync(id);
             return StatusCode(result.Status, result);
         }
 

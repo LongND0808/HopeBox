@@ -2,6 +2,7 @@
 using HopeBox.Core.IService;
 using HopeBox.Domain.Converter;
 using HopeBox.Domain.Dtos;
+using HopeBox.Domain.DTOs;
 using HopeBox.Domain.Models;
 using HopeBox.Domain.RequestDto;
 using HopeBox.Domain.ResponseDto;
@@ -16,17 +17,20 @@ namespace HopeBox.Core.Service
     {
         protected readonly IRepository<Event> _repository;
         protected readonly IConverter<Event, EventDto> _converter;
+        private readonly IConverter<Event, EventDetailDto> _eventDetailConverter;
         protected readonly IOpenMapService _openMapService;
         protected readonly ILogger<EventService> _logger;
 
         public EventService(
             IRepository<Event> repository,
             IConverter<Event, EventDto> converter,
+            IConverter<Event, EventDetailDto> eventDetailConverter,
             IOpenMapService openMapService,
             ILogger<EventService> logger)
         {
             _repository = repository;
             _converter = converter;
+            _eventDetailConverter = eventDetailConverter;
             _openMapService = openMapService;
             _logger = logger;
         }
@@ -188,6 +192,152 @@ namespace HopeBox.Core.Service
                 {
                     Status = 500,
                     Message = ex.Message,
+                    ResponseData = null
+                };
+            }
+        }
+        #endregion
+
+        #region GetEventsDetailByFilter
+        /// <summary>
+        /// Lấy danh sách Event với thông tin chi tiết và filter nâng cao
+        /// </summary>
+        /// <param name="request">Filter request</param>
+        /// <returns>Danh sách Event với thông tin chi tiết</returns>
+        public async Task<BaseResponseDto<BasePagingResponseDto<EventDetailDto>>> GetEventsDetailByFilterAsync(EventFilterRequestDto request)
+        {
+            try
+            {
+                _logger.LogInformation("Getting events detail by filter started");
+
+                var filter = PredicateBuilder.New<Event>(true);
+
+                if (!string.IsNullOrWhiteSpace(request.Title))
+                {
+                    filter = filter.And(e => EF.Functions.Like(e.Title, $"%{request.Title}%"));
+                }
+
+                if (!string.IsNullOrWhiteSpace(request.CauseTitle))
+                {
+                    filter = filter.And(e => e.Cause != null &&
+                                           EF.Functions.Like(e.Cause.Title, $"%{request.CauseTitle}%"));
+                }
+
+                var totalRecords = await _repository.GetCount(filter);
+                var totalPages = (int)Math.Ceiling((double)totalRecords / request.PageSize);
+
+                _logger.LogInformation("Found {TotalRecords} events matching filter criteria", totalRecords);
+
+                var events = await _repository.GetListAsyncUntracked<Event>(
+                    filter: filter,
+                    include: query => query.AsQueryable()
+                                           .Include(e => e.Creator)           
+                                           .Include(e => e.Organization)     
+                                           .Include(e => e.Cause),          
+                    orderBy: q => q.OrderByDescending(e => e.StartDate),   
+                    pageSize: request.PageSize,
+                    pageNumber: request.PageIndex
+                );
+
+                var eventDetailDtos = events.Select(e => {
+                    var dto = _eventDetailConverter.ToDTO(e);
+
+                    dto.OrganizationName = e.Organization?.Name ?? "Unknown Organization";
+                    dto.CauseTitle = e.Cause?.Title ?? "No Associated Cause";
+                    dto.CreatedByName = e.Creator?.FullName ?? "Unknown User";
+                    dto.CauseType = e.Cause?.Type;
+
+                    return dto;
+                }).ToList();
+
+                var pagingResponse = new BasePagingResponseDto<EventDetailDto>
+                {
+                    TotalRecords = totalRecords,
+                    TotalPages = totalPages,
+                    PagedData = eventDetailDtos
+                };
+
+                _logger.LogInformation("Successfully processed {Count} events for page {PageIndex}",
+                    eventDetailDtos.Count, request.PageIndex);
+
+                return new BaseResponseDto<BasePagingResponseDto<EventDetailDto>>
+                {
+                    Status = 200,
+                    Message = eventDetailDtos.Count > 0
+                        ? $"Lấy thành công {eventDetailDtos.Count} sự kiện (trang {request.PageIndex}/{totalPages})"
+                        : "Không tìm thấy sự kiện nào phù hợp với điều kiện lọc",
+                    ResponseData = pagingResponse
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting events detail by filter");
+                return new BaseResponseDto<BasePagingResponseDto<EventDetailDto>>
+                {
+                    Status = 500,
+                    Message = $"Lỗi hệ thống: {ex.Message}",
+                    ResponseData = null
+                };
+            }
+        }
+        #endregion
+
+        #region GetEventDetailById
+        /// <summary>
+        /// Lấy thông tin chi tiết của Event theo ID
+        /// Bao gồm thông tin tọa độ cho bản đồ và thông tin từ Cause
+        /// </summary>
+        /// <param name="eventId">ID của Event</param>
+        /// <returns>Thông tin chi tiết Event</returns>
+        public async Task<BaseResponseDto<EventDetailDto>> GetEventDetailByIdAsync(Guid eventId)
+        {
+            try
+            {
+                _logger.LogInformation("Getting event detail by id: {EventId}", eventId);
+
+                // Lấy Event với include navigation properties
+                var entity = await _repository.GetOneAsyncUntracked<Event>(
+                    filter: e => e.Id == eventId,
+                    include: query => query.AsQueryable()
+                                           .Include(e => e.Creator)         
+                                           .Include(e => e.Organization)     
+                                           .Include(e => e.Cause)           
+                );
+
+                if (entity == null)
+                {
+                    _logger.LogWarning("Event not found with id: {EventId}", eventId);
+                    return new BaseResponseDto<EventDetailDto>
+                    {
+                        Status = 404,
+                        Message = "Không tìm thấy sự kiện với ID được cung cấp",
+                        ResponseData = null
+                    };
+                }
+
+                var dto = _eventDetailConverter.ToDTO(entity);
+
+                dto.OrganizationName = entity.Organization?.Name ?? "Unknown Organization";
+                dto.CauseTitle = entity.Cause?.Title ?? "No Associated Cause";
+                dto.CreatedByName = entity.Creator?.FullName ?? "Unknown User";
+                dto.CauseType = entity.Cause?.Type;
+
+                _logger.LogInformation("Successfully retrieved event detail for id: {EventId}", eventId);
+
+                return new BaseResponseDto<EventDetailDto>
+                {
+                    Status = 200,
+                    Message = "Lấy thông tin chi tiết sự kiện thành công",
+                    ResponseData = dto
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting event detail by id: {EventId}", eventId);
+                return new BaseResponseDto<EventDetailDto>
+                {
+                    Status = 500,
+                    Message = $"Lỗi hệ thống: {ex.Message}",
                     ResponseData = null
                 };
             }
