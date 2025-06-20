@@ -1,4 +1,5 @@
-﻿using HopeBox.Core.IService;
+﻿using HopeBox.Common.Enum;
+using HopeBox.Core.IService;
 using HopeBox.Domain.Converter;
 using HopeBox.Domain.Dtos;
 using HopeBox.Domain.Models;
@@ -71,6 +72,63 @@ namespace HopeBox.Core.Service
                 {
                     Status = 500,
                     Message = ex.Message,
+                    ResponseData = null
+                };
+            }
+        }
+        #endregion
+
+        #region GetUpcomingEvents
+        public async Task<BaseResponseDto<List<EventDto>>> GetUpcomingEventsAsync()
+        {
+            try
+            {
+                _logger.LogInformation("Getting upcoming events started");
+
+                var today = DateTime.Now;
+
+                var filter = PredicateBuilder.New<Event>(true);
+
+                filter = filter.And(e => e.EndDate >= today);
+
+                filter = filter.And(e => e.Status == Enumerate.EventStatus.Upcoming ||
+                                        e.Status == Enumerate.EventStatus.Ongoing);
+
+                var upcomingEvents = await _repository.GetListAsyncUntracked<Event>(
+                    filter: filter,
+                    include: query => query.AsQueryable()
+                                           .Include(e => e.Creator)
+                                           .Include(e => e.Organization),
+                    orderBy: q => q.OrderBy(e => e.StartDate),
+                    pageSize: 3,
+                    pageNumber: 1
+                );
+
+                _logger.LogInformation("Found {Count} upcoming events", upcomingEvents.Count());
+
+                var eventDtos = new List<EventDto>();
+                foreach (var eventEntity in upcomingEvents)
+                {
+                    var dto = await ConvertEventToDtoWithLocationAsync(eventEntity);
+                    eventDtos.Add(dto);
+                }
+
+                return new BaseResponseDto<List<EventDto>>
+                {
+                    Status = 200,
+                    Message = eventDtos.Count > 0
+                        ? $"Lấy thành công {eventDtos.Count} sự kiện sắp tới"
+                        : "Không có sự kiện nào sắp tới",
+                    ResponseData = eventDtos
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting upcoming events");
+                return new BaseResponseDto<List<EventDto>>
+                {
+                    Status = 500,
+                    Message = $"Lỗi hệ thống: {ex.Message}",
                     ResponseData = null
                 };
             }

@@ -20,5 +20,8 @@ namespace HopeBox.Core.IService
         Task<BaseResponseDto<string>> ChangeHeroImageAsync(Guid causeId, IFormFile file);
         Task<BaseResponseDto<string>> ChangeChallengeImageAsync(Guid causeId, IFormFile file);
         Task<BaseResponseDto<string>> ChangeSummaryImageAsync(Guid causeId, IFormFile file);
+        Task<BaseResponseDto<BasePagingResponseDto<CauseWithVolunteerStatusDto>>> GetCauseByFilterWithUserStatus(
+            CauseFilterWithUserRequestDto request);
+        Task<BaseResponseDto<CauseDto>> GetMostUrgentCauseAsync();
     }
 }

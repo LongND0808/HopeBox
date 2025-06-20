@@ -2,6 +2,7 @@
 {
     public class VolunteerRequestDto
     {
+        public Guid UserId { get; set; }
         public Guid CauseId { get; set; }
     }
 }

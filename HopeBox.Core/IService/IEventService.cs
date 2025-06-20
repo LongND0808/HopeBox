@@ -7,6 +7,7 @@ namespace HopeBox.Core.IService
     public interface IEventService
     {
         Task<BaseResponseDto<EventDto>> GetNearestEventAsync();
+        Task<BaseResponseDto<List<EventDto>>> GetUpcomingEventsAsync();
         Task<BaseResponseDto<BasePagingResponseDto<EventDto>>> GetEventsByFilterAsync(EventFilterRequestDto request);
         Task<BaseResponseDto<EventDto>> GetEventWithLocationAsync(Guid eventId);
         Task<BaseResponseDto<List<EventDto>>> GetEventsNearLocationAsync(double latitude, double longitude, double radiusKm);

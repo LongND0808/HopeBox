@@ -42,6 +42,20 @@ export const VolunteerStatusLabel = {
   [VolunteerStatus.REJECTED]: 'Từ chối'
 };
 
+export const VolunteerRegistrationState = {
+  NOT_REGISTERED: 0,     
+  REGISTERED_PENDING: 1, 
+  REGISTERED_APPROVED: 2,
+  REGISTERED_REJECTED: 3
+};
+
+export const VolunteerRegistrationStateLabel = {
+  [VolunteerRegistrationState.NOT_REGISTERED]: 'Chưa đăng ký',
+  [VolunteerRegistrationState.REGISTERED_PENDING]: 'Đã đăng ký - Chờ duyệt',
+  [VolunteerRegistrationState.REGISTERED_APPROVED]: 'Đã đăng ký - Được duyệt',
+  [VolunteerRegistrationState.REGISTERED_REJECTED]: 'Đã đăng ký - Bị từ chối'
+};
+
 export const CausesStatus = {
   PENDING: 1,
   APPROVED: 2,
@@ -79,7 +93,8 @@ export const CausesTypeLabel = {
 export const CausesTypeOptions = Object.entries(CausesType)
   .map(([key, value]) => ({
     value,
-    label: CausesTypeLabel[value]
+    label: CausesTypeLabel[value],
+    key: key.toLowerCase()
   }));
 
 export const EventStatus = {
