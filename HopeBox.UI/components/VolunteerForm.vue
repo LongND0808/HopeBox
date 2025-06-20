@@ -57,57 +57,56 @@
                     <div class="causes-list-section" v-else-if="causesData && causesData.length > 0">
                         <div class="row">
                             <!-- Thay đổi grid: 1 card per row trên mobile, 2 cards trên tablet, 3 cards trên desktop -->
-                            <div class="col-12 col-md-6 col-lg-4 mb-4" v-for="(cause, index) in causesData"
-                                :key="cause.id || index">
-                                <div class="volunteer-cause-item">
-                                    <!-- Ảnh ở trên -->
-                                    <div class="thumb">
-                                        <img :src="cause.heroImage || '/images/default-cause.jpg'" :alt="cause.title"
-                                            @error="handleImageError">
-                                    </div>
+<div class="col-12 col-md-12 col-lg-12 mb-12" v-for="(cause, index) in causesData"
+    :key="cause.id || index">
+    <div class="volunteer-cause-item d-flex flex-row align-items-start gap-3 p-3 border rounded">
+        <!-- Ảnh bên trái -->
+        <div class="thumb" style="flex-shrink: 0; height: 150px; width: 200px;">
+            <img class="img-fluid rounded" :src="cause.heroImage || '/images/default-cause.jpg'" 
+                :alt="cause.title" @error="handleImageError" />
+        </div>
 
-                                    <!-- Nội dung ở giữa -->
-                                    <div class="content">
-                                        <h4 class="title">
-                                            <a href="#" @click.prevent>{{ cause.title }}</a>
-                                        </h4>
-                                        <p class="description">{{ cause.description }}</p>
+        <!-- Nội dung ở giữa -->
+        <div class="content flex-grow-1">
+            <h4 class="title">
+                <a href="#" @click.prevent>{{ cause.title }}</a>
+            </h4>
+            <p class="description">{{ cause.description }}</p>
 
-                                        <div class="summary-section" v-if="cause.summary">
-                                            <p class="summary">
-                                                <strong>Tóm tắt:</strong> {{ cause.summary }}
-                                            </p>
-                                        </div>
+            <div class="summary-section" v-if="cause.summary">
+                <p class="summary">
+                    <strong>Tóm tắt:</strong> {{ cause.summary }}
+                </p>
+            </div>
 
-                                        <!-- Hiển thị trạng thái đăng ký -->
-                                        <div class="volunteer-status" v-if="cause.isVolunteerRegistered">
-                                            <span class="status-badge"
-                                                :class="getStatusBadgeClass(cause.volunteerStatus)">
-                                                <i :class="getStatusIcon(cause.volunteerStatus)"></i>
-                                                {{ getStatusText(cause.volunteerStatus) }}
-                                            </span>
-                                            <small class="registration-date" v-if="cause.volunteerJoinDate">
-                                                Đăng ký: {{ formatDate(cause.volunteerJoinDate) }}
-                                            </small>
-                                        </div>
-                                    </div>
+            <div class="volunteer-status mt-2" v-if="cause.isVolunteerRegistered">
+                <span class="status-badge" :class="getStatusBadgeClass(cause.volunteerStatus)">
+                    <i :class="getStatusIcon(cause.volunteerStatus)"></i>
+                    {{ getStatusText(cause.volunteerStatus) }}
+                </span>
+                <small class="registration-date" v-if="cause.volunteerJoinDate">
+                    Đăng ký: {{ formatDate(cause.volunteerJoinDate) }}
+                </small>
+            </div>
+        </div>
 
-                                    <!-- Button ở dưới -->
-                                    <div class="volunteer-footer">
-                                        <button class="volunteer-register-btn" type="button"
-                                            @click="handleVolunteerAction(cause)"
-                                            :disabled="isProcessing || isButtonDisabled(cause)"
-                                            :class="getButtonClass(cause)">
-                                            <span v-if="isProcessing && selectedCauseId === cause.id">
-                                                <i class="fa fa-spinner fa-spin"></i> {{ getProcessingText(cause) }}
-                                            </span>
-                                            <span v-else>
-                                                <i :class="getButtonIcon(cause)"></i> {{ getButtonText(cause) }}
-                                            </span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+        <!-- Nút bên phải -->
+        <div class="volunteer-footer d-flex align-items-start">
+            <button class="volunteer-register-btn btn btn-primary" type="button"
+                @click="handleVolunteerAction(cause)"
+                :disabled="isProcessing || isButtonDisabled(cause)"
+                :class="getButtonClass(cause)">
+                <span v-if="isProcessing && selectedCauseId === cause.id">
+                    <i class="fa fa-spinner fa-spin"></i> {{ getProcessingText(cause) }}
+                </span>
+                <span v-else>
+                    <i :class="getButtonIcon(cause)"></i> {{ getButtonText(cause) }}
+                </span>
+            </button>
+        </div>
+    </div>
+</div>
+
                         </div>
                         <!-- Pagination -->
                         <div class="pagination-container" v-if="totalPages > 1">
@@ -203,7 +202,7 @@ export default {
 
         async getCurrentUser() {
             try {
-                const response = await axios.get('https://localhost:7213/api/Authentication/me', {
+                const response = await axios.get(`${BASE_URL}/api/Authentication/me`, {
                     withCredentials: true
                 });
 
@@ -227,7 +226,7 @@ export default {
                 };
 
                 const response = await axios.post(
-                    'https://localhost:7213/api/Cause/get-cause-by-filter-with-user-status',
+                    `${BASE_URL}/api/Cause/get-cause-by-filter-with-user-status`,
                     requestData,
                     {
                         withCredentials: true,
@@ -273,7 +272,7 @@ export default {
                 };
 
                 const response = await axios.post(
-                    'https://localhost:7213/api/Cause/get-cause-by-filter',
+                    `${BASE_URL}/api/Cause/get-cause-by-filter`,
                     requestData,
                     {
                         headers: {
@@ -386,12 +385,12 @@ export default {
                 let userId = this.userInfo?.id;
                 if (!userId) {
                     try {
-                        const meRes = await axios.get('https://localhost:7213/api/Authentication/me', {
+                        const meRes = await axios.get(`${BASE_URL}/api/Authentication/me`, {
                             withCredentials: true
                         });
                         if (meRes.data.status === 200) {
                             userId = meRes.data.responseData.id;
-                            this.userInfo = meRes.data.responseData; // cache lại luôn
+                            this.userInfo = meRes.data.responseData; 
                         } else {
                             await showErrorAlert('Lỗi xác thực', 'Không thể lấy thông tin người dùng, vui lòng đăng nhập lại.');
                             return;

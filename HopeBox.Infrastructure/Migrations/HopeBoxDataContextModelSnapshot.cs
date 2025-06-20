@@ -249,6 +249,9 @@ namespace HopeBox.Infrastructure.Migrations
                     b.Property<string>("BannerImage")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("CauseId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -301,6 +304,8 @@ namespace HopeBox.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CauseId");
+
                     b.HasIndex("CreatedBy");
 
                     b.HasIndex("OrganizationId");
@@ -337,6 +342,46 @@ namespace HopeBox.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Feedbacks");
+                });
+
+            modelBuilder.Entity("HopeBox.Domain.Models.InKindDonation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("From")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SenderName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("To")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("InKindDonations");
                 });
 
             modelBuilder.Entity("HopeBox.Domain.Models.Media", b =>
@@ -942,6 +987,12 @@ namespace HopeBox.Infrastructure.Migrations
 
             modelBuilder.Entity("HopeBox.Domain.Models.Event", b =>
                 {
+                    b.HasOne("HopeBox.Domain.Models.Cause", "Cause")
+                        .WithMany()
+                        .HasForeignKey("CauseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("HopeBox.Domain.Models.User", "Creator")
                         .WithMany()
                         .HasForeignKey("CreatedBy")
@@ -953,6 +1004,8 @@ namespace HopeBox.Infrastructure.Migrations
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Cause");
 
                     b.Navigation("Creator");
 
@@ -973,6 +1026,25 @@ namespace HopeBox.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Cause");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("HopeBox.Domain.Models.InKindDonation", b =>
+                {
+                    b.HasOne("HopeBox.Domain.Models.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("HopeBox.Domain.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Event");
 
                     b.Navigation("User");
                 });

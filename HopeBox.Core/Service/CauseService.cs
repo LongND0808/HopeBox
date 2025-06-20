@@ -18,13 +18,13 @@ namespace HopeBox.Core.Service
     {
         private readonly IRepository<Donation> _donationRepository;
         private readonly IR2StorageService _r2StorageService;
-        public CauseService(IRepository<Cause> repository, IConverter<Cause, CauseDto> converter, IRepository<Donation> donationRepository, IR2StorageService r2StorageService)
         private readonly IRepository<Volunteer> _volunteerRepository;
         public CauseService(
             IRepository<Cause> repository,
             IConverter<Cause, CauseDto> converter,
             IRepository<Donation> donationRepository,
-            IRepository<Volunteer> volunteerRepository)
+            IRepository<Volunteer> volunteerRepository,
+            IR2StorageService r2StorageService)
             : base(repository, converter)
         {
             _donationRepository = donationRepository;

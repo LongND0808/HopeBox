@@ -93,6 +93,7 @@
 
 <script>
 import axios from 'axios';
+import { BASE_URL } from '@/utils/constants';
 
 export default {
     name: 'MostUrgentCause',
@@ -126,15 +127,12 @@ export default {
         this.fetchMostUrgentCause();
     },
     methods: {
-        /**
-         * Gọi API để lấy chiến dịch quan trọng nhất
-         */
         async fetchMostUrgentCause() {
             try {
                 this.loading = true;
                 this.error = null;
 
-                const response = await axios.get('https://localhost:7213/api/Cause/get-most-urgent-cause', {
+                const response = await axios.get(`${BASE_URL}/api/Cause/get-most-urgent-cause`, {
                     headers: {
                         'Content-Type': 'application/json'
                     }
