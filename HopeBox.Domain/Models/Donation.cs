@@ -8,7 +8,6 @@ namespace HopeBox.Domain.Models
     {
         public Guid UserId { get; set; }
         public Guid CauseId { get; set; }
-        public Guid? EventId { get; set; }
         public decimal Amount { get; set; }
         public DateTime DonationDate { get; set; }
         [Required]

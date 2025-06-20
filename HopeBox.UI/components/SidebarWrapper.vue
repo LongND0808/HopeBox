@@ -1,22 +1,22 @@
 <template>
     <div class="sidebar-area">
-        <WidgetSearch />
+        <!-- <WidgetSearch />
         
-        <WidgetCategory />
+        <WidgetCategory /> -->
 
         <WidgetUrgentCauses />
 
-        <WidgetTag />
+        <!-- <WidgetTag /> -->
     </div>
 </template>
 
 <script>
     export default {
         components: {
-            WidgetSearch: () => import('@/components/WidgetSearch'),
-            WidgetCategory: () => import('@/components/WidgetCategory'),
+            // WidgetSearch: () => import('@/components/WidgetSearch'),
+            // WidgetCategory: () => import('@/components/WidgetCategory'),
             WidgetUrgentCauses: () => import('@/components/WidgetUrgentCauses'),
-            WidgetTag: () => import('@/components/WidgetTag'),
+            // WidgetTag: () => import('@/components/WidgetTag'),
         },
     };
 </script>
