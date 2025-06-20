@@ -249,11 +249,11 @@ namespace HopeBox.Infrastructure.Migrations
                     b.Property<string>("BannerImage")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("CreatedBy")
+                    b.Property<Guid>("CauseId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal>("CurrentAmount")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -291,15 +291,14 @@ namespace HopeBox.Infrastructure.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("TargetAmount")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CauseId");
 
                     b.HasIndex("CreatedBy");
 
@@ -337,6 +336,68 @@ namespace HopeBox.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Feedbacks");
+                });
+
+            modelBuilder.Entity("HopeBox.Domain.Models.InkindDonation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ApprovedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ApprovedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeliveredDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DonationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("EstimatedDeliveryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("InKind")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsAnonymous")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("ReceiverAddress")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("SenderAddress")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApprovedBy");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("InkindDonations");
                 });
 
             modelBuilder.Entity("HopeBox.Domain.Models.Media", b =>
@@ -942,6 +1003,12 @@ namespace HopeBox.Infrastructure.Migrations
 
             modelBuilder.Entity("HopeBox.Domain.Models.Event", b =>
                 {
+                    b.HasOne("HopeBox.Domain.Models.Cause", "Cause")
+                        .WithMany("Events")
+                        .HasForeignKey("CauseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("HopeBox.Domain.Models.User", "Creator")
                         .WithMany()
                         .HasForeignKey("CreatedBy")
@@ -953,6 +1020,8 @@ namespace HopeBox.Infrastructure.Migrations
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Cause");
 
                     b.Navigation("Creator");
 
@@ -973,6 +1042,32 @@ namespace HopeBox.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Cause");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("HopeBox.Domain.Models.InkindDonation", b =>
+                {
+                    b.HasOne("HopeBox.Domain.Models.User", "Approver")
+                        .WithMany()
+                        .HasForeignKey("ApprovedBy")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("HopeBox.Domain.Models.Event", "Event")
+                        .WithMany("InkindDonations")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("HopeBox.Domain.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Approver");
+
+                    b.Navigation("Event");
 
                     b.Navigation("User");
                 });
@@ -1130,6 +1225,8 @@ namespace HopeBox.Infrastructure.Migrations
 
                     b.Navigation("Donations");
 
+                    b.Navigation("Events");
+
                     b.Navigation("ReliefPackages");
 
                     b.Navigation("Volunteers");
@@ -1142,6 +1239,8 @@ namespace HopeBox.Infrastructure.Migrations
 
             modelBuilder.Entity("HopeBox.Domain.Models.Event", b =>
                 {
+                    b.Navigation("InkindDonations");
+
                     b.Navigation("Photos");
                 });
 

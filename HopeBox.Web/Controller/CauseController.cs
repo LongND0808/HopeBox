@@ -5,7 +5,7 @@ using HopeBox.Domain.Models;
 using HopeBox.Domain.RequestDto;
 using HopeBox.Domain.ResponseDto;
 using Microsoft.AspNetCore.Authorization;
-using HopeBox.Core.Service;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HopeBox.Web.Controller
 {

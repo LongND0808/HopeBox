@@ -2,10 +2,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Migrations;
 using static HopeBox.Common.Enum.Enumerate;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace HopeBox.Infrastructure.Migrations
 {
-    public partial class seedingdata : Migration
+    public partial class seedingdatabase : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -94,6 +95,11 @@ namespace HopeBox.Infrastructure.Migrations
             var sponsor1Id = Guid.NewGuid();
             var sponsor2Id = Guid.NewGuid();
 
+            // Testimonial IDs
+            var testimonial1Id = 1;
+            var testimonial2Id = 2;
+            var testimonial3Id = 3;
+
             // Notification IDs
             var notification1Id = Guid.NewGuid();
             var notification2Id = Guid.NewGuid();
@@ -119,16 +125,6 @@ namespace HopeBox.Infrastructure.Migrations
                     }
                 });
 
-            // Insert Roles
-            migrationBuilder.InsertData(
-                table: "AspNetRoles",
-                columns: new[] { "Id", "Code", "Name", "NormalizedName", "ConcurrencyStamp" },
-                values: new object[,]
-                {
-                    { roleAdminId, "ADMIN", "Admin", "ADMIN", Guid.NewGuid().ToString() },
-                    { roleCustomerId, "CUSTOMER", "Customer", "CUSTOMER", Guid.NewGuid().ToString() },
-                    { roleManagerId, "MANAGER", "Manager", "MANAGER", Guid.NewGuid().ToString() }
-                });
 
             // Insert Users
             migrationBuilder.InsertData(
@@ -176,66 +172,77 @@ namespace HopeBox.Infrastructure.Migrations
                     }
                 });
 
-            // Insert Additional Manager Users
             migrationBuilder.InsertData(
-                table: "AspNetUsers",
-                columns: new[]
+            table: "AspNetUsers",
+            columns: new[]
+            {
+                "Id", "UserName", "NormalizedUserName", "Email", "NormalizedEmail", "EmailConfirmed",
+                "PasswordHash", "SecurityStamp", "ConcurrencyStamp", "PhoneNumber", "PhoneNumberConfirmed",
+                "FullName", "Address", "DateOfBirth", "Gender", "AvatarUrl", "Point", "UserStatus",
+                "OrganizationId", "AccessFailedCount", "LockoutEnabled", "LockoutEnd", "TwoFactorEnabled"
+            },
+            values: new object[,]
+            {
                 {
-                    "Id", "UserName", "NormalizedUserName", "Email", "NormalizedEmail", "EmailConfirmed",
-                    "PasswordHash", "SecurityStamp", "ConcurrencyStamp", "PhoneNumber", "PhoneNumberConfirmed",
-                    "FullName", "Address", "DateOfBirth", "Gender", "AvatarUrl", "Point", "UserStatus",
-                    "OrganizationId", "AccessFailedCount", "LockoutEnabled", "LockoutEnd", "TwoFactorEnabled"
+                    userManagerId1, "Phạm Thị Hồng", "PHAM THI HONG", "manager1_org1@hopebox.org", "MANAGER1_ORG1@HOPEBOX.ORG", true,
+                    new PasswordHasher<IdentityUser<Guid>>().HashPassword(null, "Manager@123"),
+                    Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "0900000001", true,
+                    "Phạm Thị Hồng", "12 Charity Street, HCMC", new DateTime(1987, 2, 20), (int)Gender.Female,
+                    "images/user/manager1.jpg", 90, (int)UserStatus.Active, orgId1,
+                    0, false, null, false
                 },
+                {
+                    userManagerId2, "Ngô Văn Tài", "NGO VAN TAI", "manager2_org1@hopebox.org", "MANAGER2_ORG1@HOPEBOX.ORG", true,
+                    new PasswordHasher<IdentityUser<Guid>>().HashPassword(null, "Manager@123"),
+                    Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "0900000002", true,
+                    "Ngô Văn Tài", "88 Love Road, HCMC", new DateTime(1990, 11, 5), (int)Gender.Male,
+                    "images/user/manager2.jpg", 85, (int)UserStatus.Active, orgId1,
+                    0, false, null, false
+                },
+                {
+                    userManagerId3, "Đinh Thị Mai", "DINH THI MAI", "manager3_org1@hopebox.org", "MANAGER3_ORG1@HOPEBOX.ORG", true,
+                    new PasswordHasher<IdentityUser<Guid>>().HashPassword(null, "Manager@123"),
+                    Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "0900000003", true,
+                    "Đinh Thị Mai", "99 Giving Blvd, HCMC", new DateTime(1992, 8, 12), (int)Gender.Female,
+                    "images/user/manager3.jpg", 88, (int)UserStatus.Active, orgId1,
+                    0, false, null, false
+                },
+
+                {
+                    userManagerId4, "Trần Quốc Hưng", "TRAN QUOC HUNG", "manager1_org2@hopebox.org", "MANAGER1_ORG2@HOPEBOX.ORG", true,
+                    new PasswordHasher<IdentityUser<Guid>>().HashPassword(null, "Manager@123"),
+                    Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "0900000004", true,
+                    "Trần Quốc Hưng", "10 Peace Alley, Hue", new DateTime(1985, 3, 10), (int)Gender.Male,
+                    "images/user/manager4.jpg", 92, (int)UserStatus.Active, orgId2,
+                    0, false, null, false
+                },
+                {
+                    userManagerId5, "Lê Thị Thu Hà", "LE THI THU HA", "manager2_org2@hopebox.org", "MANAGER2_ORG2@HOPEBOX.ORG", true,
+                    new PasswordHasher<IdentityUser<Guid>>().HashPassword(null, "Manager@123"),
+                    Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "0900000005", true,
+                    "Lê Thị Thu Hà", "55 Volunteer Rd, Hue", new DateTime(1993, 6, 25), (int)Gender.Female,
+                    "images/user/manager5.jpg", 87, (int)UserStatus.Active, orgId2,
+                    0, false, null, false
+                },
+                {
+                    userManagerId6, "Nguyễn Văn Khải", "NGUYEN VAN KHAI", "manager3_org2@hopebox.org", "MANAGER3_ORG2@HOPEBOX.ORG", true,
+                    new PasswordHasher<IdentityUser<Guid>>().HashPassword(null, "Manager@123"),
+                    Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "0900000006", true,
+                    "Nguyễn Văn Khải", "102 Unity Blvd, Hue", new DateTime(1991, 4, 18), (int)Gender.Male,
+                    "images/user/manager6.jpg", 89, (int)UserStatus.Active, orgId2,
+                    0, false, null, false
+                }
+            });
+
+            // Insert Roles
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "Code", "Name", "NormalizedName", "ConcurrencyStamp" },
                 values: new object[,]
                 {
-                    {
-                        userManagerId1, "Phạm Thị Hồng", "PHAM THI HONG", "manager1_org1@hopebox.org", "MANAGER1_ORG1@HOPEBOX.ORG", true,
-                        new PasswordHasher<IdentityUser<Guid>>().HashPassword(null, "Manager@123"),
-                        Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "0900000001", true,
-                        "Phạm Thị Hồng", "12 Charity Street, HCMC", new DateTime(1987, 2, 20), (int)Gender.Female,
-                        "images/user/manager1.jpg", 90, (int)UserStatus.Active, orgId1,
-                        0, false, null, false
-                    },
-                    {
-                        userManagerId2, "Ngô Văn Tài", "NGO VAN TAI", "manager2_org1@hopebox.org", "MANAGER2_ORG1@HOPEBOX.ORG", true,
-                        new PasswordHasher<IdentityUser<Guid>>().HashPassword(null, "Manager@123"),
-                        Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "0900000002", true,
-                        "Ngô Văn Tài", "88 Love Road, HCMC", new DateTime(1990, 11, 5), (int)Gender.Male,
-                        "images/user/manager2.jpg", 85, (int)UserStatus.Active, orgId1,
-                        0, false, null, false
-                    },
-                    {
-                        userManagerId3, "Đinh Thị Mai", "DINH THI MAI", "manager3_org1@hopebox.org", "MANAGER3_ORG1@HOPEBOX.ORG", true,
-                        new PasswordHasher<IdentityUser<Guid>>().HashPassword(null, "Manager@123"),
-                        Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "0900000003", true,
-                        "Đinh Thị Mai", "99 Giving Blvd, HCMC", new DateTime(1992, 8, 12), (int)Gender.Female,
-                        "images/user/manager3.jpg", 88, (int)UserStatus.Active, orgId1,
-                        0, false, null, false
-                    },
-                    {
-                        userManagerId4, "Trần Quốc Hưng", "TRAN QUOC HUNG", "manager1_org2@hopebox.org", "MANAGER1_ORG2@HOPEBOX.ORG", true,
-                        new PasswordHasher<IdentityUser<Guid>>().HashPassword(null, "Manager@123"),
-                        Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "0900000004", true,
-                        "Trần Quốc Hưng", "10 Peace Alley, Hue", new DateTime(1985, 3, 10), (int)Gender.Male,
-                        "images/user/manager4.jpg", 92, (int)UserStatus.Active, orgId2,
-                        0, false, null, false
-                    },
-                    {
-                        userManagerId5, "Lê Thị Thu Hà", "LE THI THU HA", "manager2_org2@hopebox.org", "MANAGER2_ORG2@HOPEBOX.ORG", true,
-                        new PasswordHasher<IdentityUser<Guid>>().HashPassword(null, "Manager@123"),
-                        Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "0900000005", true,
-                        "Lê Thị Thu Hà", "55 Volunteer Rd, Hue", new DateTime(1993, 6, 25), (int)Gender.Female,
-                        "images/user/manager5.jpg", 87, (int)UserStatus.Active, orgId2,
-                        0, false, null, false
-                    },
-                    {
-                        userManagerId6, "Nguyễn Văn Khải", "NGUYEN VAN KHAI", "manager3_org2@hopebox.org", "MANAGER3_ORG2@HOPEBOX.ORG", true,
-                        new PasswordHasher<IdentityUser<Guid>>().HashPassword(null, "Manager@123"),
-                        Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "0900000006", true,
-                        "Nguyễn Văn Khải", "102 Unity Blvd, Hue", new DateTime(1991, 4, 18), (int)Gender.Male,
-                        "images/user/manager6.jpg", 89, (int)UserStatus.Active, orgId2,
-                        0, false, null, false
-                    }
+                    { roleAdminId, "ADMIN", "Admin", "ADMIN", Guid.NewGuid().ToString() },
+                    { roleCustomerId, "CUSTOMER", "Customer", "CUSTOMER", Guid.NewGuid().ToString() },
+                    { roleManagerId, "MANAGER", "Manager", "MANAGER", Guid.NewGuid().ToString() }
                 });
 
             // Insert UserRoles
@@ -354,6 +361,7 @@ namespace HopeBox.Infrastructure.Migrations
                 });
 
             // Insert Events
+
             migrationBuilder.InsertData(
                 table: "Events",
                 columns: new[]
@@ -361,7 +369,7 @@ namespace HopeBox.Infrastructure.Migrations
                     "Id", "Title", "Description", "Detail", "BannerImage",
                     "StartDate", "EndDate", "Location",
                     "Latitude", "Longitude", "FormattedAddress",
-                    "TargetAmount", "CurrentAmount", "Status", "CreatedBy", "OrganizationId"
+                    "Status", "CreatedBy", "OrganizationId", "CauseId"
                 },
                 values: new object[,]
                 {
@@ -377,11 +385,10 @@ namespace HopeBox.Infrastructure.Migrations
                         21.0285,
                         105.8542,
                         "Hoài Đức, Hà Nội, Việt Nam",
-                        50000000m,
-                        0m,
                         (int)EventStatus.Ongoing,
                         userManagerId1,
-                        orgId1
+                        orgId1,
+                        causeClothingId
                     },
                     {
                         eventBloodDriveId,
@@ -395,11 +402,10 @@ namespace HopeBox.Infrastructure.Migrations
                         16.0544,
                         108.2022,
                         "Hải Châu, Đà Nẵng, Việt Nam",
-                        0m,
-                        0m,
                         (int)EventStatus.Ongoing,
                         userManagerId1,
-                        orgId1
+                        orgId1,
+                        causeHealthId
                     },
                     {
                         eventLaoCaiId,
@@ -413,11 +419,10 @@ namespace HopeBox.Infrastructure.Migrations
                         22.5212,
                         104.2831,
                         "Bắc Hà, Lào Cai, Việt Nam",
-                        80000000m,
-                        0m,
                         (int)EventStatus.Ongoing,
                         userManagerId2,
-                        orgId1
+                        orgId1,
+                        causeClothingId
                     },
                     {
                         eventHueId,
@@ -431,11 +436,10 @@ namespace HopeBox.Infrastructure.Migrations
                         16.4478,
                         107.5772,
                         "Thủy Biều, Huế, Việt Nam",
-                        60000000m,
-                        0m,
                         (int)EventStatus.Ongoing,
                         userManagerId1,
-                        orgId1
+                        orgId1,
+                        causeHealthId
                     },
                     {
                         eventCanThoId,
@@ -449,11 +453,10 @@ namespace HopeBox.Infrastructure.Migrations
                         10.0486,
                         105.6195,
                         "Trường Long, Phong Điền, Cần Thơ, Việt Nam",
-                        100000000m,
-                        0m,
                         (int)EventStatus.Ongoing,
                         userManagerId1,
-                        orgId1
+                        orgId1,
+                        causeWaterId
                     },
                     {
                         eventDakLakId,
@@ -467,11 +470,10 @@ namespace HopeBox.Infrastructure.Migrations
                         12.6783,
                         108.0494,
                         "Cư Êbur, Buôn Ma Thuột, Đắk Lắk, Việt Nam",
-                        70000000m,
-                        0m,
                         (int)EventStatus.Ongoing,
                         userManagerId1,
-                        orgId1
+                        orgId1,
+                        causeEducationId
                     }
                 });
 
@@ -511,18 +513,50 @@ namespace HopeBox.Infrastructure.Migrations
                     { reliefItemFoodId, "Gói thực phẩm", (int) Unit.Pack, 100000m },
                     { reliefItemMedicineId, "Hộp thuốc y tế", (int) Unit.Box, 200000m },
                     { reliefItemBookId, "Bộ sách giáo khoa", (int) Unit.Pack, 50000m },
-                    { reliefItemClothingId, "Bộ quần áo ấm", (int) Unit.Pack, 80000m }
+                    { reliefItemClothingId, "Bộ quần áo ấm", (int) Unit.Pack, 80000m },
+                    { Guid.NewGuid(), "Gạo", (int)Unit.kg, 15000m },
+                    { Guid.NewGuid(), "Mì gói", (int)Unit.Pack, 25000m },
+                    { Guid.NewGuid(), "Nước suối", (int)Unit.Bottle, 10000m },
+                    { Guid.NewGuid(), "Dầu ăn", (int)Unit.Bottle, 35000m },
+                    { Guid.NewGuid(), "Nước tương", (int)Unit.Bottle, 20000m },
+                    { Guid.NewGuid(), "Đường", (int)Unit.kg, 18000m },
+                    { Guid.NewGuid(), "Muối", (int)Unit.kg, 7000m },
+                    { Guid.NewGuid(), "Bánh quy", (int)Unit.Pack, 22000m },
+                    { Guid.NewGuid(), "Sữa hộp", (int)Unit.Carton, 120000m },
+                    { Guid.NewGuid(), "Bột ngọt", (int)Unit.Bag, 15000m },
+                    { Guid.NewGuid(), "Nước rửa tay", (int)Unit.Bottle, 25000m },
+                    { Guid.NewGuid(), "Khẩu trang", (int)Unit.Box, 40000m },
+                    { Guid.NewGuid(), "Xà phòng", (int)Unit.Box, 30000m },
+                    { Guid.NewGuid(), "Trứng", (int)Unit.Box, 35000m },
+                    { Guid.NewGuid(), "Thịt hộp", (int)Unit.Box, 50000m },
+                    { Guid.NewGuid(), "Cháo ăn liền", (int)Unit.Pack, 17000m },
+                    { Guid.NewGuid(), "Tã giấy", (int)Unit.Bag, 90000m },
+                    { Guid.NewGuid(), "Kem đánh răng", (int)Unit.Box, 15000m },
+                    { Guid.NewGuid(), "Bàn chải", (int)Unit.Pack, 12000m },
+                    { Guid.NewGuid(), "Nước lau sàn", (int)Unit.Bottle, 35000m },
+                    { Guid.NewGuid(), "Giấy vệ sinh", (int)Unit.Pack, 20000m },
+                    { Guid.NewGuid(), "Khăn ướt", (int)Unit.Pack, 18000m },
+                    { Guid.NewGuid(), "Ngũ cốc", (int)Unit.Box, 45000m },
+                    { Guid.NewGuid(), "Bánh mì", (int)Unit.Bag, 25000m },
+                    { Guid.NewGuid(), "Rau củ sấy", (int)Unit.Bag, 30000m },
+                    { Guid.NewGuid(), "Nước trái cây", (int)Unit.Bottle, 28000m },
+                    { Guid.NewGuid(), "Hạt nêm", (int)Unit.Bag, 22000m },
+                    { Guid.NewGuid(), "Chanh", (int)Unit.kg, 12000m },
+                    { Guid.NewGuid(), "Ớt", (int)Unit.kg, 10000m },
+                    { Guid.NewGuid(), "Mì Ý", (int)Unit.Pack, 27000m },
                 });
 
             // Insert ReliefPackages
             migrationBuilder.InsertData(
                 table: "ReliefPackages",
-                columns: new[] { "Id", "CauseId", "Name", "Description" },
+                columns: new[] { "Id", "CauseId", "Name", "Description",
+                                    "ExtraFee", "TotalPrice",
+                                    "CurrentQuantity", "TargetQuantity"},
                 values: new object[,]
                 {
-                    { reliefPackageWaterId, causeWaterId, "Gói Nước Sạch", "Gói hỗ trợ nước sạch cho hộ gia đình" },
-                    { reliefPackageFoodId, causeFoodId, "Gói Thực Phẩm", "Gói thực phẩm dinh dưỡng cho trẻ em" },
-                    { reliefPackageMedicineId, causeMedicineId, "Gói Y Tế", "Gói thuốc và vật tư y tế cơ bản" }
+                    { reliefPackageWaterId, causeWaterId, "Gói Nước Sạch", "Gói hỗ trợ nước sạch cho hộ gia đình", 0m, 300000m, 0, 100 },
+                    { reliefPackageFoodId, causeFoodId, "Gói Thực Phẩm", "Gói thực phẩm dinh dưỡng cho trẻ em", 5000m, 500000m, 0, 200 },
+                    { reliefPackageMedicineId, causeMedicineId, "Gói Y Tế", "Gói thuốc và vật tư y tế cơ bản", 10000m, 600000m, 0, 150 }
                 });
 
             // Insert ReliefPackageItems
@@ -539,12 +573,12 @@ namespace HopeBox.Infrastructure.Migrations
             // Insert Donations
             migrationBuilder.InsertData(
                 table: "Donations",
-                columns: new[] { "Id", "UserId", "CauseId", "Amount", "DonationDate", "PaymentMethod", "TransactionId", "TradingCode", "Status" },
+                columns: new[] { "Id", "UserId", "CauseId", "DonationAmount", "Amount", "DonationDate", "PaymentMethod", "TransactionId", "TradingCode", "Status", "IsAnonymous"},
                 values: new object[,]
                 {
-                    { donation1Id, userCustomer1Id, causeWaterId, 1000000m, DateTime.UtcNow.AddDays(-5), (int)PaymentMethod.VNPay, "TXN12345", "CODE123", 1 },
-                    { donation2Id, userCustomer2Id, causeFoodId, 500000m, DateTime.UtcNow.AddDays(-3), (int)PaymentMethod.VietQR, "TXN67890", "CODE456", 1 },
-                    { donation3Id, userCustomer1Id, causeEducationId, 2000000m, DateTime.UtcNow.AddDays(-2), (int)PaymentMethod.VNPay, "TXN54321", "CODE789", 1 }
+                    { donation1Id, userCustomer1Id, causeWaterId, 0m, 1000000m, DateTime.UtcNow.AddDays(-5), (int)PaymentMethod.VNPay, "TXN12345", "CODE123", 1, false },
+                    { donation2Id, userCustomer2Id, causeFoodId, 0m, 500000m, DateTime.UtcNow.AddDays(-3), (int)PaymentMethod.VietQR, "TXN67890", "CODE456", 1 , false},
+                    { donation3Id, userCustomer1Id, causeEducationId, 0m, 2000000m, DateTime.UtcNow.AddDays(-2), (int)PaymentMethod.VNPay, "TXN54321", "CODE789", 1 , false}
                 });
 
             // Insert DonationReliefPackages
@@ -594,9 +628,9 @@ namespace HopeBox.Infrastructure.Migrations
                 columns: new[] { "Id", "Name", "Designation", "Description", "ImageUrl", "CreatedAt" },
                 values: new object[,]
                 {
-                    { 1, "Nguyễn Văn A", "Tình nguyện viên", "Tham gia chương trình nước sạch là trải nghiệm đáng nhớ, mang lại giá trị lớn cho cộng đồng.", "/images/testimonials/person1.jpg", DateTime.UtcNow.AddDays(-10) },
-                    { 2, "Trần Thị B", "Nhà tài trợ", "Tôi rất tự hào khi góp phần mang giáo dục đến trẻ em vùng cao.", "/images/testimonials/person2.jpg", DateTime.UtcNow.AddDays(-8) },
-                    { 3, "Lê Văn C", "Người thụ hưởng", "Nhờ chương trình, gia đình tôi có được ngôi nhà mới an toàn.", "/images/testimonials/person3.jpg", DateTime.UtcNow.AddDays(-6) }
+                    { testimonial1Id, "Nguyễn Văn A", "Tình nguyện viên", "Tham gia chương trình nước sạch là trải nghiệm đáng nhớ, mang lại giá trị lớn cho cộng đồng.", "/images/testimonials/person1.jpg", DateTime.UtcNow.AddDays(-10) },
+                    { testimonial2Id, "Trần Thị B", "Nhà tài trợ", "Tôi rất tự hào khi góp phần mang giáo dục đến trẻ em vùng cao.", "/images/testimonials/person2.jpg", DateTime.UtcNow.AddDays(-8) },
+                    { testimonial3Id, "Lê Văn C", "Người thụ hưởng", "Nhờ chương trình, gia đình tôi có được ngôi nhà mới an toàn.", "/images/testimonials/person3.jpg", DateTime.UtcNow.AddDays(-6) }
                 });
 
             // Insert Notifications
@@ -616,3 +650,4 @@ namespace HopeBox.Infrastructure.Migrations
         }
     }
 }
+

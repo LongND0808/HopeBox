@@ -55,5 +55,6 @@ namespace HopeBox.Domain.Models
         public virtual ICollection<Donation>? Donations { get; set; }
         public virtual ICollection<Volunteer>? Volunteers { get; set; }
         public virtual ICollection<Media>? Documents { get; set; }
+        public virtual ICollection<Event>? Events { get; set; }
     }
 }
