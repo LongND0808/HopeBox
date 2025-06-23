@@ -51,8 +51,7 @@ namespace HopeBox.Core.Service
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<BaseResponseDto<string>> CreateDonation(string userId,
-            CreateDonationRequestDto donationDto)
+        public async Task<BaseResponseDto<string>> CreateDonation(string userId, CreateDonationRequestDto donationDto)
         {
             try
             {
@@ -102,8 +101,7 @@ namespace HopeBox.Core.Service
                             return new BaseResponseDto<string>
                             {
                                 Status = 400,
-                                Message = $"Số lượng yêu cầu cho gói {pkg.Name} không hợp lệ" +
-                                $" (còn lại {availableQuantity}).",
+                                Message = $"Số lượng yêu cầu cho gói {pkg.Name} không hợp lệ (còn lại {availableQuantity}).",
                                 ResponseData = null
                             };
                         }
@@ -146,8 +144,7 @@ namespace HopeBox.Core.Service
                     {
                         foreach (var (packageId, quantity) in donationDto.ReliefPackages)
                         {
-                            var package = await _reliefPackageRepository.GetOneAsync(
-                                filter: f => f.Id == packageId);
+                            var package = await _reliefPackageRepository.GetOneAsync(filter: f => f.Id == packageId);
 
                             package.CurrentQuantity += quantity;
                             await _reliefPackageRepository.UpdateAsync(package);
@@ -208,7 +205,7 @@ namespace HopeBox.Core.Service
             donation.TradingCode ??= vnp_TxnRef;
 
             string vnp_OrderInfo = $"Thanh toán ủng hộ";
-            string vnp_Amount = ((int)(donation.Amount * 100)).ToString();
+            string vnp_Amount = ((double)(donation.Amount * 100)).ToString();
 
             var payParams = new SortedDictionary<string, string>
             {
@@ -263,6 +260,7 @@ namespace HopeBox.Core.Service
                     if (cause.CurrentAmount >= cause.TargetAmount)
                     {
                         cause.Status = CauseStatus.Completed;
+                        await SendThankYouEmailsAndCertificatesAsync(cause);
                     }
                     await _causeRepository.UpdateAsync(cause);
 
@@ -280,8 +278,10 @@ namespace HopeBox.Core.Service
                     user.Point += (int)Math.Round(donation.Amount / 100000);
                     await _userRepository.UpdateAsync(user);
 
+                    var donationReliefPackages = await _donationReliefPackageRepository.GetListAsync(
+                        filter: f => f.DonationId == donation.Id);
                     string subject = "Hóa đơn quyên góp - HopeBox";
-                    string body = GenerateInvoiceHtml(donation, user.FullName, user.Email, cause.Title);
+                    string body = GenerateInvoiceHtml(donation, user.FullName, user.Email, cause.Title, donationReliefPackages.ToList());
                     await _emailService.SendEmailAsync(user.Email, subject, body);
 
                     await transaction.CommitAsync();
@@ -313,20 +313,292 @@ namespace HopeBox.Core.Service
             };
         }
 
-        private string GenerateInvoiceHtml(Donation donation, string userName, string userEmail, string causeTitle)
+        private async Task SendThankYouEmailsAndCertificatesAsync(Cause cause)
+        {
+            var donations = await _repository.GetListAsyncUntracked<Donation>(filter: f => f.CauseId == cause.Id && f.Status == DonationStatus.Paid);
+            var users = await _userRepository.GetListAsyncUntracked(selector: u => new { u.Id, u.FullName, u.Email });
+
+            foreach (var donation in donations)
+            {
+                var user = users.FirstOrDefault(u => u.Id == donation.UserId);
+                if (user != null)
+                {
+                    // Send thank you email
+                    string thankYouSubject = "Cảm ơn bạn đã ủng hộ chiến dịch - HopeBox";
+                    string thankYouBody = $@"
+                        <p>Xin chào {user.FullName},</p>
+                        <p>Cảm ơn bạn đã đóng góp cho chiến dịch {cause.Title}. Sự hỗ trợ của bạn đã giúp chúng tôi hoàn thành mục tiêu. Hy vọng sẽ tiếp tục nhận được sự đồng hành từ bạn!</p>
+                        <p>Trân trọng,<br>Đội ngũ HopeBox</p>";
+                    await _emailService.SendEmailAsync(user.Email, thankYouSubject, thankYouBody);
+
+                    // Check for certificate eligibility
+                    if (donation.Amount >= 10000000 || donation.Amount >= (cause.TargetAmount * (decimal) 0.1))
+                    {
+                        string certificateHtml = GenerateCertificateHtml(donation, user.FullName, cause.Title);
+                        await _emailService.SendEmailAsync(user.Email, "Chứng nhận đóng góp - HopeBox", certificateHtml);
+                    }
+                }
+            }
+        }
+
+        private string GenerateCertificateHtml(Donation donation, string userName, string causeTitle)
         {
             return $@"
-                <h2>Cảm ơn bạn đã quyên góp cho HopeBox!</h2>
-                <p><strong>Tên người dùng:</strong> {userName}</p>
-                <p><strong>Email:</strong> {userEmail}</p>
-                <p><strong>Số tiền:</strong> {donation.Amount:N0} VND</p>
-                <p><strong>Ngày quyên góp:</strong> {donation.DonationDate:dd/MM/yyyy HH:mm}</p>
-                <p><strong>Mã giao dịch:</strong> {donation.TradingCode}</p>
-                <p><strong>ID giao dịch ngân hàng:</strong> {donation.TransactionId ?? "N/A"}</p>
-                <p><strong>Chiến dịch:</strong> {causeTitle}</p>
-                <br/>
-                <p>Một lần nữa, chúng tôi xin chân thành cảm ơn bạn vì sự đóng góp quý báu này!</p>
-                <p>HopeBox Team ❤️</p>
+                <!DOCTYPE html>
+                <html lang=""vi"">
+                <head>
+                    <meta charset=""UTF-8"">
+                    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+                    <style>
+                        body {{
+                            font-family: 'Arial', sans-serif;
+                            margin: 0;
+                            padding: 20px;
+                            background-color: #f0e68c;
+                            color: #333;
+                            text-align: center;
+                        }}
+                        .certificate {{
+                            max-width: 800px;
+                            margin: 0 auto;
+                            background: #fff;
+                            padding: 30px;
+                            border: 2px solid #4CAF50;
+                            border-radius: 10px;
+                            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                        }}
+                        .header {{
+                            text-align: center;
+                            margin-bottom: 20px;
+                        }}
+                        .header h2 {{
+                            margin: 0;
+                            color: #4CAF50;
+                            font-size: 24px;
+                            font-weight: bold;
+                        }}
+                        .content {{
+                            margin: 20px 0;
+                        }}
+                        .content p {{
+                            font-size: 16px;
+                            margin: 10px 0;
+                        }}
+                        .footer {{
+                            margin-top: 20px;
+                            font-size: 12px;
+                            color: #666;
+                        }}
+                    </style>
+                </head>
+                <body>
+                    <div class=""certificate"">
+                        <div class=""header"">
+                            <h2>HOPEBOX</h2>
+                            <p>Đại học FPT - Hòa Lạc<br>0868390784 - HopeBoxHola@gmail.com</p>
+                        </div>
+                        <div class=""content"">
+                            <h1>BẰNG KHEN</h1>
+                            <p>Giấy chứng nhận này được trao đến:</p>
+                            <h3>{userName}</h3>
+                            <p>Vì đã có đóng góp xuất sắc cho chiến dịch: {causeTitle}</p>
+                            <p>Số tiền: {donation.Amount:N0} VND</p>
+                            <p>Ngày trao: {DateTime.Now:dd/MM/yyyy}</p>
+                        </div>
+                        <div class=""footer"">
+                            <p>Trân trọng,<br>Đội ngũ HopeBox</p>
+                        </div>
+                    </div>
+                </body>
+                </html>";
+        }
+
+        private string GenerateInvoiceHtml(Donation donation, string userName, string userEmail, string causeTitle, List<DonationReliefPackage> donationReliefPackages)
+        {
+            var reliefPackageRows = "";
+            if (donationReliefPackages != null && donationReliefPackages.Any())
+            {
+                var packages = _reliefPackageRepository.GetListAsync(filter: f => donationReliefPackages.Select(dr => dr.ReliefPackageId).Contains(f.Id)).Result;
+
+                var countId = 2;
+
+                foreach (var drp in donationReliefPackages)
+                {
+                    var package = packages.FirstOrDefault(p => p.Id == drp.ReliefPackageId);
+                    if (package != null)
+                    {
+                        reliefPackageRows += $@"
+                            <tr>
+                                <td>{countId}</td>
+                                <td>{package.Name}</td>
+                                <td>{package.TotalPrice:N0} VND</td>
+                                <td>{drp.Quantity}</td>
+                                <td>{drp.Quantity * package.TotalPrice:N0} VND</td>
+                            </tr>";
+                        countId++;
+                    }
+                }
+            }
+
+            return $@"
+                <!DOCTYPE html>
+                <html lang=""vi"">
+                <head>
+                    <meta charset=""UTF-8"">
+                    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+                    <style>
+                        body {{
+                            font-family: 'Arial', sans-serif;
+                            margin: 0;
+                            padding: 20px;
+                            background-color: #f0f8f0;
+                            color: #333;
+                        }}
+                        .invoice-container {{
+                            max-width: 800px;
+                            margin: 0 auto;
+                            background: #fff;
+                            padding: 30px;
+                            border: 2px solid #4CAF50;
+                            border-radius: 10px;
+                            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                        }}
+                        .header {{
+                            text-align: center;
+                            margin-bottom: 20px;
+                        }}
+                        .header h2 {{
+                            margin: 0;
+                            color: #4CAF50;
+                            font-size: 24px;
+                            font-weight: bold;
+                        }}
+                        .header p {{
+                            margin: 5px 0;
+                            font-size: 14px;
+                            color: #666;
+                        }}
+                        .details {{
+                            display: flex;
+                            justify-content: space-between;
+                            margin-bottom: 20px;
+                            border-bottom: 1px solid #ddd;
+                            padding-bottom: 10px;
+                        }}
+                        .details div {{
+                            width: 45%;
+                        }}
+                        .details h3 {{
+                            margin: 0 0 10px 0;
+                            color: #4CAF50;
+                            font-size: 18px;
+                        }}
+                        .details p {{
+                            margin: 5px 0;
+                            font-size: 14px;
+                            color: #666;
+                        }}
+                        .table {{
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin: 20px 0;
+                        }}
+                        .table th, .table td {{
+                            border: 1px solid #ddd;
+                            padding: 12px;
+                            text-align: left;
+                            font-size: 14px;
+                        }}
+                        .table th {{
+                            background-color: #4CAF50;
+                            color: white;
+                            font-weight: bold;
+                        }}
+                        .summary {{
+                            text-align: right;
+                            margin-top: 20px;
+                            padding-top: 10px;
+                            border-top: 1px solid #ddd;
+                        }}
+                        .summary p {{
+                            margin: 5px 0;
+                            font-size: 16px;
+                            color: #333;
+                            font-weight: bold;
+                        }}
+                        .summary p span {{
+                            color: #4CAF50;
+                        }}
+                        .footer {{
+                            text-align: center;
+                            margin-top: 20px;
+                            font-size: 12px;
+                            color: #666;
+                        }}
+                        .footer a {{
+                            color: #4CAF50;
+                            text-decoration: none;
+                        }}
+                        .footer a:hover {{
+                            text-decoration: underline;
+                        }}
+                    </style>
+                </head>
+                <body>
+                    <h2>Cảm ơn bạn đã quyên góp cho chiến dịch: {causeTitle}</h2>
+                    <br/>
+                    <div class=""invoice-container"">
+                        <div class=""header"">
+                            <h2>HÓA ĐƠN</h2>
+                            <p><strong>HOPEBOX</strong><br>Đại học FPT - Hòa Lạc<br>0868390784 - HopeBoxHola@gmail.com</p>
+                        </div>
+                        <div class=""details"">
+                            <div>
+                                <h3>THANH TOÁN CHO:</h3>
+                                <p>{userName}</p>
+                                <p>{userEmail}</p>
+                                <p>{donation.DonationDate:dd/MM/yyyy}</p>
+                                <p><strong>SỐ HÓA ĐƠN</strong><br>{donation.TradingCode}</p>
+                                <p><strong>NGÀY HÓA ĐƠN</strong><br>{donation.DonationDate:dd/MM/yyyy HH:mm}</p>
+                                <p><strong>HẠN THANH TOÁN</strong><br>{donation.DonationDate.AddDays(14):dd/MM/yyyy}</p>
+                            </div>
+                        </div>
+                        <table class=""table"">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Mô tả</th>
+                                    <th>Giá</th>
+                                    <th>Số lượng</th>
+                                    <th>Tổng</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>Số tiền quyên góp</td>
+                                    <td>{donation.DonationAmount:N0} VND</td>
+                                    <td>1</td>
+                                    <td>{donation.DonationAmount:N0} VND</td>
+                                </tr>
+                                {reliefPackageRows}
+                            </tbody>
+                        </table>
+                        <div>
+                            <p><strong>TỔNG CỘNG</strong> <span>{donation.Amount:N0} VND</span></p>
+                            <p><strong>THUẾ (%)</strong> <span>0 VND</span></p>
+                            <p><strong>TỔNG HÓA ĐƠN</strong> <span>{donation.Amount:N0} VND</span></p>
+                        </div>
+                        <div>
+                            <h3>TÀI KHOẢN NGÂN HÀNG</h3>
+                            <p>Tên công ty: HopeBox<br>Số tài khoản: 09238812374912313<br>Tên ngân hàng: BIDV</p>
+                        </div>
+                        <div class=""footer"">
+                            <p><a href=""https://hopebox.long2003-2014.workers.dev/"">HopeBox</a></p>
+                        </div>
+                    </div>
+                </body>
+                </html>
             ";
         }
 

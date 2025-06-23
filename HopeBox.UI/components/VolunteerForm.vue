@@ -57,55 +57,55 @@
                     <div class="causes-list-section" v-else-if="causesData && causesData.length > 0">
                         <div class="row">
                             <!-- Thay đổi grid: 1 card per row trên mobile, 2 cards trên tablet, 3 cards trên desktop -->
-<div class="col-12 col-md-12 col-lg-12 mb-12" v-for="(cause, index) in causesData"
-    :key="cause.id || index">
-    <div class="volunteer-cause-item d-flex flex-row align-items-start gap-3 p-3 border rounded">
-        <!-- Ảnh bên trái -->
-        <div class="thumb" style="flex-shrink: 0; height: 150px; width: 200px;">
-            <img class="img-fluid rounded" :src="cause.heroImage || '/images/default-cause.jpg'" 
-                :alt="cause.title" @error="handleImageError" />
-        </div>
+                            <div class="col-12 col-md-12 col-lg-12 mb-12" v-for="(cause, index) in causesData"
+                                :key="cause.id || index">
+                                <div class="volunteer-cause-item d-flex flex-row align-items-start gap-3 p-3 border rounded">
+                                    <!-- Ảnh bên trái -->
+                                    <div class="thumb" style="flex-shrink: 0; height: 150px; width: 200px;">
+                                        <img class="img-fluid rounded" :src="cause.heroImage || '/images/default-cause.jpg'" 
+                                            :alt="cause.title" @error="handleImageError" />
+                                    </div>
 
-        <!-- Nội dung ở giữa -->
-        <div class="content flex-grow-1">
-            <h4 class="title">
-                <a href="#" @click.prevent>{{ cause.title }}</a>
-            </h4>
-            <p class="description">{{ cause.description }}</p>
+                                    <!-- Nội dung ở giữa -->
+                                    <div class="content flex-grow-1">
+                                        <h4 class="title">
+                                            <a href="#" @click.prevent>{{ cause.title }}</a>
+                                        </h4>
+                                        <p class="description">{{ cause.description }}</p>
 
-            <div class="summary-section" v-if="cause.summary">
-                <p class="summary">
-                    <strong>Tóm tắt:</strong> {{ cause.summary }}
-                </p>
-            </div>
+                                        <div class="summary-section" v-if="cause.summary">
+                                            <p class="summary">
+                                                <strong>Tóm tắt:</strong> {{ cause.summary }}
+                                            </p>
+                                        </div>
 
-            <div class="volunteer-status mt-2" v-if="cause.isVolunteerRegistered">
-                <span class="status-badge" :class="getStatusBadgeClass(cause.volunteerStatus)">
-                    <i :class="getStatusIcon(cause.volunteerStatus)"></i>
-                    {{ getStatusText(cause.volunteerStatus) }}
-                </span>
-                <small class="registration-date" v-if="cause.volunteerJoinDate">
-                    Đăng ký: {{ formatDate(cause.volunteerJoinDate) }}
-                </small>
-            </div>
-        </div>
+                                        <div class="volunteer-status mt-2" v-if="cause.isVolunteerRegistered">
+                                            <span class="status-badge" :class="getStatusBadgeClass(cause.volunteerStatus)">
+                                                <i :class="getStatusIcon(cause.volunteerStatus)"></i>
+                                                {{ getStatusText(cause.volunteerStatus) }}
+                                            </span>
+                                            <small class="registration-date" v-if="cause.volunteerJoinDate">
+                                                Đăng ký: {{ formatDate(cause.volunteerJoinDate) }}
+                                            </small>
+                                        </div>
+                                    </div>
 
-        <!-- Nút bên phải -->
-        <div class="volunteer-footer d-flex align-items-start">
-            <button class="volunteer-register-btn btn btn-primary" type="button"
-                @click="handleVolunteerAction(cause)"
-                :disabled="isProcessing || isButtonDisabled(cause)"
-                :class="getButtonClass(cause)">
-                <span v-if="isProcessing && selectedCauseId === cause.id">
-                    <i class="fa fa-spinner fa-spin"></i> {{ getProcessingText(cause) }}
-                </span>
-                <span v-else>
-                    <i :class="getButtonIcon(cause)"></i> {{ getButtonText(cause) }}
-                </span>
-            </button>
-        </div>
-    </div>
-</div>
+                                    <!-- Nút bên phải -->
+                                    <div class="volunteer-footer d-flex align-items-start">
+                                        <button class="volunteer-register-btn btn btn-primary" type="button"
+                                            @click="handleVolunteerAction(cause)"
+                                            :disabled="isProcessing || isButtonDisabled(cause)"
+                                            :class="getButtonClass(cause)">
+                                            <span v-if="isProcessing && selectedCauseId === cause.id">
+                                                <i class="fa fa-spinner fa-spin"></i> {{ getProcessingText(cause) }}
+                                            </span>
+                                            <span v-else>
+                                                <i :class="getButtonIcon(cause)"></i> {{ getButtonText(cause) }}
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
 
                         </div>
                         <!-- Pagination -->

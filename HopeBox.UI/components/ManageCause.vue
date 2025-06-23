@@ -238,7 +238,7 @@ import axios from 'axios';
 import { showSuccessAlertDark, showErrorAlertDark, showConfirmDialogDark } from '@/utils/alertHelper';
 import { CausesStatus, CausesStatusLabel, CausesType, CausesTypeOptions, CausesTypeLabel } from '@/enums/enums';
 
-const BASE_URL = 'https://localhost:7213';
+import { BASE_URL } from '@/utils/constants';
 
 export default {
   data() {
