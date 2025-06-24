@@ -391,7 +391,7 @@ export default {
                         });
                         if (meRes.data.status === 200) {
                             userId = meRes.data.responseData.id;
-                            this.userInfo = meRes.data.responseData; // cache lại luôn
+                            this.userInfo = meRes.data.responseData;
                         } else {
                             await showErrorAlert('Lỗi xác thực', 'Không thể lấy thông tin người dùng, vui lòng đăng nhập lại.');
                             return;

@@ -10,12 +10,9 @@
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public string? Location { get; set; }
-
-        // Thêm các trường tọa độ
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }
         public string? FormattedAddress { get; set; }
-
         public decimal TargetAmount { get; set; }
         public decimal CurrentAmount { get; set; }
         public int Status { get; set; }

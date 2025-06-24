@@ -65,6 +65,7 @@ builder.Services.AddScoped<IOpenMapService, OpenMapService>();
 builder.Services.AddScoped<IR2StorageService, R2StorageService>();
 builder.Services.AddScoped<IReliefPackageService, ReliefPackageService>();
 builder.Services.AddScoped<IReliefPackageItemService, ReliefPackageItemService>();
+builder.Services.AddScoped<IInkindDonationService, InkindDonationService>();
 #endregion
 
 #region Add Converter

@@ -283,7 +283,6 @@ namespace HopeBox.Core.Service
             {
                 _logger.LogInformation("Getting event detail by id: {EventId}", eventId);
 
-                // Lấy Event với include navigation properties
                 var entity = await _repository.GetOneAsyncUntracked<Event>(
                     filter: e => e.Id == eventId,
                     include: query => query.AsQueryable()
@@ -308,6 +307,8 @@ namespace HopeBox.Core.Service
                 dto.OrganizationName = entity.Organization?.Name ?? "Unknown Organization";
                 dto.CauseTitle = entity.Cause?.Title ?? "No Associated Cause";
                 dto.CreatedByName = entity.Creator?.FullName ?? "Unknown User";
+                dto.CurrentAmount = entity.Cause?.CurrentAmount ?? 0;
+                dto.TargetAmount = entity.Cause?.TargetAmount ?? 0;
                 dto.CauseType = entity.Cause?.Type;
 
                 _logger.LogInformation("Successfully retrieved event detail for id: {EventId}", eventId);

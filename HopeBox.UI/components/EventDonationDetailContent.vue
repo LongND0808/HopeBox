@@ -46,6 +46,52 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <!-- Add Progress Section -->
+                                    <div class="col-lg-6">
+                                        <div class="donation-progress-section">
+                                            <div class="progress-header">
+                                                <h4 class="progress-title">
+                                                    <i class="fas fa-chart-line"></i>
+                                                    Tiến Độ Quyên Góp
+                                                </h4>
+                                            </div>
+
+                                            <!-- Updated progress amounts to match causes style -->
+                                            <ul class="donate-info">
+                                                <li class="info-item">
+                                                    <span class="info-title">Mục tiêu</span>
+                                                    <span class="amount">{{ formatCurrencyShort(eventData.targetAmount || 0) }}</span>
+                                                </li>
+                                                <li class="info-item">
+                                                    <span class="info-title">Đóng góp</span>
+                                                    <span class="amount">{{ formatCurrencyShort(eventData.currentAmount || 0) }}</span>
+                                                </li>
+                                                <li class="info-item">
+                                                    <span class="info-title">Còn thiếu</span>
+                                                    <span class="amount">{{ formatCurrencyShort(remainingAmount) }}</span>
+                                                </li>
+                                            </ul>
+
+                                            <div class="progress-bar-container">
+                                                <div class="progress-bar">
+                                                    <div 
+                                                        class="progress-fill" 
+                                                        :style="{ width: progressPercentage + '%' }"
+                                                        :class="progressBarClass"
+                                                    >
+                                                        <div class="progress-shine"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="progress-percentage">{{ Math.round(progressPercentage) }}%</div>
+                                            </div>
+
+                                            <div class="progress-message" v-if="progressMessage">
+                                                <i class="fas fa-info-circle"></i>
+                                                <span>{{ progressMessage }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="row mt-4" v-if="eventData?.detail">
@@ -58,7 +104,11 @@
                                 </div>
 
                                 <!-- Inkind Donation Form -->
-                                
+                                <div class="row mt-4" v-if="eventData">
+                                    <div class="col-lg-12">
+                                        <InkindDonationForm :eventId="eventId" />
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -69,10 +119,9 @@
                                         <img class="icon-img" src="/images/icons/c1.png" alt="Icon">
                                     </div>
                                     <div class="content">
-                                        <h4>Ngày Diễn Ra</h4>
+                                        <h4>Liên Hệ</h4>
                                         <img class="line-icon" src="/images/shape/line-s1.png" alt="Image-HopeBox">
-                                        <p>{{ formatDate(eventData?.startDate) }}</p>
-                                        <p>{{ formatDate(eventData?.endDate) }}</p>
+                                        <p>0964486148</p>
                                     </div>
                                 </div>
                                 <div class="event-info-item">
@@ -80,10 +129,9 @@
                                         <img class="icon-img" src="/images/icons/c2.png" alt="Icon">
                                     </div>
                                     <div class="content">
-                                        <h4>Thời Gian</h4>
+                                        <h4>Email</h4>
                                         <img class="line-icon" src="/images/shape/line-s1.png" alt="Image-HopeBox">
-                                        <p>{{ formatTime(eventData?.startDate) }} - {{ formatTime(eventData?.endDate) }}
-                                        </p>
+                                        <p>hopebox.vn@gmail.com</p>
                                     </div>
                                 </div>
                                 <div class="event-info-item mb-0 pb-0">
@@ -124,13 +172,53 @@
 <script>
 import axios from 'axios';
 import { showErrorAlert } from '@/utils/alertHelper';
+import InkindDonationForm from '@/components/InkindDonationForm.vue';
 
 export default {
     name: 'EventDonationDetailContent',
+    components: {
+        InkindDonationForm
+    },
     props: {
         eventId: {
             type: String,
             required: true
+        }
+    },
+    computed: {
+        progressPercentage() {
+            if (!this.eventData?.targetAmount || this.eventData.targetAmount === 0) return 0;
+            const percentage = (this.eventData.currentAmount / this.eventData.targetAmount) * 100;
+            return Math.min(percentage, 100);
+        },
+        
+        progressBarClass() {
+            if (this.progressPercentage >= 100) return 'progress-complete';
+            if (this.progressPercentage >= 75) return 'progress-high';
+            if (this.progressPercentage >= 50) return 'progress-medium';
+            return 'progress-low';
+        },
+        
+        remainingAmount() {
+            if (!this.eventData?.targetAmount || !this.eventData?.currentAmount) return 0;
+            const remaining = this.eventData.targetAmount - this.eventData.currentAmount;
+            return Math.max(remaining, 0);
+        },
+        
+        progressMessage() {
+            if (this.progressPercentage >= 100) {
+                return 'Chúc mừng! Mục tiêu đã được hoàn thành!';
+            }
+            if (this.progressPercentage >= 75) {
+                return 'Sắp đạt mục tiêu rồi! Cùng nhau hoàn thành nào!';
+            }
+            if (this.progressPercentage >= 50) {
+                return 'Đã hoàn thành hơn một nửa chặng đường!';
+            }
+            if (this.progressPercentage >= 25) {
+                return 'Khởi đầu tốt! Hãy tiếp tục ủng hộ!';
+            }
+            return 'Mọi đóng góp đều có ý nghĩa. Hãy bắt đầu!';
         }
     },
     data() {
@@ -309,7 +397,6 @@ export default {
 
         handlePackagesSelected(selectedPackages) {
             console.log('Selected packages:', selectedPackages);
-            // Store selected packages for later use
             this.selectedPackages = selectedPackages;
         },
 
@@ -326,6 +413,19 @@ export default {
                     totalAmount: donationData.totalAmount
                 }
             });
+        },
+        formatCurrency(amount) {
+            if (!amount) return '0 ₫';
+            return new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount);
+        },
+        formatCurrencyShort(amount) {
+            if (!amount) return '0tr ₫';
+            return `${(amount / 1_000_000).toFixed(1)}tr ₫`;
         }
     },
 
