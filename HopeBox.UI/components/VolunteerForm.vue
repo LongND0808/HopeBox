@@ -53,30 +53,30 @@
                         </div>
                     </div>
 
-                    <!-- Danh sách các chiến dịch với layout stack -->
+                    <!-- Danh sách các chiến dịch với layout list horizontal -->
                     <div class="causes-list-section" v-else-if="causesData && causesData.length > 0">
-                        <div class="row">
-                            <!-- Thay đổi grid: 1 card per row trên mobile, 2 cards trên tablet, 3 cards trên desktop -->
-                            <div class="col-12 col-md-6 col-lg-4 mb-4" v-for="(cause, index) in causesData"
+                        <div class="volunteer-causes-list">
+                            <div class="volunteer-cause-item-horizontal" v-for="(cause, index) in causesData"
                                 :key="cause.id || index">
-                                <div class="volunteer-cause-item">
-                                    <!-- Ảnh ở trên -->
-                                    <div class="thumb">
-                                        <img :src="cause.heroImage || '/images/default-cause.jpg'" :alt="cause.title"
-                                            @error="handleImageError">
-                                    </div>
+                                
+                                <!-- Ảnh bên trái -->
+                                <div class="cause-image">
+                                    <img :src="cause.heroImage || '/images/default-cause.jpg'" :alt="cause.title"
+                                        @error="handleImageError">
+                                </div>
 
-                                    <!-- Nội dung ở giữa -->
-                                    <div class="content">
-                                        <h4 class="title">
+                                <!-- Nội dung chính ở giữa -->
+                                <div class="cause-content">
+                                    <div class="cause-header">
+                                        <h4 class="cause-title">
                                             <a href="#" @click.prevent>{{ cause.title }}</a>
                                         </h4>
-                                        <p class="description">{{ cause.description }}</p>
 
-                                        <div class="summary-section" v-if="cause.summary">
-                                            <p class="summary">
-                                                <strong>Tóm tắt:</strong> {{ cause.summary }}
-                                            </p>
+                                        <div v-if="cause.isVolunteerRegistered && cause.volunteerJoinDate">
+                                            <small class="registration-date">
+                                                <i class="fa fa-calendar"></i>
+                                                Đăng ký: {{ formatDate(cause.volunteerJoinDate) }}
+                                            </small>
                                         </div>
 
                                         <!-- Hiển thị trạng thái đăng ký -->
@@ -86,29 +86,41 @@
                                                 <i :class="getStatusIcon(cause.volunteerStatus)"></i>
                                                 {{ getStatusText(cause.volunteerStatus) }}
                                             </span>
-                                            <small class="registration-date" v-if="cause.volunteerJoinDate">
-                                                Đăng ký: {{ formatDate(cause.volunteerJoinDate) }}
-                                            </small>
                                         </div>
                                     </div>
 
-                                    <!-- Button ở dưới -->
-                                    <div class="volunteer-footer">
-                                        <button class="volunteer-register-btn" type="button"
+                                    <p class="cause-description">{{ cause.description }}</p>
+
+                                    <div class="cause-summary" v-if="cause.summary">
+                                        <p class="summary-text">
+                                            <strong>Tóm tắt:</strong> {{ cause.summary }}
+                                        </p>
+                                    </div>
+
+
+                                </div>
+
+                                <!-- Button và thông tin bên phải -->
+                                <div class="cause-actions">
+                                    <div class="action-content">
+                                        <button class="volunteer-register-btn-horizontal" type="button"
                                             @click="handleVolunteerAction(cause)"
                                             :disabled="isProcessing || isButtonDisabled(cause)"
                                             :class="getButtonClass(cause)">
                                             <span v-if="isProcessing && selectedCauseId === cause.id">
-                                                <i class="fa fa-spinner fa-spin"></i> {{ getProcessingText(cause) }}
+                                                <i class="fa fa-spinner fa-spin"></i>
+                                                {{ getProcessingText(cause) }}
                                             </span>
                                             <span v-else>
-                                                <i :class="getButtonIcon(cause)"></i> {{ getButtonText(cause) }}
+                                                <i :class="getButtonIcon(cause)"></i>
+                                                {{ getButtonText(cause) }}
                                             </span>
                                         </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
                         <!-- Pagination -->
                         <div class="pagination-container" v-if="totalPages > 1">
                             <button class="pagination-button" :disabled="currentPage === 1"
