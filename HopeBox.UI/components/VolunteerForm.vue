@@ -12,7 +12,6 @@
                         </div>
                     </div>
 
-                    <!-- Filter Controls -->
                     <div class="row mb-4 filter-controls">
                         <div class="col-md-4 mb-2">
                             <input v-model="searchName" type="text" class="form-control"
@@ -45,7 +44,6 @@
                         </div>
                     </div>
 
-                    <!-- Loading state -->
                     <div class="loading-state" v-if="loading">
                         <div class="text-center">
                             <i class="fa fa-spinner fa-spin fa-3x"></i>
@@ -53,19 +51,16 @@
                         </div>
                     </div>
 
-                    <!-- Danh sách các chiến dịch với layout list horizontal -->
                     <div class="causes-list-section" v-else-if="causesData && causesData.length > 0">
                         <div class="volunteer-causes-list">
                             <div class="volunteer-cause-item-horizontal" v-for="(cause, index) in causesData"
                                 :key="cause.id || index">
-                                
-                                <!-- Ảnh bên trái -->
+
                                 <div class="cause-image">
                                     <img :src="cause.heroImage || '/images/default-cause.jpg'" :alt="cause.title"
                                         @error="handleImageError">
                                 </div>
 
-                                <!-- Nội dung chính ở giữa -->
                                 <div class="cause-content">
                                     <div class="cause-header">
                                         <h4 class="cause-title">
@@ -79,7 +74,6 @@
                                             </small>
                                         </div>
 
-                                        <!-- Hiển thị trạng thái đăng ký -->
                                         <div class="volunteer-status" v-if="cause.isVolunteerRegistered">
                                             <span class="status-badge"
                                                 :class="getStatusBadgeClass(cause.volunteerStatus)">
@@ -100,7 +94,6 @@
 
                                 </div>
 
-                                <!-- Button và thông tin bên phải -->
                                 <div class="cause-actions">
                                     <div class="action-content">
                                         <button class="volunteer-register-btn-horizontal" type="button"
@@ -121,7 +114,6 @@
                             </div>
                         </div>
 
-                        <!-- Pagination -->
                         <div class="pagination-container" v-if="totalPages > 1">
                             <button class="pagination-button" :disabled="currentPage === 1"
                                 @click="goToPage(currentPage - 1)" title="Trang trước">
@@ -141,7 +133,6 @@
                         </div>
                     </div>
 
-                    <!-- Thông báo khi không có dữ liệu -->
                     <div class="no-causes-message" v-else-if="!loading">
                         <p>
                             <i class="fa fa-info-circle"></i>

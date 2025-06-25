@@ -25,4 +25,16 @@ export default defineNuxtConfig({
     logLevel: 'silent',
     compatibilityDate: '2025-06-13',
   },
+
+  app: {
+    head: {
+        script: [
+            {
+                src: 'https://mirabot.tenten.vn/mirabot.js?f=LoFY8M7BQ6mwb24OqTM5vtIYkhZ5fGwfMh4tU9QkW35lQLh0WgUVWWTi3QmmVxZOo6Arg48npepoDTD7JygIjcgi9SiFRa6jC9WW&t=873',
+                async: true,
+                type: 'text/javascript'
+            }
+        ]
+    }
+  }
 })
