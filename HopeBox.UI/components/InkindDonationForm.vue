@@ -127,6 +127,7 @@
 <script>
 import axios from 'axios';
 import { showSuccessAlert, showErrorAlert, showWarningAlert, showConfirmDialog } from '@/utils/alertHelper';
+import { BASE_URL } from '@/utils/constants'
 
 export default {
     name: 'InkindDonationForm',
@@ -168,7 +169,7 @@ export default {
     methods: {
         async getCurrentUser() {
             try {
-                const response = await axios.get('https://localhost:7213/api/Authentication/me', {
+                const response = await axios.get(`${BASE_URL}/api/Authentication/me`, {
                     withCredentials: true
                 });
 
@@ -230,7 +231,7 @@ export default {
                 };
 
                 const response = await axios.post(
-                    'https://localhost:7213/api/InkindDonation/create',
+                    `${BASE_URL}/api/InkindDonation/create`,
                     requestData,
                     {
                         withCredentials: true,

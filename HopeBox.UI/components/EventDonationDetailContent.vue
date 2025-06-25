@@ -173,6 +173,7 @@
 import axios from 'axios';
 import { showErrorAlert } from '@/utils/alertHelper';
 import InkindDonationForm from '@/components/InkindDonationForm.vue';
+import { BASE_URL } from '@/utils/constants'
 
 export default {
     name: 'EventDonationDetailContent',
@@ -240,7 +241,7 @@ export default {
                 this.loading = true;
 
                 const response = await axios.get(
-                    `https://localhost:7213/api/Event/get-event-donation-detail/${this.eventId}`
+                    `${BASE_URL}/api/Event/get-event-donation-detail/${this.eventId}`
                 );
 
                 if (response.data.status === 200) {
@@ -334,7 +335,7 @@ export default {
 
             try {
                 const response = await axios.get(
-                    `https://localhost:7213/api/Event/search-places`,
+                    `${BASE_URL}/api/Event/search-places`,
                     { params: { keyword: this.eventData.location } }
                 );
 
@@ -342,7 +343,7 @@ export default {
                     const firstPlace = response.data.responseData[0];
 
                     const detailResponse = await axios.get(
-                        `https://localhost:7213/api/Event/place-detail/${firstPlace.id}`
+                        `${BASE_URL}/api/Event/place-detail/${firstPlace.id}`
                     );
 
                     if (detailResponse.data.status === 200) {

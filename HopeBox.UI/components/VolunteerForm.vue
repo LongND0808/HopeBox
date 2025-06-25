@@ -206,7 +206,7 @@ export default {
 
         async getCurrentUser() {
             try {
-                const response = await axios.get('https://localhost:7213/api/Authentication/me', {
+                const response = await axios.get(`${BASE_URL}/api/Authentication/me`, {
                     withCredentials: true
                 });
 
@@ -230,7 +230,7 @@ export default {
                 };
 
                 const response = await axios.post(
-                    'https://localhost:7213/api/Cause/get-cause-by-filter-with-user-status',
+                    `${BASE_URL}/api/Cause/get-cause-by-filter-with-user-status`,
                     requestData,
                     {
                         withCredentials: true,
@@ -276,7 +276,7 @@ export default {
                 };
 
                 const response = await axios.post(
-                    'https://localhost:7213/api/Cause/get-cause-by-filter',
+                    `${BASE_URL}/api/Cause/get-cause-by-filter`,
                     requestData,
                     {
                         headers: {
@@ -389,7 +389,7 @@ export default {
                 let userId = this.userInfo?.id;
                 if (!userId) {
                     try {
-                        const meRes = await axios.get('https://localhost:7213/api/Authentication/me', {
+                        const meRes = await axios.get(`${BASE_URL}/api/Authentication/me`, {
                             withCredentials: true
                         });
                         if (meRes.data.status === 200) {

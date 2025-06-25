@@ -136,6 +136,7 @@
 <script>
 import axios from 'axios';
 import { showErrorAlert } from '@/utils/alertHelper';
+import { BASE_URL } from '@/utils/constants'
 
 export default {
     name: 'EventDetail',
@@ -180,7 +181,7 @@ export default {
                 };
 
                 const response = await axios.get(
-                    'https://localhost:7213/api/Event/get-events-donation-detail-by-filter',
+                    `${BASE_URL}/api/Event/get-events-donation-detail-by-filter`,
                     {
                         params: requestData,
                         headers: {

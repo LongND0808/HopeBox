@@ -160,11 +160,4 @@ export default {
   /* ... */
 }
 
-/* This is the problematic line that should NOT be in <style> */
-/* Remove this: */
-/* <span>{{ formatDate(blog.createdAt).day }}</span>{{ formatDate(blog.createdAt).month }} */
-
-.some-other-css-rule {
-  /* More CSS */
-}
 </style>

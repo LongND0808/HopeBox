@@ -101,7 +101,7 @@
     import axios from 'axios';
     import { showSuccessAlert, showErrorAlert } from '@/utils/alertHelper.js';
 
-    const BASE_URL = 'https://localhost:7213';
+    const BASE_URL = '${BASE_URL}';
 
     export default {
         props: {

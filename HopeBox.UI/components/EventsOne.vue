@@ -119,7 +119,7 @@ export default {
                 this.loading = true;
                 this.error = null;
 
-                const response = await axios.get('https://localhost:7213/api/Event/get-upcoming-events', {
+                const response = await axios.get('${BASE_URL}/api/Event/get-upcoming-events', {
                     headers: {
                         'Content-Type': 'application/json'
                     }
