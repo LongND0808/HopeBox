@@ -8,15 +8,19 @@ using HopeBox.Domain.ResponseDto;
 using HopeBox.Infrastructure.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Org.BouncyCastle.Crypto.Macs;
 using System;
 using System.Collections.Generic;
+using System.Drawing.Printing;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using static HopeBox.Common.Enum.Enumerate;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace HopeBox.Core.Service
 {
@@ -321,22 +325,27 @@ namespace HopeBox.Core.Service
             foreach (var donation in donations)
             {
                 var user = users.FirstOrDefault(u => u.Id == donation.UserId);
-                if (user != null)
+                if (user == null) continue;
+
+                // Check certificate eligibility
+                bool isEligibleForCertificate = donation.Amount >= 10000000 || donation.Amount >= (cause.TargetAmount * (decimal)0.1);
+
+                if (isEligibleForCertificate)
                 {
-                    // Send thank you email
+                    // Send certificate only
+                    string certificateSubject = "Chứng nhận đóng góp - HopeBox";
+                    string certificateHtml = GenerateCertificateHtml(donation, user.FullName, cause.Title);
+                    await _emailService.SendEmailAsync(user.Email, certificateSubject, certificateHtml);
+                }
+                else
+                {
+                    // Send thank-you email only
                     string thankYouSubject = "Cảm ơn bạn đã ủng hộ chiến dịch - HopeBox";
                     string thankYouBody = $@"
                         <p>Xin chào {user.FullName},</p>
-                        <p>Cảm ơn bạn đã đóng góp cho chiến dịch {cause.Title}. Sự hỗ trợ của bạn đã giúp chúng tôi hoàn thành mục tiêu. Hy vọng sẽ tiếp tục nhận được sự đồng hành từ bạn!</p>
+                        <p>Cảm ơn bạn đã đóng góp cho chiến dịch <strong>{cause.Title}</strong>. Sự hỗ trợ của bạn đã giúp chúng tôi tiến gần hơn đến mục tiêu. Hy vọng sẽ tiếp tục nhận được sự đồng hành từ bạn!</p>
                         <p>Trân trọng,<br>Đội ngũ HopeBox</p>";
                     await _emailService.SendEmailAsync(user.Email, thankYouSubject, thankYouBody);
-
-                    // Check for certificate eligibility
-                    if (donation.Amount >= 10000000 || donation.Amount >= (cause.TargetAmount * (decimal) 0.1))
-                    {
-                        string certificateHtml = GenerateCertificateHtml(donation, user.FullName, cause.Title);
-                        await _emailService.SendEmailAsync(user.Email, "Chứng nhận đóng góp - HopeBox", certificateHtml);
-                    }
                 }
             }
         }
@@ -344,73 +353,37 @@ namespace HopeBox.Core.Service
         private string GenerateCertificateHtml(Donation donation, string userName, string causeTitle)
         {
             return $@"
-                <!DOCTYPE html>
-                <html lang=""vi"">
-                <head>
-                    <meta charset=""UTF-8"">
-                    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
-                    <style>
-                        body {{
-                            font-family: 'Arial', sans-serif;
-                            margin: 0;
-                            padding: 20px;
-                            background-color: #f0e68c;
-                            color: #333;
-                            text-align: center;
-                        }}
-                        .certificate {{
-                            max-width: 800px;
-                            margin: 0 auto;
-                            background: #fff;
-                            padding: 30px;
-                            border: 2px solid #4CAF50;
-                            border-radius: 10px;
-                            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                        }}
-                        .header {{
-                            text-align: center;
-                            margin-bottom: 20px;
-                        }}
-                        .header h2 {{
-                            margin: 0;
-                            color: #4CAF50;
-                            font-size: 24px;
-                            font-weight: bold;
-                        }}
-                        .content {{
-                            margin: 20px 0;
-                        }}
-                        .content p {{
-                            font-size: 16px;
-                            margin: 10px 0;
-                        }}
-                        .footer {{
-                            margin-top: 20px;
-                            font-size: 12px;
-                            color: #666;
-                        }}
-                    </style>
-                </head>
-                <body>
-                    <div class=""certificate"">
-                        <div class=""header"">
-                            <h2>HOPEBOX</h2>
-                            <p>Đại học FPT - Hòa Lạc<br>0868390784 - HopeBoxHola@gmail.com</p>
-                        </div>
-                        <div class=""content"">
-                            <h1>BẰNG KHEN</h1>
-                            <p>Giấy chứng nhận này được trao đến:</p>
-                            <h3>{userName}</h3>
-                            <p>Vì đã có đóng góp xuất sắc cho chiến dịch: {causeTitle}</p>
-                            <p>Số tiền: {donation.Amount:N0} VND</p>
-                            <p>Ngày trao: {DateTime.Now:dd/MM/yyyy}</p>
-                        </div>
-                        <div class=""footer"">
-                            <p>Trân trọng,<br>Đội ngũ HopeBox</p>
-                        </div>
+            <!DOCTYPE html>
+            <html lang=""vi"">
+            <head>
+                <meta charset=""UTF-8"">
+                <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+                <title>Chứng nhận đóng góp – HopeBox</title>
+                <link href=""https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro&display=swap"" rel=""stylesheet"">
+            </head>
+            <body style=""margin: 0; padding: 0; font-family: 'Be Vietnam Pro', sans-serif; background-color: #ffffff;"">
+                <div style=""position: relative; width: 1123px; height: 794px; margin: 0 auto; background-image: url('https://pub-dc597dd9f97242ceb1fc0179075fabfa.r2.dev/certificate.png'); background-size: cover; background-repeat: no-repeat; padding: 60px 80px; box-sizing: border-box; color: #111111; text-align: center;"">
+                    <div style=""text-align: right; font-size: 16px; line-height: 1.5;"">
+                        <p style=""margin: 4px 0;""><strong>HOPEBOX</strong></p>
+                        <p style=""margin: 4px 0;"">Đại học FPT - Hòa Lạc</p>
+                        <p style=""margin: 4px 0;"">0868 390 784 | HopeBoxHola@gmail.com</p>
                     </div>
-                </body>
-                </html>";
+                    <div style=""text-align: center; font-size: 36px; color: #d4af37; font-weight: bold; text-transform: uppercase; margin-top: 20px;"">CHỨNG NHẬN ĐÓNG GÓP</div>
+                    <div style=""text-align: center; margin-top: 30px; font-size: 18px; line-height: 1.8;"">
+                        <p style=""margin: 4px 0;"">Chứng nhận này được trao cho</p>
+                        <p style=""font-size: 26px; font-weight: bold; text-decoration: underline; margin: 10px 0;"">{userName}</p>
+                        <p style=""margin: 4px 0;"">Vì đã có đóng góp ý nghĩa cho chiến dịch:</p>
+                        <p style=""margin: 4px 0;""><strong>{causeTitle}</strong></p>
+                        <p style=""margin: 4px 0;"">Số tiền ủng hộ: <strong>{donation.Amount:N0} VND</strong></p>
+                        <p style=""margin: 4px 0;"">Ngày trao: <strong>{DateTime.Now:dd/MM/yyyy}</strong></p>
+                    </div>
+                    <div style=""text-align: right; font-size: 16px; margin-top: 40px;"">
+                        <p style=""margin: 4px 0;"">Trân trọng,</p>
+                        <p style=""margin: 4px 0;"">Đội ngũ HopeBox</p>
+                    </div>
+                </div>
+            </body>
+            </html>";
         }
 
         private string GenerateInvoiceHtml(Donation donation, string userName, string userEmail, string causeTitle, List<DonationReliefPackage> donationReliefPackages)
