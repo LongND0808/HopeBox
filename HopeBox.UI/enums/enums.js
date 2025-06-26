@@ -43,8 +43,8 @@ export const VolunteerStatusLabel = {
 };
 
 export const VolunteerRegistrationState = {
-  NOT_REGISTERED: 0,     
-  REGISTERED_PENDING: 1, 
+  NOT_REGISTERED: 0,
+  REGISTERED_PENDING: 1,
   REGISTERED_APPROVED: 2,
   REGISTERED_REJECTED: 3
 };
@@ -61,14 +61,18 @@ export const CausesStatus = {
   APPROVED: 2,
   ONGOING: 3,
   COMPLETED: 4,
-  CANCELED: 5
+  EXECUTE: 5,
+  CLOSED: 6,
+  CANCELED: 7
 };
 
 export const CausesStatusLabel = {
   [CausesStatus.PENDING]: 'Chờ duyệt',
   [CausesStatus.APPROVED]: 'Đã duyệt',
-  [CausesStatus.ONGOING]: 'Đang diễn ra',
-  [CausesStatus.COMPLETED]: 'Đã hoàn thành',
+  [CausesStatus.ONGOING]: 'Đang diễn ra quyên góp',
+  [CausesStatus.COMPLETED]: 'Đã hoàn thành quyên góp',
+  [CausesStatus.EXECUTE]: 'Đang tiến hành từ thiện',
+  [CausesStatus.COMPLETED]: 'Đã hoàn thành chiến dịch',
   [CausesStatus.CANCELED]: 'Đã hủy'
 };
 
