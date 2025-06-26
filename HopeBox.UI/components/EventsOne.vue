@@ -100,6 +100,7 @@
 
 <script>
 import axios from 'axios';
+import { BASE_URL } from '@/utils/constants';
 
 export default {
     name: 'EventOne',
@@ -119,7 +120,7 @@ export default {
                 this.loading = true;
                 this.error = null;
 
-                const response = await axios.get('${BASE_URL}/api/Event/get-upcoming-events', {
+                const response = await axios.get(`${BASE_URL}/api/Event/get-upcoming-events`, {
                     headers: {
                         'Content-Type': 'application/json'
                     }

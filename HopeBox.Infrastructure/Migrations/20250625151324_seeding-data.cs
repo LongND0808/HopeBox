@@ -6,7 +6,7 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace HopeBox.Infrastructure.Migrations
 {
-    public partial class seedingdatabase : Migration
+    public partial class seedingdata : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -61,7 +61,7 @@ namespace HopeBox.Infrastructure.Migrations
 
             // Blog IDs
             var blogIds = new Guid[15];
-            for (int i = 0; i < 15; i++)
+            for (int i = 0; i < 5; i++)
             {
                 blogIds[i] = Guid.NewGuid();
             }
@@ -477,30 +477,159 @@ namespace HopeBox.Infrastructure.Migrations
                     }
                 });
 
-            // Insert Blogs
+            // Insert Blogs với các trường mới
             migrationBuilder.InsertData(
                 table: "Blogs",
                 columns: new[]
                 {
-                    "Id", "Title", "Content", "Description", "ImageUrl", "IsPublished", "CreatedAt", "CreatedBy", "UpdatedAt"
+                    "Id", "Title", "Content", "Description", "ImageUrl", "Slug",
+                    "ViewCount", "LikeCount", "CommentCount", "ShareCount", "Tags",
+                    "MetaDescription", "MetaKeywords", "ReadingTime", "CreatedAt",
+                    "CreatedBy", "UpdatedAt", "IsPublished"
                 },
                 values: new object[,]
                 {
-                    { blogIds[0], "Giúp Trẻ Em Vùng Cao Có Nước Sạch", "Nội dung chi tiết về việc xây dựng giếng khoan và lọc nước sạch cho các bản làng vùng cao...", "Tổng quan về dự án nước sạch cho trẻ em vùng cao.", "/images/blog/water.jpg", true, DateTime.UtcNow.AddDays(-10), userAdminId, null },
-                    { blogIds[1], "Chương Trình Hỗ Trợ Dinh Dưỡng", "Chi tiết chương trình cung cấp thực phẩm dinh dưỡng cho trẻ em suy dinh dưỡng vùng cao...", "Giới thiệu chương trình hỗ trợ dinh dưỡng.", "/images/blog/food.jpg", false, DateTime.UtcNow.AddDays(-8), userAdminId, null },
-                    { blogIds[2], "Xây Dựng Lớp Học Vùng Núi", "Thông tin về dự án xây trường học mới cho trẻ em ở vùng sâu vùng xa...", "Cải thiện điều kiện học tập cho trẻ em vùng núi.", "/images/blog/education.jpg", true, DateTime.UtcNow.AddDays(-15), userAdminId, null },
-                    { blogIds[3], "Tặng Quần Áo Ấm Cho Trẻ Em", "Chiến dịch quyên góp và phân phát áo ấm cho trẻ em vùng lạnh...", "Mang đến hơi ấm mùa đông cho trẻ em vùng cao.", "/images/blog/clothing.jpg", true, DateTime.UtcNow.AddDays(-12), userAdminId, null },
-                    { blogIds[4], "Cung Cấp Sách Giáo Khoa", "Hỗ trợ sách vở và dụng cụ học tập cho học sinh nghèo...", "Nâng cao chất lượng giáo dục thông qua hỗ trợ vật chất.", "/images/blog/books.jpg", true, DateTime.UtcNow.AddDays(-10), userAdminId, null },
-                    { blogIds[5], "Khám Sức Khỏe Định Kỳ", "Chương trình khám sức khỏe miễn phí cho trẻ em...", "Quan tâm sức khỏe định kỳ cho trẻ em vùng xa.", "/images/blog/health.jpg", false, DateTime.UtcNow.AddDays(-7), userAdminId, null },
-                    { blogIds[6], "Trại Hè Tình Nguyện", "Tổ chức trại hè bổ ích và vui chơi cho trẻ em khó khăn...", "Mang đến nụ cười và niềm vui cho trẻ em mùa hè.", "/images/blog/camp.jpg", true, DateTime.UtcNow.AddDays(-20), userAdminId, null },
-                    { blogIds[7], "Hướng Nghiệp Cho Học Sinh", "Chia sẻ kiến thức nghề nghiệp và định hướng tương lai...", "Đồng hành cùng các em trong hành trình tương lai.", "/images/blog/career.jpg", false, DateTime.UtcNow.AddDays(-5), userAdminId, null },
-                    { blogIds[8], "Học Bổng Cho Học Sinh Nghèo", "Chương trình học bổng dành cho học sinh có hoàn cảnh khó khăn...", "Khuyến khích học sinh tiếp tục học tập.", "/images/blog/scholarship.jpg", true, DateTime.UtcNow.AddDays(-25), userAdminId, null },
-                    { blogIds[9], "Ngày Hội Đọc Sách", "Khơi dậy niềm yêu thích đọc sách trong trẻ em...", "Góp phần xây dựng văn hóa đọc cho thế hệ tương lai.", "/images/blog/reading.jpg", true, DateTime.UtcNow.AddDays(-7), userAdminId, null },
-                    { blogIds[10], "Trồng Cây Xanh Ở Trường Học", "Chiến dịch trồng cây xanh tại các điểm trường vùng cao...", "Cải thiện môi trường sống và học tập cho trẻ em.", "/images/blog/trees.jpg", true, DateTime.UtcNow.AddDays(-4), userAdminId, null },
-                    { blogIds[11], "Khóa Học Kỹ Năng Sống", "Giáo dục kỹ năng sống giúp học sinh tự tin và giao tiếp...", "Giáo dục toàn diện cho học sinh.", "/images/blog/skills.jpg", true, DateTime.UtcNow.AddDays(-3), userAdminId, null },
-                    { blogIds[12], "Hỗ Trợ Nhà Ở Vùng Cao", "Chi tiết về chương trình xây dựng nhà ở an toàn cho các gia đình nghèo...", "Mang lại mái ấm bền vững cho cộng đồng.", "/images/blog/shelter.jpg", true, DateTime.UtcNow.AddDays(-2), userAdminId, null },
-                    { blogIds[13], "Chương Trình Y Tế Cộng Đồng", "Tổ chức khám sức khỏe và tư vấn y tế miễn phí...", "Cải thiện sức khỏe cộng đồng vùng sâu vùng xa.", "/images/blog/healthcare.jpg", false, DateTime.UtcNow.AddDays(-6), userAdminId, null },
-                    { blogIds[14], "Ngày Hội Môi Trường", "Sự kiện tuyên truyền bảo vệ môi trường và trồng cây xanh...", "Lan tỏa ý thức bảo vệ môi trường trong cộng đồng.", "/images/blog/environment.jpg", true, DateTime.UtcNow.AddDays(-1), userAdminId, null }
+                    {
+                        blogIds[0],
+                        "Giúp Trẻ Em Vùng Cao Có Nước Sạch",
+                        "Dự án này nhằm mục đích cung cấp nước sạch và an toàn cho các trẻ em ở vùng cao, nơi mà nguồn nước hiện tại đang bị ô nhiễm và không đảm bảo sức khỏe. Chúng tôi đã tiến hành khảo sát kỹ lưỡng và xây dựng các hệ thống lọc nước hiện đại, đồng thời đào tạo cộng đồng về cách sử dụng và bảo trì. Việc này không chỉ giúp cải thiện sức khỏe mà còn nâng cao chất lượng cuộc sống và khả năng học tập của các em. Chúng tôi cam kết minh bạch trong mọi hoạt động và luôn cập nhật tiến độ dự án cho cộng đồng và các nhà tài trợ. Dự án được thực hiện với sự hỗ trợ của các chuyên gia kỹ thuật và tình nguyện viên địa phương, đảm bảo tính bền vững và hiệu quả lâu dài. Các hệ thống lọc nước được lắp đặt sẽ phục vụ hàng trăm gia đình trong khu vực, mang lại nguồn nước sạch ổn định cho sinh hoạt hàng ngày và học tập của trẻ em.",
+                        "Dự án này nhằm mục đích cung cấp nước sạch và an toàn cho các trẻ em ở vùng cao, nơi mà nguồn nước hiện tại đang bị ô nhiễm và không đảm bảo sức khỏe. Chúng tôi đã tiến hành khảo sát kỹ lưỡng và xây dựng các hệ thống lọc nước hiện đại, đồng thời đào tạo cộng đồng về cách sử dụng và bảo trì. Việc này không chỉ giúp cải thiện sức khỏe mà còn nâng cao chất lượng cuộc sống và khả năng học tập của các em. Chúng tôi cam kết minh bạch trong mọi hoạt động và luôn cập nhật tiến độ dự án cho cộng đồng và các nhà tài trợ.",
+                        "https://api.nongthonviet.com.vn/media/60759533068bb739ff924adc_images1452820_nuoc_sach.jpg",
+                        "giup-tre-em-vung-cao-co-nuoc-sach",
+                        551, 28, 29, 15,
+                        "nước sạch, trẻ em, vùng cao",
+                        "Dự án này nhằm mục đích cung cấp nước sạch và an toàn cho các trẻ em ở vùng cao, nơi mà nguồn nước hiện tại đang bị ô nhiễm và không đảm bảo sức khỏe. Chúng tôi",
+                        "nước sạch, dự án, trẻ em",
+                        1,
+                        DateTime.UtcNow.AddDays(-20),
+                        userAdminId,
+                        null,
+                        true
+                    },
+                    {
+                        blogIds[1],
+                        "Chương Trình Hỗ Trợ Dinh Dưỡng",
+                        "Chương trình hỗ trợ dinh dưỡng được thiết kế để giải quyết tình trạng suy dinh dưỡng ở trẻ em vùng cao thông qua việc cung cấp thực phẩm bổ dưỡng và giáo dục về dinh dưỡng. Chúng tôi làm việc trực tiếp với các gia đình để hiểu rõ nhu cầu và thách thức trong việc đảm bảo dinh dưỡng cho trẻ em. Các gói thực phẩm được cung cấp bao gồm gạo, thịt, rau củ, sữa và các loại vitamin cần thiết cho sự phát triển toàn diện của trẻ. Ngoài ra, chúng tôi còn tổ chức các buổi tập huấn cho phụ huynh về cách chế biến món ăn dinh dưỡng từ các nguyên liệu có sẵn tại địa phương. Chương trình cũng bao gồm việc theo dõi sức khỏe định kỳ để đánh giá hiệu quả và điều chỉnh kế hoạch hỗ trợ phù hợp với từng trẻ em. Sự hợp tác với các trạm y tế địa phương đảm bảo việc theo dõi chặt chẽ tình trạng dinh dưỡng và sức khỏe của các em.",
+                        "Chương trình hỗ trợ dinh dưỡng được thiết kế để giải quyết tình trạng suy dinh dưỡng ở trẻ em vùng cao thông qua việc cung cấp thực phẩm bổ dưỡng và giáo dục về dinh dưỡng. Chúng tôi làm việc trực tiếp với các gia đình để hiểu rõ nhu cầu và thách thức trong việc đảm bảo dinh dưỡng cho trẻ em. Các gói thực phẩm được cung cấp bao gồm gạo, thịt, rau củ, sữa và các loại vitamin cần thiết cho sự phát triển toàn diện của trẻ. Ngoài ra, chúng tôi còn tổ chức các buổi tập huấn cho phụ huynh về cách chế biến món ăn dinh dưỡng từ các nguyên liệu có sẵn tại địa phương.",
+                        "https://thoidai.com.vn/stores/news_dataimages/2024/042024/06/13/vna-potal-bua-an-ban-tru-gop-phan-giam-ty-le-suy-dinh-duong-cho-hoc-sinh-mien-nui-quang-ngai-stand20240406131738.jpg?rt=20240406131743",
+                        "chuong-trinh-ho-tro-dinh-duong",
+                        811, 52, 9, 3,
+                        "dinh dưỡng, trẻ em, suy dinh dưỡng",
+                        "Chương trình hỗ trợ dinh dưỡng được thiết kế để giải quyết tình trạng suy dinh dưỡng ở trẻ em vùng cao thông qua việc cung cấp thực phẩm bổ dưỡng và giáo dục về dinh",
+                        "dinh dưỡng, thực phẩm, trẻ em",
+                        1,
+                        DateTime.UtcNow.AddDays(-18),
+                        userAdminId,
+                        null,
+                        true
+                    },
+                    {
+                        blogIds[2],
+                        "Xây Dựng Lớp Học Vùng Núi",
+                        "Dự án xây dựng lớp học vùng núi nhằm cải thiện điều kiện học tập cho trẻ em ở những vùng xa xôi nhất của đất nước. Chúng tôi không chỉ xây dựng cơ sở vật chất mà còn trang bị đầy đủ bàn ghế, bảng viết, và các dụng cụ học tập cần thiết. Mỗi lớp học được thiết kế để chịu được điều kiện thời tiết khắc nghiệt của vùng núi, đảm bảo an toàn và thoải mái cho các em trong suốt năm học. Chúng tôi cũng hỗ trợ đào tạo giáo viên địa phương, cung cấp tài liệu giảng dạy và phương pháp sư phạm hiện đại phù hợp với đặc điểm văn hóa bản địa. Dự án còn bao gồm việc xây dựng thư viện nhỏ với các sách giáo khoa và sách tham khảo phù hợp với từng độ tuổi. Ngoài ra, chúng tôi lắp đặt hệ thống điện năng lượng mặt trời để đảm bảo ánh sáng đầy đủ cho việc học tập. Sự tham gia của cộng đồng địa phương trong quá trình xây dựng không chỉ giúp giảm chi phí mà còn tạo ra sự gắn kết và trách nhiệm chung trong việc duy trì và bảo vệ ngôi trường.",
+                        "Dự án xây dựng lớp học vùng núi nhằm cải thiện điều kiện học tập cho trẻ em ở những vùng xa xôi nhất của đất nước. Chúng tôi không chỉ xây dựng cơ sở vật chất mà còn trang bị đầy đủ bàn ghế, bảng viết, và các dụng cụ học tập cần thiết. Mỗi lớp học được thiết kế để chịu được điều kiện thời tiết khắc nghiệt của vùng núi, đảm bảo an toàn và thoải mái cho các em trong suốt năm học. Chúng tôi cũng hỗ trợ đào tạo giáo viên địa phương, cung cấp tài liệu giảng dạy và phương pháp sư phạm hiện đại phù hợp với đặc điểm văn hóa bản địa.",
+                        "https://static.kienviet.net/storage/uploads/2024/02/kienviet-truong-mam-non-va-tieu-hoc-lung-vai-1-6-1708770817.jpg",
+                        "xay-dung-lop-hoc-vung-nui",
+                        954, 65, 50, 4,
+                        "giáo dục, xây dựng trường học, vùng núi",
+                        "Dự án xây dựng lớp học vùng núi nhằm cải thiện điều kiện học tập cho trẻ em ở những vùng xa xôi nhất của đất nước. Chúng tôi không chỉ xây dựng cơ sở vật chất mà",
+                        "giáo dục, trường học, vùng núi",
+                        2,
+                        DateTime.UtcNow.AddDays(-15),
+                        userAdminId,
+                        null,
+                        true
+                    },
+                    {
+                        blogIds[3],
+                        "Tặng Quần Áo Ấm Cho Trẻ Em",
+                        "Chiến dịch tặng quần áo ấm cho trẻ em được tổ chức hàng năm nhằm giúp các em vượt qua mùa đông lạnh giá ở vùng cao. Chúng tôi thu thập và phân phát hàng nghìn bộ quần áo ấm, bao gồm áo khoác, áo len, quần dài, tất và giày dép phù hợp với từng độ tuổi. Mỗi bộ quần áo được kiểm tra kỹ lưỡng về chất lượng và độ an toàn trước khi đến tay các em. Chúng tôi cũng tổ chức các hoạt động vui chơi và giáo dục trong các buổi trao quà, tạo không khí ấm áp và niềm vui cho trẻ em. Ngoài việc trao quà trực tiếp, chúng tôi còn hướng dẫn các gia đình cách bảo quản và sử dụng quần áo hiệu quả. Chiến dịch cũng bao gồm việc quyên góp chăn màn, khăn len và các vật dụng giữ ấm khác. Sự tham gia của các tình nguyện viên từ khắp nơi đã tạo nên một mạng lưới yêu thương rộng lớn, lan tỏa tinh thần tương thân tương ái trong cộng đồng. Chúng tôi cũng phối hợp với các trường học địa phương để đảm bảo các em có đủ quần áo ấm để đến trường trong những ngày lạnh nhất.",
+                        "Chiến dịch tặng quần áo ấm cho trẻ em được tổ chức hàng năm nhằm giúp các em vượt qua mùa đông lạnh giá ở vùng cao. Chúng tôi thu thập và phân phát hàng nghìn bộ quần áo ấm, bao gồm áo khoác, áo len, quần dài, tất và giày dép phù hợp với từng độ tuổi. Mỗi bộ quần áo được kiểm tra kỹ lưỡng về chất lượng và độ an toàn trước khi đến tay các em. Chúng tôi cũng tổ chức các hoạt động vui chơi và giáo dục trong các buổi trao quà, tạo không khí ấm áp và niềm vui cho trẻ em.",
+                        "https://media.treemvietnam.net.vn//files/phuongnhung26/2022/12/25/anh-so-1-074258.jpg",
+                        "tang-quan-ao-am-cho-tre-em",
+                        772, 79, 39, 11,
+                        "quần áo ấm, mùa đông, trẻ em vùng cao",
+                        "Chiến dịch tặng quần áo ấm cho trẻ em được tổ chức hàng năm nhằm giúp các em vượt qua mùa đông lạnh giá ở vùng cao. Chúng tôi thu thập và phân phát hàng nghìn bộ",
+                        "quần áo ấm, mùa đông, từ thiện",
+                        2,
+                        DateTime.UtcNow.AddDays(-12),
+                        userAdminId,
+                        null,
+                        true
+                    },
+                    {
+                        blogIds[4],
+                        "Cung Cấp Sách Giáo Khoa",
+                        "Chương trình cung cấp sách giáo khoa nhằm đảm bảo mọi trẻ em đều có cơ hội tiếp cận giáo dục chất lượng bất kể hoàn cảnh gia đình. Chúng tôi thu thập, phân loại và phân phát hàng nghìn cuốn sách giáo khoa từ lớp 1 đến lớp 12, cùng với các sách tham khảo và truyện thiếu nhi. Mỗi bộ sách được đóng gói cẩn thận và giao trực tiếp đến tay học sinh hoặc thông qua các trường học địa phương. Chúng tôi cũng tổ chức các buổi đọc sách cộng đồng, khuyến khích trẻ em phát triển thói quen đọc sách từ sớm. Ngoài sách giáo khoa, chúng tôi còn cung cấp các dụng cụ học tập như bút, vở, thước kẻ, và cặp sách. Chương trình cũng bao gồm việc hỗ trợ xây dựng các thư viện nhỏ tại các điểm trường xa xôi. Sự hợp tác với các nhà xuất bản và tác giả đã giúp chúng tôi có được nguồn sách phong phú và chất lượng. Chúng tôi cũng tổ chức các cuộc thi viết văn và kể chuyện để khuyến khích trẻ em thể hiện tài năng và sự sáng tạo của mình.",
+                        "Chương trình cung cấp sách giáo khoa nhằm đảm bảo mọi trẻ em đều có cơ hội tiếp cận giáo dục chất lượng bất kể hoàn cảnh gia đình. Chúng tôi thu thập, phân loại và phân phát hàng nghìn cuốn sách giáo khoa từ lớp 1 đến lớp 12, cùng với các sách tham khảo và truyện thiếu nhi. Mỗi bộ sách được đóng gói cẩn thận và giao trực tiếp đến tay học sinh hoặc thông qua các trường học địa phương. Chúng tôi cũng tổ chức các buổi đọc sách cộng đồng, khuyến khích trẻ em phát triển thói quen đọc sách từ sớm.",
+                        "https://cdn.lawnet.vn/uploads/NewsThumbnail/2019/11/20/090108mohinhvnen.jpg",
+                        "cung-cap-sach-giao-khoa",
+                        166, 23, 26, 2,
+                        "sách giáo khoa, giáo dục, học tập",
+                        "Chương trình cung cấp sách giáo khoa nhằm đảm bảo mọi trẻ em đều có cơ hội tiếp cận giáo dục chất lượng bất kể hoàn cảnh gia đình. Chúng tôi thu thập, phân loại",
+                        "sách giáo khoa, giáo dục, trẻ em",
+                        2,
+                        DateTime.UtcNow.AddDays(-10),
+                        userAdminId,
+                        null,
+                        true
+                    }
+                });
+
+            // Insert Shares
+            migrationBuilder.InsertData(
+                table: "Shares",
+                columns: new[]
+                {
+                    "Id", "UserId", "BlogId", "Platform", "ShareUrl", "ShareCaption", "CreatedAt"
+                },
+                values: new object[,]
+                {
+                    {
+                        Guid.NewGuid(),
+                        userAdminId,
+                        blogIds[0],
+                        (int)SharePlatform.Facebook,
+                        "https://hopebox.long2003-2014.workers.dev/blogs/giup-tre-em-vung-cao-co-nuoc-sach",
+                        "Chia sẻ bài viết: Giúp Trẻ Em Vùng Cao Có Nước Sạch",
+                        DateTime.UtcNow.AddDays(-19)
+                    },
+                    {
+                        Guid.NewGuid(),
+                        userAdminId,
+                        blogIds[1],
+                        (int)SharePlatform.Twitter,
+                        "https://hopebox.long2003-2014.workers.dev/blogs/chuong-trinh-ho-tro-dinh-duong",
+                        "Chia sẻ bài viết: Chương Trình Hỗ Trợ Dinh Dưỡng",
+                        DateTime.UtcNow.AddDays(-17)
+                    },
+                    {
+                        Guid.NewGuid(),
+                        userAdminId,
+                        blogIds[2],
+                        (int)SharePlatform.Tiktok,
+                        "https://hopebox.long2003-2014.workers.dev/blogs/xay-dung-lop-hoc-vung-nui",
+                        "Chia sẻ bài viết: Xây Dựng Lớp Học Vùng Núi",
+                        DateTime.UtcNow.AddDays(-14)
+                    },
+                    {
+                        Guid.NewGuid(),
+                        userAdminId,
+                        blogIds[3],
+                        (int)SharePlatform.Facebook,
+                        "https://hopebox.long2003-2014.workers.dev//blogs/tang-quan-ao-am-cho-tre-em",
+                        "Chia sẻ bài viết: Tặng Quần Áo Ấm Cho Trẻ Em",
+                        DateTime.UtcNow.AddDays(-11)
+                    },
+                    {
+                        Guid.NewGuid(),
+                        userAdminId,
+                        blogIds[4],
+                        (int)SharePlatform.Twitter,
+                        "https://hopebox.long2003-2014.workers.dev/blogs/cung-cap-sach-giao-khoa",
+                        "Chia sẻ bài viết: Cung Cấp Sách Giáo Khoa",
+                        DateTime.UtcNow.AddDays(-9)
+                    }
                 });
 
             // Insert ReliefItems
@@ -573,7 +702,7 @@ namespace HopeBox.Infrastructure.Migrations
             // Insert Donations
             migrationBuilder.InsertData(
                 table: "Donations",
-                columns: new[] { "Id", "UserId", "CauseId", "DonationAmount", "Amount", "DonationDate", "PaymentMethod", "TransactionId", "TradingCode", "Status", "IsAnonymous"},
+                columns: new[] { "Id", "UserId", "CauseId", "DonationAmount", "Amount", "DonationDate", "PaymentMethod", "TransactionId", "TradingCode", "Status", "IsAnonymous" },
                 values: new object[,]
                 {
                     { donation1Id, userCustomer1Id, causeWaterId, 0m, 1000000m, DateTime.UtcNow.AddDays(-5), (int)PaymentMethod.VNPay, "TXN12345", "CODE123", 1, false },

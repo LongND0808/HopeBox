@@ -1,4 +1,3 @@
-using System;
 using static HopeBox.Common.Enum.Enumerate;
 
 namespace HopeBox.Domain.Dtos

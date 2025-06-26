@@ -95,5 +95,19 @@ namespace HopeBox.Common.Enum
             Delivered = 4,   
             Cancelled = 5       
         }
+
+        public enum LikeType
+        {
+            Blog = 0,
+            Comment = 1
+        }
+
+        public enum SharePlatform
+        {
+            Facebook = 0,
+            Twitter = 1,
+            Tiktok = 2,
+        }
+
     }
 }

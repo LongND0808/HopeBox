@@ -88,7 +88,6 @@ namespace HopeBox.Core.Service
             }
         }
 
-
         public async Task<BaseResponseDto<CauseDto>> GetCauseHighestTargetAsync()
         {
             try
