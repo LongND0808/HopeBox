@@ -2,7 +2,7 @@
   <div class="blog-page-wrapper">
     <Header />
     <OffCanvasMobileMenu />
-    <Breadcrumb :items="['Blog details']" title="Blog details" />
+    <Breadcrumb items="Blog Details" title="Blog Details" />
     <BlogDetailsContent :id="$route.query.id" />
     <Footer />
   </div>
