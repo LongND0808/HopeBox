@@ -23,7 +23,7 @@
                   <div v-html="blog.content"></div>
                   <div class="blockquote-area">
                     <blockquote class="blockquote-style">
-                      <p>{{ blog.blockquote || 'Contrary to popular belief not simply random has roots in a piece of classical Latin literature making it over 2000 years old Latin professor looked up one of the more.' }}</p>
+                      <p>{{ blog.blockquote || 'Mỗi hành động tử tế hôm nay, là hạt giống hy vọng cho ngày mai.' }}</p>
                       <div class="icon">“</div>
                     </blockquote>
                   </div>
@@ -49,10 +49,8 @@
                     <div>Ngày đăng: {{ formatDate(blog.createdAt) }}</div>
                     <div>Tác giả: {{ blog.authorName || 'Ẩn danh' }}</div>
                 </div>
-                <!-- Comments, form giữ nguyên như template tĩnh -->
                 <div class="comment-area">
                   <h2 class="title">Comments <span>(04)</span></h2>
-                  <!-- ... comments render here ... -->
                   <div class="comment-form">
                     <h2 class="title">Reply Comment</h2>
                     <form action="#" method="post">

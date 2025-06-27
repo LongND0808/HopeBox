@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using System.Xml.Linq;
 
 namespace HopeBox.Infrastructure.DataContext
 {
@@ -53,14 +54,9 @@ namespace HopeBox.Infrastructure.DataContext
             {
                 foreach (var foreignKey in entity.GetForeignKeys())
                 {
-                    bool allColumnsNullable = foreignKey.Properties.All(p => p.IsNullable);
-
-                    foreignKey.DeleteBehavior = allColumnsNullable
-                        ? DeleteBehavior.SetNull
-                        : DeleteBehavior.Restrict;
+                    foreignKey.DeleteBehavior = DeleteBehavior.NoAction;
                 }
             }
         }
-
     }
 }

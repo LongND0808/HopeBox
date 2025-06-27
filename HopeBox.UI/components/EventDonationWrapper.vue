@@ -58,7 +58,10 @@
                                     </div>
                                     <div class="content">
                                         <h4 class="title">
-                                            <nuxt-link :to="`/event-details?id=${event.id}`">
+                                            <nuxt-link :to="{
+                                                path: '/event-donation-detail',
+                                                query: { eventId: event.id }
+                                            }">
                                                 {{ event.title }}
                                             </nuxt-link>
                                         </h4>
@@ -134,144 +137,144 @@
 </template>
 
 <script>
-import axios from 'axios';
-import { showErrorAlert } from '@/utils/alertHelper';
-import { BASE_URL } from '@/utils/constants'
+    import axios from 'axios';
+    import { showErrorAlert } from '@/utils/alertHelper';
+    import { BASE_URL } from '@/utils/constants'
 
-export default {
-    name: 'EventDetail',
-    data() {
-        return {
-            eventsData: [],
-            loading: false,
-            searchTitle: '',
-            searchCauseTitle: '',
-            pageSize: 6,
-            currentPage: 1,
-            totalPages: 0,
-            totalRecords: 0,
-            pageSizeOptions: [3, 6, 9, 12, 15]
-        }
-    },
-    computed: {
-        visiblePages() {
-            const pages = [];
-            const start = Math.max(1, this.currentPage - 2);
-            const end = Math.min(this.totalPages, this.currentPage + 2);
-
-            for (let i = start; i <= end; i++) {
-                pages.push(i);
+    export default {
+        name: 'EventDetail',
+        data() {
+            return {
+                eventsData: [],
+                loading: false,
+                searchTitle: '',
+                searchCauseTitle: '',
+                pageSize: 6,
+                currentPage: 1,
+                totalPages: 0,
+                totalRecords: 0,
+                pageSizeOptions: [3, 6, 9, 12, 15]
             }
-            return pages;
-        }
-    },
-    mounted() {
-        this.fetchEventsData();
-    },
-    methods: {
-        async fetchEventsData() {
-            try {
-                this.loading = true;
+        },
+        computed: {
+            visiblePages() {
+                const pages = [];
+                const start = Math.max(1, this.currentPage - 2);
+                const end = Math.min(this.totalPages, this.currentPage + 2);
 
-                const requestData = {
-                    title: this.searchTitle || null,
-                    causeTitle: this.searchCauseTitle || null,
-                    pageIndex: this.currentPage,
-                    pageSize: this.pageSize
-                };
+                for (let i = start; i <= end; i++) {
+                    pages.push(i);
+                }
+                return pages;
+            }
+        },
+        mounted() {
+            this.fetchEventsData();
+        },
+        methods: {
+            async fetchEventsData() {
+                try {
+                    this.loading = true;
 
-                const response = await axios.get(
-                    `${BASE_URL}/api/Event/get-events-donation-detail-by-filter`,
-                    {
-                        params: requestData,
-                        headers: {
-                            'Content-Type': 'application/json'
+                    const requestData = {
+                        title: this.searchTitle || null,
+                        causeTitle: this.searchCauseTitle || null,
+                        pageIndex: this.currentPage,
+                        pageSize: this.pageSize
+                    };
+
+                    const response = await axios.get(
+                        `${BASE_URL}/api/Event/get-events-donation-detail-by-filter`,
+                        {
+                            params: requestData,
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
                         }
+                    );
+
+                    if (response.data.status === 200) {
+                        const responseData = response.data.responseData;
+                        this.eventsData = responseData.pagedData || [];
+                        this.totalRecords = responseData.totalRecords;
+                        this.totalPages = responseData.totalPages;
+                    } else {
+                        await showErrorAlert('Lỗi tải dữ liệu', response.data.message || 'Không thể tải danh sách sự kiện');
+                        this.eventsData = [];
                     }
-                );
-
-                if (response.data.status === 200) {
-                    const responseData = response.data.responseData;
-                    this.eventsData = responseData.pagedData || [];
-                    this.totalRecords = responseData.totalRecords;
-                    this.totalPages = responseData.totalPages;
-                } else {
-                    await showErrorAlert('Lỗi tải dữ liệu', response.data.message || 'Không thể tải danh sách sự kiện');
+                } catch (error) {
+                    console.error('Lỗi khi lấy dữ liệu events:', error);
+                    await showErrorAlert(
+                        'Lỗi kết nối',
+                        'Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng và thử lại.'
+                    );
                     this.eventsData = [];
+                } finally {
+                    this.loading = false;
                 }
-            } catch (error) {
-                console.error('Lỗi khi lấy dữ liệu events:', error);
-                await showErrorAlert(
-                    'Lỗi kết nối',
-                    'Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng và thử lại.'
-                );
-                this.eventsData = [];
-            } finally {
-                this.loading = false;
-            }
-        },
+            },
 
-        async handleSearch() {
-            this.currentPage = 1;
-            await this.fetchEventsData();
-        },
-
-        async handlePageSizeChange() {
-            this.currentPage = 1;
-            await this.fetchEventsData();
-        },
-
-        async goToPage(page) {
-            if (page >= 1 && page <= this.totalPages && page !== this.currentPage) {
-                this.currentPage = page;
+            async handleSearch() {
+                this.currentPage = 1;
                 await this.fetchEventsData();
-            }
-        },
+            },
 
-        getRemainingAmount(event) {
-            return Math.max(event.targetAmount - event.currentAmount, 0);
-        },
+            async handlePageSizeChange() {
+                this.currentPage = 1;
+                await this.fetchEventsData();
+            },
 
-        formatEventDate(startDate, endDate) {
-            try {
-                const start = new Date(startDate);
-                const end = new Date(endDate);
-
-                const startFormatted = this.formatSingleDate(start);
-
-                if (this.isSameDate(start, end)) {
-                    return startFormatted;
+            async goToPage(page) {
+                if (page >= 1 && page <= this.totalPages && page !== this.currentPage) {
+                    this.currentPage = page;
+                    await this.fetchEventsData();
                 }
+            },
 
-                const endFormatted = this.formatSingleDate(end);
-                return `${startFormatted} - ${endFormatted}`;
-            } catch (error) {
-                console.error('Error formatting date:', error);
-                return 'Ngày không xác định';
+            getRemainingAmount(event) {
+                return Math.max(event.targetAmount - event.currentAmount, 0);
+            },
+
+            formatEventDate(startDate, endDate) {
+                try {
+                    const start = new Date(startDate);
+                    const end = new Date(endDate);
+
+                    const startFormatted = this.formatSingleDate(start);
+
+                    if (this.isSameDate(start, end)) {
+                        return startFormatted;
+                    }
+
+                    const endFormatted = this.formatSingleDate(end);
+                    return `${startFormatted} - ${endFormatted}`;
+                } catch (error) {
+                    console.error('Error formatting date:', error);
+                    return 'Ngày không xác định';
+                }
+            },
+
+            formatSingleDate(date) {
+                const day = date.getDate();
+                const month = date.getMonth() + 1;
+                const year = date.getFullYear();
+
+                return `${day}/${month}/${year}`;
+            },
+
+            isSameDate(date1, date2) {
+                return date1.getDate() === date2.getDate() &&
+                    date1.getMonth() === date2.getMonth() &&
+                    date1.getFullYear() === date2.getFullYear();
+            },
+
+            handleImageError(event) {
+                event.target.src = '/images/default-event.jpg';
             }
-        },
-
-        formatSingleDate(date) {
-            const day = date.getDate();
-            const month = date.getMonth() + 1;
-            const year = date.getFullYear();
-
-            return `${day}/${month}/${year}`;
-        },
-
-        isSameDate(date1, date2) {
-            return date1.getDate() === date2.getDate() &&
-                date1.getMonth() === date2.getMonth() &&
-                date1.getFullYear() === date2.getFullYear();
-        },
-
-        handleImageError(event) {
-            event.target.src = '/images/default-event.jpg';
         }
     }
-}
 </script>
 
 <style scoped>
-@import '@/assets/scss/component/_event-donation.scss';
+    @import '@/assets/scss/component/_event-donation.scss';
 </style>
