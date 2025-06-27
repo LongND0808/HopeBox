@@ -1,3 +1,7 @@
+@import '../common/mixins';
+@import '../common/typography';
+
+// Variables
 $volunteer-primary-color: #ff6b1f;
 $volunteer-secondary-color: #ff7a36;
 $volunteer-success-color: #28a745;
@@ -74,7 +78,7 @@ $volunteer-shadow: 0 2px 6px rgba(255, 168, 108, 0.2);
         padding: 12px 16px;
         font-size: 15px;
         box-shadow: $volunteer-shadow;
-        transition: all 0.3s ease;
+        @include transition(all 0.3s ease);
         height: 48px;
 
         &:focus {
@@ -83,7 +87,7 @@ $volunteer-shadow: 0 2px 6px rgba(255, 168, 108, 0.2);
             box-shadow: 0 0 0 3px rgba(255, 122, 54, 0.2);
         }
 
-        &::placeholder {
+        @include placeholder {
             color: #999;
         }
     }
@@ -98,7 +102,7 @@ $volunteer-shadow: 0 2px 6px rgba(255, 168, 108, 0.2);
     }
 
     .btn-search {
-        background: linear-gradient(135deg, $volunteer-secondary-color, $volunteer-primary-color);
+        @include gradient-bg();
         border: none;
         color: $volunteer-white;
         font-weight: 600;
@@ -106,7 +110,7 @@ $volunteer-shadow: 0 2px 6px rgba(255, 168, 108, 0.2);
         border-radius: 25px;
         font-size: 16px;
         height: 48px;
-        transition: all 0.3s ease;
+        @include transition(all 0.3s ease);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -114,13 +118,13 @@ $volunteer-shadow: 0 2px 6px rgba(255, 168, 108, 0.2);
         cursor: pointer;
 
         &:hover {
-            background: linear-gradient(135deg, $volunteer-primary-color, $volunteer-secondary-color);
-            transform: translateY(-2px);
+            @include gradient-bg-hover();
+            @include transform(translateY(-2px));
             box-shadow: 0 4px 12px rgba(255, 107, 31, 0.3);
         }
 
         &:active {
-            transform: translateY(0);
+            @include transform(translateY(0));
         }
 
         &::before {
@@ -147,195 +151,288 @@ $volunteer-shadow: 0 2px 6px rgba(255, 168, 108, 0.2);
     }
 }
 
-/// ===== VOLUNTEER CAUSE ITEMS - STACK LAYOUT =====
-.volunteer-cause-item {
+// ===== HORIZONTAL LIST LAYOUT =====
+.volunteer-causes-list {
     background: $volunteer-white;
-    border-radius: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     overflow: hidden;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
-    height: 100%;
-    
-    // STACK LAYOUT: flex-direction column (mặc định)
+    margin-bottom: 30px;
+}
+
+.volunteer-cause-item-horizontal {
     display: flex;
-    flex-direction: column;
+    align-items: stretch;
+    border-bottom: 1px solid #f0f0f0;
+    @include transition(all 0.3s ease);
+    min-height: 180px;
     
-    &:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    &:last-child {
+        border-bottom: none;
     }
     
-    // ===== THUMB (ẢNH Ở TRÊN) =====
-    .thumb {
-        width: 100%;
-        height: 220px; // Chiều cao cố định
+    &:hover {
+        background: rgba(255, 107, 31, 0.02);
+        @include transform(translateX(5px));
+        box-shadow: 0 2px 15px rgba(255, 107, 31, 0.1);
+    }
+    
+    // ===== IMAGE SECTION (LEFT) =====
+    .cause-image {
+        flex: 0 0 220px;
+        height: 180px;
         overflow: hidden;
         position: relative;
+        
+        @media (max-width: 991px) {
+            flex: 0 0 180px;
+            height: 160px;
+        }
+        
+        @media (max-width: 767px) {
+            flex: 0 0 120px;
+            height: 140px;
+        }
         
         img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.5s ease;
+            @include transition(transform 0.5s ease);
+        }
+        
+        &:hover img {
+            @include transform(scale(1.1));
         }
     }
     
-    &:hover .thumb img {
-        transform: scale(1.1);
-    }
-    
-    // ===== CONTENT (NỘI DUNG Ở GIỮA) =====
-    .content {
-        flex: 1; // Chiếm không gian còn lại
+    // ===== CONTENT SECTION (MIDDLE) =====
+    .cause-content {
+        flex: 1;
         padding: 25px;
         display: flex;
         flex-direction: column;
+        justify-content: space-between;
         
-        .title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #232323;
-            margin-bottom: 15px;
-            line-height: 1.4;
+        @media (max-width: 767px) {
+            padding: 20px 15px;
+        }
+        
+        .cause-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
             
-            a {
-                color: inherit;
-                text-decoration: none;
+            @media (max-width: 767px) {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .cause-title {
+                font-size: 20px;
+                font-weight: 700;
+                color: #232323;
+                margin: 0;
+                line-height: 1.3;
+                flex: 1;
                 
-                &:hover {
+                @media (max-width: 991px) {
+                    font-size: 18px;
+                }
+                
+                @media (max-width: 767px) {
+                    font-size: 16px;
+                }
+                
+                a {
+                    color: inherit;
+                    text-decoration: none;
+                    @include transition(color 0.3s ease);
+                    
+                    &:hover {
+                        color: $volunteer-primary-color;
+                    }
+                }
+            }
+            
+            .registration-date {
+                color: #999;
+                font-size: 11px;
+                font-style: italic;
+                
+                i {
                     color: $volunteer-primary-color;
+                }
+            }
+
+            .volunteer-status {
+                margin-left: 15px;
+                
+                @media (max-width: 767px) {
+                    margin-left: 0;
+                    align-self: flex-start;
+                }
+                
+                .status-badge {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 5px;
+                    padding: 4px 10px;
+                    border-radius: 15px;
+                    font-size: 11px;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    
+                    &.badge-pending {
+                        background: linear-gradient(135deg, #ffc107, #ffb347);
+                        color: #212529;
+                        box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+                    }
+                    
+                    &.badge-approved {
+                        background: linear-gradient(135deg, #28a745, #20c997);
+                        color: white;
+                        box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+                    }
+                    
+                    &.badge-rejected {
+                        background: linear-gradient(135deg, #dc3545, #c82333);
+                        color: white;
+                        box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+                    }
+                    
+                    i {
+                        font-size: 12px;
+                    }
                 }
             }
         }
         
-        .description {
+        .cause-description {
             color: #666;
             font-size: 14px;
             line-height: 1.6;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             
-            // Giới hạn số dòng hiển thị
             display: -webkit-box;
-            -webkit-line-clamp: 3;
-            line-clamp: 3;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            
+            @media (max-width: 767px) {
+                font-size: 13px;
+                -webkit-line-clamp: 1;
+                line-clamp: 1;
+            }
         }
         
-        .summary-section {
-            margin-bottom: 15px;
+        .cause-summary {
+            margin-bottom: 10px;
             
-            .summary {
+            .summary-text {
                 font-size: 13px;
                 color: #555;
                 font-style: italic;
+                margin: 0;
                 
-                // Giới hạn số dòng
                 display: -webkit-box;
-                -webkit-line-clamp: 2;
-                line-clamp: 2;
+                -webkit-line-clamp: 1;
+                line-clamp: 1;
                 -webkit-box-orient: vertical;
                 overflow: hidden;
+                
+                @media (max-width: 767px) {
+                    font-size: 12px;
+                }
             }
         }
     }
     
-    // ===== VOLUNTEER STATUS =====
-    .volunteer-status {
-        margin-top: auto; // Đẩy xuống dưới
-        text-align: center;
-        padding-top: 10px;
+    // ===== ACTION SECTION (RIGHT) =====
+    .cause-actions {
+        flex: 0 0 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 25px 20px;
+        background: rgba(255, 107, 31, 0.02);
+        border-left: 1px solid #f0f0f0;
         
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            
-            &.badge-pending {
-                background: linear-gradient(135deg, #ffc107, #ffb347);
-                color: #212529;
-                box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
-            }
-            
-            &.badge-approved {
-                background: linear-gradient(135deg, #28a745, #20c997);
-                color: white;
-                box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
-            }
-            
-            &.badge-rejected {
-                background: linear-gradient(135deg, #dc3545, #c82333);
-                color: white;
-                box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
-            }
-            
-            i {
-                font-size: 14px;
-            }
+        @media (max-width: 991px) {
+            flex: 0 0 160px;
+            padding: 20px 15px;
         }
         
-        .registration-date {
-            display: block;
-            margin-top: 8px;
-            color: #666;
-            font-size: 11px;
-            font-style: italic;
+        @media (max-width: 767px) {
+            flex: 0 0 120px;
+            padding: 15px 10px;
         }
-    }
-    
-    // ===== FOOTER (BUTTON Ở DƯỚI) =====
-    .volunteer-footer {
-        padding: 0 25px 25px;
         
-        .volunteer-register-btn {
+        .action-content {
             width: 100%;
-            padding: 14px 20px;
-            font-size: 16px;
+            text-align: center;
+        }
+        
+        .volunteer-register-btn-horizontal {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 14px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             border: none;
-            border-radius: 25px;
-            background: linear-gradient(135deg, $volunteer-secondary-color, $volunteer-primary-color);
+            border-radius: 20px;
+            @include gradient-bg();
             color: $volunteer-white;
             cursor: pointer;
-            transition: all 0.3s ease;
+            @include transition(all 0.3s ease);
             position: relative;
             overflow: hidden;
             
+            @media (max-width: 991px) {
+                font-size: 12px;
+                padding: 10px 12px;
+            }
+            
+            @media (max-width: 767px) {
+                font-size: 11px;
+                padding: 8px 10px;
+            }
+            
             &:hover:not(:disabled) {
-                transform: translateY(-2px);
-                box-shadow: 0 8px 25px rgba(252, 101, 57, 0.4);
+                @include transform(translateY(-2px));
+                box-shadow: 0 6px 20px rgba(252, 101, 57, 0.4);
             }
             
             &:active:not(:disabled) {
-                transform: translateY(0);
+                @include transform(translateY(0));
             }
             
             &:disabled,
             &.disabled {
                 opacity: 0.6;
                 cursor: not-allowed;
-                transform: none !important;
+                @include transform(none !important);
                 background: #ccc;
             }
             
             .fa-spinner {
-                margin-right: 8px;
+                margin-right: 6px;
+            }
+            
+            i {
+                margin-right: 6px;
+                font-size: 12px;
             }
             
             // ===== BUTTON STATES =====
             &.btn-register {
-                background: linear-gradient(135deg, $volunteer-secondary-color, $volunteer-primary-color);
+                @include gradient-bg();
                 
                 &:hover:not(:disabled) {
-                    background: linear-gradient(135deg, $volunteer-primary-color, $volunteer-secondary-color);
+                    @include gradient-bg-hover();
                 }
             }
             
@@ -360,7 +457,7 @@ $volunteer-shadow: 0 2px 6px rgba(255, 168, 108, 0.2);
                     cursor: not-allowed;
                     
                     &:hover {
-                        transform: none !important;
+                        @include transform(none !important);
                     }
                 }
             }
@@ -394,7 +491,7 @@ $volunteer-shadow: 0 2px 6px rgba(255, 168, 108, 0.2);
         font-weight: 600;
         font-size: 16px;
         cursor: pointer;
-        transition: all 0.3s ease;
+        @include transition(all 0.3s ease);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -402,7 +499,7 @@ $volunteer-shadow: 0 2px 6px rgba(255, 168, 108, 0.2);
         &:hover:not(:disabled) {
             background-color: $volunteer-primary-color;
             color: $volunteer-white;
-            transform: translateY(-2px);
+            @include transform(translateY(-2px));
             box-shadow: 0 4px 12px rgba(255, 107, 31, 0.4);
         }
         
@@ -418,7 +515,7 @@ $volunteer-shadow: 0 2px 6px rgba(255, 168, 108, 0.2);
             background-color: #f5f5f5;
             border-color: #ddd;
             color: #aaa;
-            transform: none !important;
+            @include transform(none !important);
         }
     }
 }
@@ -450,31 +547,30 @@ $volunteer-shadow: 0 2px 6px rgba(255, 168, 108, 0.2);
         }
     }
     
-    .volunteer-cause-item {
-        margin-bottom: 30px;
+    .volunteer-cause-item-horizontal {
+        flex-direction: column;
+        min-height: auto;
         
-        .thumb {
-            height: 200px; // Giảm chiều cao ảnh trên mobile
+        .cause-image {
+            flex: none;
+            height: 200px;
+            width: 100%;
         }
         
-        .content {
-            padding: 20px;
-            
-            .title {
-                font-size: 18px;
-            }
-            
-            .description {
-                font-size: 13px;
-            }
+        .cause-content {
+            order: 2;
         }
         
-        .volunteer-footer {
-            padding: 0 20px 20px;
+        .cause-actions {
+            order: 3;
+            flex: none;
+            border-left: none;
+            border-top: 1px solid #f0f0f0;
+            background: rgba(255, 107, 31, 0.05);
             
-            .volunteer-register-btn {
+            .volunteer-register-btn-horizontal {
                 font-size: 14px;
-                padding: 12px 16px;
+                padding: 12px 20px;
             }
         }
     }
@@ -490,32 +586,18 @@ $volunteer-shadow: 0 2px 6px rgba(255, 168, 108, 0.2);
     }
 }
 
-// ===== GRID LAYOUT OPTIMIZATION =====
-.causes-list-section {
-    .row {
-        margin: 0 -15px;
-    }
-    
-    [class*="col-"] {
-        padding: 0 15px;
-    }
+// ===== ANIMATION =====
+.volunteer-causes-list {
+    animation: fadeInUp 0.6s ease-out;
 }
 
-// Responsive grid: 1 column mobile, 2 columns tablet, 3 columns desktop
-@media (min-width: 768px) {
-    .causes-list-section {
-        .col-md-6 {
-            flex: 0 0 50%;
-            max-width: 50%;
-        }
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        @include transform(translateY(20px));
     }
-}
-
-@media (min-width: 992px) {
-    .causes-list-section {
-        .col-lg-4 {
-            flex: 0 0 33.333333%;
-            max-width: 33.333333%;
-        }
+    to {
+        opacity: 1;
+        @include transform(translateY(0));
     }
 }

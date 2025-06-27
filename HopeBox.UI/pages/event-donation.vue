@@ -1,9 +1,9 @@
 <template>
-    <div class="contact-page-wrapper">
+    <div class="event-donation-page-wrapper">
         <Header />
         <OffCanvasMobileMenu />
-        <Breadcrumb items="Contact" title="Contact" />
-        <ContactWrapper />
+        <Breadcrumb items="Sự kiện" title="Sự kiện" />
+        <EventDonationWrapper />
         <Footer />
     </div>
 </template>
@@ -14,8 +14,10 @@
             Header: () => import('@/components/Header'),
             OffCanvasMobileMenu: () => import('@/components/OffCanvasMobileMenu'),
             Breadcrumb: () => import('@/components/Breadcrumb'),
-            ContactWrapper: () => import('@/components/ContactWrapper'),
+            EventDonationWrapper: () => import('@/components/EventDonationWrapper'),
             Footer: () => import('@/components/Footer'),
         }
     };
 </script>
+
+

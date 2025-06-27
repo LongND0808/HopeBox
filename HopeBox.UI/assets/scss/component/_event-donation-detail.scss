@@ -1,0 +1,596 @@
+/*
+-----------------------------------------------------------------------
+    EventDonationDetailContent CSS
+-----------------------------------------------------------------------
+*/
+@import '../common/mixins';
+// Variables
+$event-primary-color: #ff6b1f;
+$event-secondary-color: #ff7a36;
+$event-white: #ffffff;
+$event-light-bg: #fef9f6;
+
+.event-donation-detail-area {
+    padding: 117px 0 220px;
+    position: relative;
+    
+    @media (max-width: 991px) {
+        padding: 80px 0 150px;
+    }
+}
+
+.event-donation-column {
+    display: flex;
+    padding-left: 30px;
+    
+    @media (max-width: 1199px) {
+        padding-left: 20px;
+    }
+    
+    @media (max-width: 991px) {
+        display: block;
+        padding: 0 50px;
+    }
+    
+    @media (max-width: 575px) {
+        padding: 0 15px;
+    }
+
+    // Event Detail Form
+    .event-detail-form {
+        background-color: $event-light-bg;
+        max-width: 900px;
+        min-width: 900px;
+        padding: 60px 60px;
+        width: 100%;
+        
+        @media (max-width: 1199px) {
+            max-width: 750px;
+            min-width: 750px;
+            padding: 60px 40px;
+        }
+        
+        @media (max-width: 991px) {
+            max-width: none;
+            min-width: auto;
+            margin-bottom: 90px;
+            width: 100%;
+        }
+        
+        @media (max-width: 575px) {
+            padding: 40px 20px;
+        }
+
+        .section-title {
+            margin-bottom: 40px;
+            
+            .title {
+                font-size: 48px;
+                margin-bottom: 16px;
+                color: #333;
+                
+                @media (max-width: 991px) {
+                    font-size: 36px;
+                }
+                
+                @media (max-width: 575px) {
+                    padding: 40px 20px;
+                    font-size: 28px;
+                }
+            }
+        }
+
+        .event-banner {
+            margin-bottom: 30px;
+            
+            img {
+                width: 100%;
+                height: 300px;
+                object-fit: cover;
+                border-radius: 12px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            }
+        }
+
+        .event-info-section{
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+
+            h4 {
+                color: $event-primary-color;
+                margin-bottom: 20px;
+                font-size: 20px;
+                font-weight: 700;
+            }
+
+            .info-item {
+                margin-bottom: 12px;
+                font-size: 15px;
+                
+                strong {
+                    color: #333;
+                    margin-right: 8px;
+                }
+            }
+        }
+
+        .event-detail-description {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+
+            h4 {
+                color: $event-primary-color;
+                margin-bottom: 15px;
+                font-size: 20px;
+                font-weight: 700;
+            }
+
+            p {
+                line-height: 1.6;
+                color: #666;
+                margin: 0;
+            }
+        }
+    }
+
+    // Event Map Area
+    .event-map-area {
+        height: auto;
+        position: relative;
+        width: 100%;
+        flex: 1;
+        
+        @media (max-width: 991px) {
+            height: 900px;
+        }
+        
+        @media (max-width: 575px) {
+            height: auto;
+        }
+
+        .event-info-content {
+            left: 0;
+            min-width: 450px;
+            padding: 40px 50px 35px 50px;
+            position: absolute;
+            top: 20%;
+            transform: translateY(-50%);
+            @include gradient-bg-style();
+            border-radius: 15px;
+            
+            @media (max-width: 575px) {
+                margin-bottom: 70px;
+                min-width: auto;
+                padding: 40px 20px;
+                position: relative;
+                top: auto;
+                transform: none;
+                width: 100%;
+            }
+
+            .event-info-item {
+                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+                margin-bottom: 20px;
+                padding-bottom: 18px;
+                position: relative;
+
+                .icon {
+                    left: 25px;
+                    position: absolute;
+                    top: 20px;
+
+                    &:before {
+                        background-color: $event-secondary-color;
+                        border-radius: 50%;
+                        content: "";
+                        height: 65px;
+                        left: -19px;
+                        position: absolute;
+                        top: -18px;
+                        width: 65px; 
+                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+                    }
+
+                    .icon-img {
+                        width: auto;
+                        position: relative;
+                    }
+                }
+
+                .content {
+                    padding-left: 100px;
+                    
+                    @media (max-width: 575px) {
+                        padding-left: 85px;
+                    }
+
+                    h4 {
+                        color: white;
+                        font-size: 28px;
+                        margin-bottom: 8px;
+                        
+                        @media (max-width: 575px) {
+                            font-size: 20px;
+                        }
+                    }
+
+                    .line-icon {
+                        margin-bottom: 8px;
+                    }
+
+                    p {
+                        font-size: 16px;
+                        font-weight: 500;
+                        line-height: 1.5;
+                        color: white;
+                        margin-bottom: 3px;
+                        
+                        @media (max-width: 575px) {
+                            font-size: 16px;
+                        }
+
+                        &:last-child {
+                            margin-bottom: 0;
+                        }
+                    }
+                }
+
+                &:last-child {
+                    border: none;
+                }
+            }
+        }
+
+        #openmap {
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100% !important;
+            height: 2250px !important;
+            min-height: 2250px;
+            z-index: -1;
+        }
+
+        .map-placeholder {
+            border: 2px dashed #ddd;
+            height: 1500px !important;
+            
+            .btn {
+                margin-top: 10px;
+                background: $event-primary-color;
+                border-color: $event-primary-color;
+                
+                &:hover {
+                    background: $event-secondary-color;
+                    border-color: $event-secondary-color;
+                }
+            }
+        }
+    }
+}
+
+// Animations
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// Responsive Design
+@media (max-width: 1199px) {
+    .event-donation-column {
+        .event-map-area {
+            .event-info-content {
+                min-width: 400px;
+                padding: 35px 40px 30px 40px;
+                
+                .event-info-item {
+                    .icon {
+                        &:before {
+                            height: 60px;
+                            width: 60px;
+                            left: -22px;
+                            top: -20px;
+                        }
+                    }
+                    
+                    .content {
+                        padding-left: 90px;
+                        
+                        h4 {
+                            font-size: 24px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 991px) {
+    .event-donation-column {
+        .event-map-area {
+            margin-left: 0;
+            
+            .event-info-content {
+                position: relative;
+                top: auto;
+                transform: none;
+                margin-bottom: 30px;
+            }
+            
+            #openmap {
+                height: 500px !important;
+            }
+        }
+    }
+}
+
+@media (max-width: 575px) {
+    .event-donation-column {
+        .event-map-area {
+            .event-info-content {
+                .event-info-item {
+                    .icon {
+                        left: 20px;
+                        top: 15px;
+                        
+                        &:before {
+                            height: 50px;
+                            width: 50px;
+                            left: -18px;
+                            top: -15px;
+                        }
+                        
+                        .icon-img {
+                            width: 12px;
+                            height: 12px;
+                        }
+                    }
+                    
+                    .content {
+                        padding-left: 75px;
+                        
+                        h4 {
+                            font-size: 18px;
+                        }
+                        
+                        p {
+                            font-size: 13px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.event-donation-detail-area {
+    .inkind-donation-form-section {
+        margin-top: 30px;
+        
+        @media (max-width: 991px) {
+            margin-top: 20px;
+        }
+    }
+}
+
+.donation-progress-section {
+    background: $event-white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 35px;
+    overflow: hidden;
+    padding: 25px;
+    @include transition(all 0.3s ease);
+
+    .progress-header {
+        margin-bottom: 35px;
+
+        .progress-title {
+            color: $event-primary-color;
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0;
+
+            i {
+                margin-right: 8px;
+            }
+        }
+    }
+
+    .donate-info {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 25px;
+        
+        @media (max-width: 575px) {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .info-item {
+            background-color: $white;
+            font-family: $font-current-theme2;
+            min-width: 100px;
+            padding: 7px 13px 6px;
+            @include transition(0.3s);
+            
+            @media (max-width: 991px) {
+                min-width: auto;
+                padding: 9px 13px 8px;
+            }
+            
+            @media (max-width: 767px) {
+                min-width: 90px;
+            }
+            
+            @media (max-width: 575px) {
+                min-width: 100%;
+                text-align: center;
+                margin-bottom: 5px;
+            }
+
+            .info-title,
+            .amount {
+                display: block;
+                line-height: 1;
+                @include transition(0.1s);
+            }
+
+            .info-title {
+                color: $theme-color3;
+                font-size: 14px;
+                margin-bottom: 8px;
+            }
+
+            .amount {
+                color: $theme-color;
+                font-size: 20px;
+                @include gradient-text-two();
+                
+                @media (max-width: 991px) {
+                    font-size: 15px;
+                }
+                
+                @media (max-width: 575px) {
+                    font-size: 18px;
+                }
+            }
+
+            &:hover {
+                @include gradient-bg-two();
+                .info-title,
+                .amount {
+                    color: $white;
+                    -webkit-text-fill-color: $white;
+                }
+            }
+        }
+    }
+
+    .progress-bar-container {
+        align-items: center;
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+        
+        @media (max-width: 575px) {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .progress-bar {
+            background: $event-light-bg;
+            border-radius: 25px;
+            flex: 1;
+            height: 12px;
+            overflow: hidden;
+            position: relative;
+
+            .progress-fill {
+                border-radius: 25px;
+                height: 100%;
+                position: relative;
+                @include transition(width 1s ease-in-out);
+
+                &.progress-low {
+                    @include gradient-bg();
+                }
+
+                &.progress-medium {
+                    background: linear-gradient(90deg, $event-primary-color 0%, #ffc107 100%);
+                }
+
+                &.progress-high {
+                    background: linear-gradient(90deg, #ffc107 0%, #28a745 100%);
+                }
+
+                &.progress-complete {
+                    background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
+                }
+
+                .progress-shine {
+                    animation: shine 2s infinite;
+                    background: linear-gradient(
+                        90deg,
+                        transparent,
+                        rgba(255, 255, 255, 0.4),
+                        transparent
+                    );
+                    height: 100%;
+                    position: absolute;
+                    top: 0;
+                    width: 30%;
+                }
+            }
+        }
+
+        .progress-percentage {
+            color: $event-primary-color;
+            font-size: 18px;
+            font-weight: 700;
+            min-width: 50px;
+            text-align: center;
+            
+            @media (max-width: 575px) {
+                font-size: 16px;
+            }
+        }
+    }
+
+    .progress-message {
+        align-items: center;
+        background: linear-gradient(135deg, rgba(255, 107, 31, 0.1) 0%, rgba(255, 122, 54, 0.1) 100%);
+        border-left: 4px solid $event-primary-color;
+        border-radius: 6px;
+        color: darken($event-primary-color, 10%);
+        display: flex;
+        font-size: 14px;
+        font-weight: 500;
+        gap: 10px;
+        padding: 12px 15px;
+
+        i {
+            color: $event-primary-color;
+            font-size: 16px;
+        }
+    }
+}
+
+// Keep existing animations and responsive styles
+@keyframes shine {
+    0% {
+        left: -30%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+@media (max-width: 991px) {
+    .event-donation-detail-area {
+        .event-detail-form {
+            .row {
+                &:has(.donation-progress-section) {
+                    .col-lg-6 {
+                        margin-bottom: 20px;
+                        
+                        &:last-child {
+                            margin-bottom: 0;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

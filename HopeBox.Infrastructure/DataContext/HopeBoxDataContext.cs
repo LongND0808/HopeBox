@@ -40,7 +40,10 @@ namespace HopeBox.Infrastructure.DataContext
         public virtual DbSet<UserRole> UserRoles { get; set; }
         public virtual DbSet<Volunteer> Volunteers { get; set; }
         public virtual DbSet<Event> Events { get; set; }
-        public virtual DbSet<InKindDonation> InKindDonations { get; set; }
+        public virtual DbSet<InkindDonation> InkindDonations { get; set; }
+        public virtual DbSet<Comment> Comments { get; set; }
+        public virtual DbSet<Share> Shares { get; set; }
+        public virtual DbSet<Like> Likes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -18,7 +18,7 @@ namespace HopeBox.Core.Service
     {
         private readonly IRepository<Donation> _donationRepository;
         private readonly IR2StorageService _r2StorageService;
-        private readonly IRepository<Volunteer> _volunteerRepository;
+        private readonly IRepository<Volunteer> _volunteerRepository;    
         public CauseService(
             IRepository<Cause> repository,
             IConverter<Cause, CauseDto> converter,
@@ -87,7 +87,6 @@ namespace HopeBox.Core.Service
                 };
             }
         }
-
 
         public async Task<BaseResponseDto<CauseDto>> GetCauseHighestTargetAsync()
         {
