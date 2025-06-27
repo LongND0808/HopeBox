@@ -27,7 +27,6 @@ namespace HopeBox.Domain.Models
         [MaxLength(1000)]
         public string? Location { get; set; }
 
-        // Thêm các property tọa độ mới
         [Column(TypeName = "decimal(10,8)")]
         public double? Latitude { get; set; }
 
@@ -36,10 +35,6 @@ namespace HopeBox.Domain.Models
 
         [MaxLength(500)]
         public string? FormattedAddress { get; set; }
-
-        public decimal TargetAmount { get; set; }
-
-        public decimal CurrentAmount { get; set; }
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public EventStatus Status { get; set; }
@@ -52,10 +47,9 @@ namespace HopeBox.Domain.Models
 
         [ForeignKey(nameof(CreatedBy))]
         public virtual User? Creator { get; set; }
-
         public virtual Organization? Organization { get; set; }
-
+        public virtual Cause Cause { get; set; } = null!;
         public virtual ICollection<Media>? Photos { get; set; }
-        public virtual Cause Cause { get; set; }
+        public virtual ICollection<InkindDonation>? InkindDonations { get; set; }
     }
 }

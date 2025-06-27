@@ -280,26 +280,22 @@ export default {
             if (!this.event || !this.event.location) return;
 
             try {
-                // Gọi API để tìm kiếm vị trí
-                const response = await this.$axios.get('/api/Event/search-places', {
+                const response = await this.$axios.get(`${BASE_URL}/api/Event/search-places`, {
                     params: { keyword: this.event.location }
                 });
 
                 if (response.data.status === 200 && response.data.responseData.length > 0) {
                     const firstPlace = response.data.responseData[0];
                     
-                    // Lấy chi tiết địa điểm
                     const detailResponse = await axios.get(`${BASE_URL}/api/Event/place-detail/${firstPlace.id}`);
                     
                     if (detailResponse.data.status === 200) {
                         const placeDetail = detailResponse.data.responseData;
                         
-                        // Cập nhật event với tọa độ mới
                         this.event.latitude = placeDetail.latitude;
                         this.event.longitude = placeDetail.longitude;
                         this.event.formattedAddress = placeDetail.label;
                         
-                        // Khởi tạo bản đồ
                         this.$nextTick(() => {
                             this.initializeMap();
                         });
@@ -325,7 +321,6 @@ export default {
     },
 
     beforeDestroy() {
-        // Cleanup map khi component bị destroy
         if (this.map) {
             this.map.remove();
         }
@@ -349,7 +344,6 @@ export default {
     margin-top: 10px;
 }
 
-/* Tùy chỉnh popup của OpenMap */
 :deep(.maplibregl-popup-content) {
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);

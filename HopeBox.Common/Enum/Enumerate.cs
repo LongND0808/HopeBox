@@ -85,5 +85,29 @@ namespace HopeBox.Common.Enum
             VNPay = 0,
             VietQR = 1
         }
+
+        public enum InkindDonationStatus
+        {
+            Pending = 0,  
+            Approved = 1,   
+            Rejected = 2,  
+            InProgress = 3,    
+            Delivered = 4,   
+            Cancelled = 5       
+        }
+
+        public enum LikeType
+        {
+            Blog = 0,
+            Comment = 1
+        }
+
+        public enum SharePlatform
+        {
+            Facebook = 0,
+            Twitter = 1,
+            Tiktok = 2,
+        }
+
     }
 }
