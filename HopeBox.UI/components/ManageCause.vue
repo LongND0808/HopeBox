@@ -6,39 +6,41 @@
         <button class="add-btn" @click="openAddModal">+ Thêm chiến dịch</button>
       </div>
 
-      <table class="cause-table">
-        <thead>
-          <tr>
-            <th>Tiêu đề</th>
-            <th>Loại</th>
-            <th>Trạng thái</th>
-            <th>Mục tiêu (VND)</th>
-            <th>Hiện tại (VND)</th>
-            <th>Ngày bắt đầu</th>
-            <th>Ngày kết thúc</th>
-            <th>Tổ chức</th>
-            <th>Người tạo</th>
-            <th>Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="cause in causes" :key="cause.id">
-            <td>{{ cause.title }}</td>
-            <td>{{ getCauseTypeLabel(cause.type) }}</td>
-            <td>{{ getCauseStatusLabel(cause.status) }}</td>
-            <td>{{ formatCurrency(cause.targetAmount) }}</td>
-            <td>{{ formatCurrency(cause.currentAmount) }}</td>
-            <td>{{ formatDate(cause.startDate) }}</td>
-            <td>{{ formatDate(cause.endDate) }}</td>
-            <td>{{ getOrganizationName(cause.organizationId) || 'N/A' }}</td>
-            <td>{{ getUserName(cause.createdBy) || 'N/A' }}</td>
-            <td>
-              <button class="btn edit" @click="editCause(cause)"><i class="fas fa-edit"></i></button>
-              <button class="btn delete" @click="confirmDelete(cause.id)"><i class="fas fa-trash"></i></button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-container">
+        <table class="cause-table">
+          <thead>
+            <tr>
+              <th>Tiêu đề</th>
+              <th>Loại</th>
+              <th>Trạng thái</th>
+              <th>Mục tiêu (VND)</th>
+              <th>Hiện tại (VND)</th>
+              <th>Ngày bắt đầu</th>
+              <th>Ngày kết thúc</th>
+              <th>Tổ chức</th>
+              <th>Người tạo</th>
+              <th>Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="cause in causes" :key="cause.id">
+              <td data-label="Tiêu đề">{{ cause.title }}</td>
+              <td data-label="Loại">{{ getCauseTypeLabel(cause.type) }}</td>
+              <td data-label="Trạng thái">{{ getCauseStatusLabel(cause.status) }}</td>
+              <td data-label="Mục tiêu (VND)">{{ formatCurrency(cause.targetAmount) }}</td>
+              <td data-label="Hiện tại (VND)">{{ formatCurrency(cause.currentAmount) }}</td>
+              <td data-label="Ngày bắt đầu">{{ formatDate(cause.startDate) }}</td>
+              <td data-label="Ngày kết thúc">{{ formatDate(cause.endDate) }}</td>
+              <td data-label="Tổ chức">{{ getOrganizationName(cause.organizationId) || 'N/A' }}</td>
+              <td data-label="Người tạo">{{ getUserName(cause.createdBy) || 'N/A' }}</td>
+              <td data-label="Hành động">
+                <button class="btn edit" @click="editCause(cause)"><i class="fas fa-edit"></i></button>
+                <button class="btn delete" @click="confirmDelete(cause.id)"><i class="fas fa-trash"></i></button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <!-- Modal for Cause -->
       <div v-if="showModal" class="modal-overlay">
@@ -141,31 +143,33 @@
           <div class="form-group">
             <label>Quản lý gói cứu trợ</label>
             <button class="add-btn" @click="openPackageModal(null)">+ Thêm gói cứu trợ</button>
-            <table class="package-table" v-if="reliefPackages.length > 0">
-              <thead>
-                <tr>
-                  <th>Tên</th>
-                  <th>Mô tả</th>
-                  <th>Phí bổ sung (VND)</th>
-                  <th>Tổng giá (VND)</th>
-                  <th>Số lượng mục tiêu</th>
-                  <th>Hành động</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="pkg in reliefPackages" :key="pkg.id">
-                  <td>{{ pkg.name }}</td>
-                  <td>{{ pkg.description || 'N/A' }}</td>
-                  <td>{{ formatCurrency(pkg.extraFee) }}</td>
-                  <td>{{ formatCurrency(pkg.totalPrice) }}</td>
-                  <td>{{ pkg.targetQuantity }}</td>
-                  <td>
-                    <button class="btn edit" @click="openPackageModal(pkg)"><i class="fas fa-edit"></i></button>
-                    <button class="btn delete" @click="confirmDeletePackage(pkg.id)"><i class="fas fa-trash"></i></button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <div class="table-container" v-if="reliefPackages.length > 0">
+              <table class="package-table">
+                <thead>
+                  <tr>
+                    <th>Tên</th>
+                    <th>Mô tả</th>
+                    <th>Phí bổ sung (VND)</th>
+                    <th>Tổng giá (VND)</th>
+                    <th>Số lượng mục tiêu</th>
+                    <th>Hành động</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="pkg in reliefPackages" :key="pkg.id">
+                    <td data-label="Tên">{{ pkg.name }}</td>
+                    <td data-label="Mô tả">{{ pkg.description || 'N/A' }}</td>
+                    <td data-label="Phí bổ sung (VND)">{{ formatCurrency(pkg.extraFee) }}</td>
+                    <td data-label="Tổng giá (VND)">{{ formatCurrency(pkg.totalPrice) }}</td>
+                    <td data-label="Số lượng mục tiêu">{{ pkg.targetQuantity }}</td>
+                    <td data-label="Hành động">
+                      <button class="btn edit" @click="openPackageModal(pkg)"><i class="fas fa-edit"></i></button>
+                      <button class="btn delete" @click="confirmDeletePackage(pkg.id)"><i class="fas fa-trash"></i></button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
             <p v-else class="text-white fst-italic">Chưa có gói cứu trợ nào.</p>
           </div>
           <div class="modal-actions">
@@ -237,7 +241,6 @@
 import axios from 'axios';
 import { showSuccessAlertDark, showErrorAlertDark, showConfirmDialogDark } from '@/utils/alertHelper';
 import { CausesStatus, CausesStatusLabel, CausesType, CausesTypeOptions, CausesTypeLabel } from '@/enums/enums';
-
 import { BASE_URL } from '@/utils/constants';
 
 export default {
@@ -352,7 +355,6 @@ export default {
           withCredentials: true
         });
         if (res.data.status === 200) {
-          // Fetch package items for each package
           this.reliefPackages = await Promise.all(res.data.responseData.map(async (pkg) => {
             const itemsRes = await axios.get(`${BASE_URL}/api/ReliefPackageItem/get-by-package?packageId=${pkg.id}`, {
               withCredentials: true
@@ -449,7 +451,6 @@ export default {
       this.editingPackage = pkg;
       let packageItems = [];
       if (pkg) {
-        // Fetch package items for the specific package
         packageItems = await this.fetchReliefPackageItems(pkg.id);
       }
       this.packageForm = pkg
@@ -523,11 +524,9 @@ export default {
     async handlePackageImageUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
-
       try {
         const formData = new FormData();
         formData.append('file', file);
-
         const res = await axios.post(
           `${BASE_URL}/api/ReliefPackage/change-image?packageId=${encodeURIComponent(this.packageForm.id || '')}`,
           formData,
@@ -536,7 +535,6 @@ export default {
             withCredentials: true
           }
         );
-
         if (res.data.status === 200) {
           this.packageForm.image = res.data.responseData;
           await showSuccessAlertDark('Thành công', 'Ảnh gói cứu trợ đã được cập nhật.');
@@ -559,7 +557,6 @@ export default {
             acc[item.reliefItemId] = item.quantity;
             return acc;
           }, {});
-
         const payload = {
           id: this.packageForm.id || '00000000-0000-0000-0000-000000000000',
           causeId: this.form.id || this.editingCause?.id || '00000000-0000-0000-0000-000000000000',
@@ -572,15 +569,12 @@ export default {
           targetQuantity: this.packageForm.targetQuantity || 1,
           selectedItems
         };
-
         const url = this.editingPackage
           ? `${BASE_URL}/api/ReliefPackage/update-relief-package`
           : `${BASE_URL}/api/ReliefPackage/create-relief-package`;
-
         const res = await axios.post(url, payload, {
           withCredentials: true
         });
-
         if ([200, 201].includes(res.data.status)) {
           await this.fetchReliefPackages(this.form.id || this.editingCause?.id);
           await showSuccessAlertDark('Thành công', res.data.message);
@@ -599,7 +593,6 @@ export default {
         'Xóa',
         'Hủy'
       );
-
       if (result.isConfirmed) {
         try {
           const res = await axios.post(
@@ -627,13 +620,10 @@ export default {
     async handleHeroImageUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
-
       try {
         const formData = new FormData();
         formData.append('file', file);
-
         const causeId = this.form.id || this.editingCause?.id || '';
-
         const res = await axios.post(
           `${BASE_URL}/api/Cause/change-hero-image?causeId=${encodeURIComponent(causeId)}`,
           formData,
@@ -642,7 +632,6 @@ export default {
             withCredentials: true
           }
         );
-
         if (res.data.status === 200) {
           this.form.heroImage = res.data.responseData;
           await showSuccessAlertDark('Thành công', 'Ảnh tiêu điểm đã được cập nhật.');
@@ -657,13 +646,10 @@ export default {
     async handleChallengeImageUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
-
       try {
         const formData = new FormData();
         formData.append('file', file);
-
         const causeId = this.form.id || this.editingCause?.id || '';
-
         const res = await axios.post(
           `${BASE_URL}/api/Cause/change-challenge-image?causeId=${encodeURIComponent(causeId)}`,
           formData,
@@ -672,7 +658,6 @@ export default {
             withCredentials: true
           }
         );
-
         if (res.data.status === 200) {
           this.form.challengeImage = res.data.responseData;
           await showSuccessAlertDark('Thành công', 'Ảnh thách thức đã được cập nhật.');
@@ -687,13 +672,10 @@ export default {
     async handleSummaryImageUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
-
       try {
         const formData = new FormData();
         formData.append('file', file);
-
         const causeId = this.form.id || this.editingCause?.id || '';
-
         const res = await axios.post(
           `${BASE_URL}/api/Cause/change-summary-image?causeId=${encodeURIComponent(causeId)}`,
           formData,
@@ -702,7 +684,6 @@ export default {
             withCredentials: true
           }
         );
-
         if (res.data.status === 200) {
           this.form.summaryImage = res.data.responseData;
           await showSuccessAlertDark('Thành công', 'Ảnh tổng kết đã được cập nhật.');
@@ -728,15 +709,12 @@ export default {
           createdBy: this.form.createdBy || null,
           organizationId: this.form.organizationId || null
         };
-
         const url = this.editingCause
           ? `${BASE_URL}/api/Cause/update`
           : `${BASE_URL}/api/Cause/add`;
-
         const res = await axios.post(url, payload, {
           withCredentials: true
         });
-
         if ([200, 201].includes(res.data.status)) {
           await this.fetchCauses();
           await showSuccessAlertDark('Thành công', res.data.message);
@@ -755,7 +733,6 @@ export default {
         'Xóa',
         'Hủy'
       );
-
       if (result.isConfirmed) {
         try {
           const res = await axios.post(
@@ -806,16 +783,14 @@ export default {
 
 <style scoped>
 .cause-management {
-  display: flex;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .main-content {
-  margin-left: 250px;
-  padding: 30px;
+  padding: 20px;
   background: #111226;
-  color: white;
+  color: #e0e0e0;
   width: 100%;
-  min-height: 100vh;
 }
 
 .header {
@@ -823,6 +798,13 @@ export default {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.header h2 {
+  font-size: 1.8rem;
+  color: #f6d579;
 }
 
 .add-btn {
@@ -833,22 +815,33 @@ export default {
   border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.add-btn:hover {
+  background-color: #e0b450;
+}
+
+.table-container {
+  overflow-x: auto;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .cause-table, .package-table {
   width: 100%;
   border-collapse: collapse;
-  background: #1e1e2f;
+  background: #222238;
   border-radius: 8px;
   overflow: hidden;
-  margin-top: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .cause-table th,
 .cause-table td,
 .package-table th,
 .package-table td {
-  padding: 12px;
+  padding: 14px;
   text-align: left;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -856,36 +849,40 @@ export default {
 .cause-table th,
 .package-table th {
   background: #292b40;
+  color: #f6d579;
+  font-weight: 600;
+}
+
+.cause-table tbody tr:hover,
+.package-table tbody tr:hover {
+  background: #2a2a42;
 }
 
 .btn {
   border: none;
-  padding: 8px 12px;
+  padding: 8px;
   border-radius: 6px;
-  font-weight: bold;
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  transition: background-color 0.3s;
 }
 
 .edit {
-  background-color: #296695;
+  background-color: #36a3f7;
   color: white;
-  margin-right: 6px;
+  margin-right: 8px;
 }
 
 .edit:hover {
-  background-color: #22527a;
+  background-color: #2e8bd4;
 }
 
 .delete {
-  background-color: #985237;
+  background-color: #ef8157;
   color: white;
 }
 
 .delete:hover {
-  background-color: #7d422d;
+  background-color: #d66f4b;
 }
 
 .modal-overlay {
@@ -894,7 +891,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -902,23 +899,28 @@ export default {
 }
 
 .modal {
-  background: #1e1e2f;
-  padding: 24px;
+  background: #222238;
+  padding: 20px;
   border-radius: 12px;
-  width: 50%;
+  width: 90%;
+  max-width: 800px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
+  max-height: 100%;
   overflow-y: auto;
 }
 
 .modal h3 {
   color: #f6d579;
+  margin: 0;
+  font-size: 1.5rem;
 }
 
 .image-container {
   display: flex;
+  flex-wrap: wrap;
   gap: 20px;
   margin-bottom: 20px;
 }
@@ -931,8 +933,8 @@ export default {
 }
 
 .image-preview {
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
   border-radius: 8px;
   object-fit: cover;
   cursor: pointer;
@@ -957,7 +959,16 @@ export default {
   border: none;
   border-radius: 6px;
   background: #292b40;
-  color: white;
+  color: #e0e0e0;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.modal input:focus,
+.modal select:focus,
+.modal textarea:focus {
+  outline: none;
+  border: 1px solid #f6d579;
 }
 
 .modal textarea {
@@ -985,13 +996,15 @@ export default {
 .modal-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
-  margin-top: 10px;
+  gap: 12px;
+  margin-top: 16px;
 }
 
 .btn-success {
   background: #28a745;
   color: white;
+  padding: 10px 20px;
+  border-radius: 6px;
 }
 
 .btn-success:hover {
@@ -1001,26 +1014,218 @@ export default {
 .btn-secondary {
   background: #6c757d;
   color: white;
+  padding: 10px 20px;
+  border-radius: 6px;
 }
 
 .btn-secondary:hover {
   background: #5a6268;
 }
 
-.modal::-webkit-scrollbar {
+.modal::-webkit-scrollbar,
+.table-container::-webkit-scrollbar {
   width: 8px;
 }
 
-.modal::-webkit-scrollbar-track {
+.modal::-webkit-scrollbar-track,
+.table-container::-webkit-scrollbar-track {
   background: #1e1e2f;
 }
 
-.modal::-webkit-scrollbar-thumb {
+.modal::-webkit-scrollbar-thumb,
+.table-container::-webkit-scrollbar-thumb {
   background: #4a4a6a;
   border-radius: 4px;
 }
 
-.modal::-webkit-scrollbar-thumb:hover {
+.modal::-webkit-scrollbar-thumb:hover,
+.table-container::-webkit-scrollbar-thumb:hover {
   background: #5a5a7a;
+}
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+  .main-content {
+    padding: 15px;
+  }
+
+  .header h2 {
+    font-size: 1.5rem;
+  }
+
+  .add-btn {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+
+  .cause-table th,
+  .cause-table td,
+  .package-table th,
+  .package-table td {
+    padding: 10px;
+  }
+
+  .image-preview {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 10px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cause-table,
+  .package-table {
+    font-size: 0.9rem;
+  }
+
+  .cause-table th,
+  .cause-table td,
+  .package-table th,
+  .package-table td {
+    padding: 8px;
+  }
+
+  .cause-table thead,
+  .package-table thead {
+    display: none;
+  }
+
+  .cause-table tbody,
+  .cause-table tr,
+  .cause-table td,
+  .package-table tbody,
+  .package-table tr,
+  .package-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .cause-table tr,
+  .package-table tr {
+    margin-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .cause-table td,
+  .package-table td {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 10px;
+    position: relative;
+    text-align: left;
+  }
+
+  .cause-table td::before,
+  .package-table td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    color: #f6d579;
+    width: 40%;
+    flex-shrink: 0;
+    text-align: left;
+  }
+
+  .cause-table td:not(:first-child),
+  .package-table td:not(:first-child) {
+    border-top: none;
+  }
+
+  .cause-table td:last-child,
+  .package-table td:last-child {
+    display: flex;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+
+  .modal {
+    width: 95%;
+    padding: 15px;
+    max-height: 100%;
+  }
+
+  .modal h3 {
+    font-size: 1.3rem;
+    text-align: left;
+  }
+
+  .image-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .image-group {
+    align-items: flex-start;
+  }
+
+  .image-preview {
+    width: 60px;
+    height: 60px;
+  }
+
+  .modal input,
+  .modal select,
+  .modal textarea {
+    font-size: 0.9rem;
+    padding: 8px;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .btn-success,
+  .btn-secondary {
+    padding: 8px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .package-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .package-item select,
+  .package-item input {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    padding: 8px;
+  }
+
+  .header h2 {
+    font-size: 1.2rem;
+  }
+
+  .add-btn {
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+  }
+
+  .cause-table td::before,
+  .package-table td::before {
+    width: 50%;
+  }
+
+  .modal {
+    width: 98%;
+    padding: 10px;
+  }
 }
 </style>

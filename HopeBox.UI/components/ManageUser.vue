@@ -8,47 +8,49 @@
         </button>
       </div>
 
-      <table class="user-table">
-        <thead>
-          <tr>
-            <th>Avatar</th>
-            <th>Họ tên</th>
-            <th>Email</th>
-            <th>SĐT</th>
-            <th>Giới tính</th>
-            <th>Trạng thái</th>
-            <th>Tích điểm</th>
-            <th>Tổ chức</th>
-            <th>Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="user in users" :key="user.id">
-            <td>
-              <img :src="user.avatarUrl || '/images/placeholder.jpg'" class="avatar" alt="Avatar" />
-            </td>
-            <td>{{ user.fullName }}</td>
-            <td>{{ user.email }}</td>
-            <td>{{ user.phoneNumber || 'N/A' }}</td>
-            <td>{{ getGenderLabel(user.gender) }}</td>
-            <td>
-              <span :class="getStatusClass(user.userStatus)">
-                {{ getStatusLabel(user.userStatus) }}
-              </span>
-            </td>
-            <td>{{ user.point }}</td>
-            <td>{{ getOrganizationName(user.organizationId) || 'N/A' }}</td>
-            <td>
-              <button class="btn edit" @click="editUser(user)">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="btn delete" @click="confirmDelete(user.id)">
-                <i class="fas fa-trash"></i>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-container">
+        <table class="user-table">
+          <thead>
+            <tr>
+              <th>Avatar</th>
+              <th>Họ tên</th>
+              <th>Email</th>
+              <th>SĐT</th>
+              <th>Giới tính</th>
+              <th>Trạng thái</th>
+              <th>Tích điểm</th>
+              <th>Tổ chức</th>
+              <th>Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="user in users" :key="user.id">
+              <td data-label="Avatar">
+                <img :src="user.avatarUrl || '/images/placeholder.jpg'" class="avatar" alt="Avatar" />
+              </td>
+              <td data-label="Họ tên">{{ user.fullName }}</td>
+              <td data-label="Email">{{ user.email }}</td>
+              <td data-label="SĐT">{{ user.phoneNumber || 'N/A' }}</td>
+              <td data-label="Giới tính">{{ getGenderLabel(user.gender) }}</td>
+              <td data-label="Trạng thái">
+                <span :class="getStatusClass(user.userStatus)">
+                  {{ getStatusLabel(user.userStatus) }}
+                </span>
+              </td>
+              <td data-label="Tích điểm">{{ user.point }}</td>
+              <td data-label="Tổ chức">{{ getOrganizationName(user.organizationId) || 'N/A' }}</td>
+              <td data-label="Hành động">
+                <button class="btn edit" @click="editUser(user)">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn delete" @click="confirmDelete(user.id)">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <!-- Modal -->
       <div v-if="showModal" class="modal-overlay">
@@ -341,31 +343,30 @@
 
 <style scoped>
   .user-management {
-    display: flex;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
-
+  
   .main-content {
-    margin-left: 250px;
-    padding: 30px;
-    background: #1a1a2e;
+    padding: 20px;
+    background: #111226;
     color: #e0e0e0;
     width: 100%;
-    min-height: 100vh;
   }
-
+  
   .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
   }
-
+  
   .header h2 {
     font-size: 1.8rem;
     color: #f6d579;
   }
-
+  
   .add-btn {
     background-color: #fbc658;
     color: #111226;
@@ -376,11 +377,17 @@
     cursor: pointer;
     transition: background-color 0.3s;
   }
-
+  
   .add-btn:hover {
     background-color: #e0b450;
   }
-
+  
+  .table-container {
+    overflow-x: auto;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
   .user-table {
     width: 100%;
     border-collapse: collapse;
@@ -389,55 +396,55 @@
     overflow: hidden;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   }
-
+  
   .user-table th,
   .user-table td {
     padding: 14px;
     text-align: left;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
-
+  
   .user-table th {
     background: #292b40;
     color: #f6d579;
     font-weight: 600;
   }
-
+  
   .user-table tbody tr:hover {
     background: #2a2a42;
   }
-
+  
   .avatar {
     width: 40px;
     height: 40px;
     border-radius: 50%;
     object-fit: cover;
   }
-
+  
   .user-status-active {
     color: #28a745;
   }
-
+  
   .user-status-inactive {
     color: #6c757d;
   }
-
+  
   .user-status-pending {
     color: #e6950b;
   }
-
+  
   .user-status-suspended {
     color: #ff9800;
   }
-
+  
   .user-status-banned {
     color: #dc3545;
   }
-
+  
   .user-status-deleted {
     color: #6c757d;
   }
-
+  
   .btn {
     border: none;
     padding: 8px;
@@ -445,26 +452,28 @@
     cursor: pointer;
     transition: background-color 0.3s;
   }
-
+  
   .edit {
     background-color: #36a3f7;
     color: white;
     margin-right: 8px;
   }
-
+  
   .edit:hover {
     background-color: #2e8bd4;
   }
-
+  
   .delete {
     background-color: #ef8157;
     color: white;
   }
-
+  
   .delete:hover {
     background-color: #d66f4b;
   }
-
+  
+  .modal-overlay援助
+  
   .modal-overlay {
     position: fixed;
     top: 0;
@@ -477,66 +486,54 @@
     justify-content: center;
     z-index: 1000;
   }
-
+  
   .modal {
     background: #222238;
-    padding: 24px;
+    padding: 20px;
     border-radius: 12px;
-    width: 600px;
+    width: 90%;
+    max-width: 600px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     display: flex;
     flex-direction: column;
     gap: 16px;
+    max-height: 100%;
     overflow-y: auto;
   }
-
+  
   .modal h3 {
     color: #f6d579;
     margin: 0;
     font-size: 1.5rem;
   }
-
+  
   .avatar-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 10px;
   }
-
+  
   .avatar-preview {
-    width: 100px;
-    height: 100px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
     object-fit: cover;
     cursor: pointer;
     border: 2px solid #f6d579;
   }
-
-  .change-avatar-btn {
-    background: #6c757d;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-
-  .change-avatar-btn:hover {
-    background: #5a6268;
-  }
-
+  
   .form-group {
     display: flex;
     flex-direction: column;
     gap: 8px;
   }
-
+  
   .form-group label {
     color: #e0e0e0;
     font-weight: 500;
   }
-
+  
   .modal input,
   .modal select {
     padding: 10px;
@@ -547,60 +544,221 @@
     font-size: 1rem;
     transition: border-color 0.3s;
   }
-
+  
   .modal input:focus,
   .modal select:focus {
     outline: none;
     border: 1px solid #f6d579;
   }
-
+  
   .modal-actions {
     display: flex;
     justify-content: flex-end;
     gap: 12px;
     margin-top: 16px;
   }
-
+  
   .btn-success {
     background: #28a745;
     color: white;
     padding: 10px 20px;
     border-radius: 6px;
   }
-
+  
   .btn-success:hover {
     background: #218838;
   }
-
+  
   .btn-secondary {
     background: #6c757d;
     color: white;
     padding: 10px 20px;
     border-radius: 6px;
   }
-
+  
   .btn-secondary:hover {
     background: #5a6268;
   }
-
+  
   .modal::-webkit-scrollbar,
-  .modal-content::-webkit-scrollbar {
+  .table-container::-webkit-scrollbar {
     width: 8px;
   }
-
+  
   .modal::-webkit-scrollbar-track,
-  .modal-content::-webkit-scrollbar-track {
+  .table-container::-webkit-scrollbar-track {
     background: #1e1e2f;
   }
-
+  
   .modal::-webkit-scrollbar-thumb,
-  .modal-content::-webkit-scrollbar-thumb {
+  .table-container::-webkit-scrollbar-thumb {
     background: #4a4a6a;
     border-radius: 4px;
   }
-
+  
   .modal::-webkit-scrollbar-thumb:hover,
-  .modal-content::-webkit-scrollbar-thumb:hover {
+  .table-container::-webkit-scrollbar-thumb:hover {
     background: #5a5a7a;
   }
-</style>
+  
+  /* Responsive Styles */
+  @media (max-width: 1024px) {
+    .main-content {
+      padding: 15px;
+    }
+  
+    .header h2 {
+      font-size: 1.5rem;
+    }
+  
+    .add-btn {
+      padding: 8px 12px;
+      font-size: 0.9rem;
+    }
+  
+    .user-table th,
+    .user-table td {
+      padding: 10px;
+    }
+  
+    .avatar {
+      width: 32px;
+      height: 32px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .main-content {
+      padding: 10px;
+    }
+  
+    .header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .user-table {
+      font-size: 0.9rem;
+    }
+  
+    .user-table th,
+    .user-table td {
+      padding: 8px;
+    }
+  
+    /* Stack table for mobile */
+    .user-table thead {
+      display: none;
+    }
+  
+    .user-table tbody,
+    .user-table tr,
+    .user-table td {
+      display: block;
+      width: 100%;
+    }
+  
+    .user-table tr {
+      margin-bottom: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+  
+    .user-table td {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 10px;
+      position: relative;
+      text-align: left;
+    }
+  
+    .user-table td::before {
+      content: attr(data-label);
+      font-weight: bold;
+      color: #f6d579;
+      width: 40%;
+      flex-shrink: 0;
+      text-align: left;
+    }
+  
+    .user-table td:not(:first-child) {
+      border-top: none;
+    }
+  
+    .user-table td:last-child {
+      display: flex;
+      justify-content: flex-start;
+      gap: 8px;
+    }
+  
+    .avatar {
+      width: 50px;
+      height: 50px;
+    }
+  
+    .modal {
+      width: 95%;
+      padding: 15px;
+      max-height: 100%;
+    }
+  
+    .modal h3 {
+      font-size: 1.3rem;
+      text-align: left;
+    }
+  
+    .avatar-container {
+      align-items: flex-start;
+    }
+  
+    .avatar-preview {
+      width: 60px;
+      height: 60px;
+    }
+  
+    .modal input,
+    .modal select {
+      font-size: 0.9rem;
+      padding: 8px;
+    }
+  
+    .modal-actions {
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: stretch;
+      gap: 8px;
+    }
+  
+    .btn-success,
+    .btn-secondary {
+      padding: 8px;
+      width: 100%;
+      text-align: center;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .main-content {
+      padding: 8px;
+    }
+  
+    .header h2 {
+      font-size: 1.2rem;
+    }
+  
+    .add-btn {
+      width: 100%;
+      text-align: center;
+      padding: 10px;
+    }
+  
+    .user-table td::before {
+      width: 50%;
+    }
+  
+    .modal {
+      width: 98%;
+      padding: 10px;
+    }
+  }
+  </style>
