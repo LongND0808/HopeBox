@@ -1,9 +1,10 @@
-using HopeBox.Domain.Models;
+﻿using HopeBox.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using HopeBox.Domain.Dtos;
 using HopeBox.Core.IService;
 using HopeBox.Domain.RequestDto;
 using Microsoft.AspNetCore.Authorization;
+using HopeBox.Domain.ResponseDto;
 
 namespace HopeBox.Web.Controller
 {
@@ -80,6 +81,24 @@ namespace HopeBox.Web.Controller
         {
             var result = await _blogService.IncrementViewCountAsync(blogId);
             return StatusCode(result.Status, result);
+        }
+
+        [HttpPost("change-image")]
+        [Authorize(Roles ="Admin")]
+        public async Task<BaseResponseDto<string>> ChangeImage( Guid blogId, IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return (new BaseResponseDto<string>
+                {
+                    Status = 400,
+                    Message = "Không có file được tải lên",
+                    ResponseData = null
+                });
+            }
+
+            var result = await _blogService.ChangeImageAsync(blogId, file);
+            return (result);
         }
     }
 }

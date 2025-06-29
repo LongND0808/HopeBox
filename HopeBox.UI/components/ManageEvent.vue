@@ -18,6 +18,8 @@
               <th>Ngày bắt đầu</th>
               <th>Ngày kết thúc</th>
               <th>Địa điểm</th>
+              <th>Tổ chức</th>
+              <th>Người tạo</th>
               <th>Trạng thái</th>
               <th>Hành động</th>
             </tr>
@@ -32,6 +34,8 @@
               <td data-label="Ngày bắt đầu">{{ formatDate(event.startDate) }}</td>
               <td data-label="Ngày kết thúc">{{ formatDate(event.endDate) }}</td>
               <td data-label="Địa điểm">{{ event.location || 'N/A' }}</td>
+              <td data-label="Tổ chức">{{ getOrganizationName(event.organizationId) || 'N/A' }}</td>
+              <td data-label="Người tạo">{{ getUserName(event.createdBy) || 'N/A' }}</td>
               <td data-label="Trạng thái">
                 <span :class="getStatusClass(event.status)">
                   {{ getStatusLabel(event.status) }}
@@ -84,6 +88,26 @@
             <input v-model="form.location" placeholder="Địa điểm" />
           </div>
           <div class="form-group">
+            <label>Mục tiêu (VND)</label>
+            <input type="number" v-model.number="form.targetAmount" placeholder="Mục tiêu (VND)" min="0" />
+          </div>
+          <div class="form-group">
+            <label>Hiện tại (VND)</label>
+            <input type="number" v-model.number="form.currentAmount" placeholder="Hiện tại (VND)" min="0" />
+          </div>
+          <div class="form-group">
+            <label>Kinh độ</label>
+            <input type="number" v-model.number="form.latitude" placeholder="Kinh độ" step="any" />
+          </div>
+          <div class="form-group">
+            <label>Vĩ độ</label>
+            <input type="number" v-model.number="form.longitude" placeholder="Vĩ độ" step="any" />
+          </div>
+          <div class="form-group">
+            <label>Địa chỉ định dạng</label>
+            <input v-model="form.formattedAddress" placeholder="Địa chỉ định dạng" />
+          </div>
+          <div class="form-group">
             <label>Trạng thái</label>
             <select v-model.number="form.status" required>
               <option v-for="(label, value) in EventStatusLabel" :key="value" :value="Number(value)">
@@ -91,8 +115,27 @@
               </option>
             </select>
           </div>
+          <div class="form-group">
+            <label>Tổ chức</label>
+            <select v-model="form.organizationId" @change="onOrganizationChange" required>
+              <option value="" disabled>Chọn tổ chức</option>
+              <option v-for="org in organizations" :key="org.id" :value="org.id">
+                {{ org.name }}
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Người tạo</label>
+            <select v-model="form.createdBy" :disabled="!form.organizationId" required>
+              <option value="" disabled>Chọn người tạo</option>
+              <option v-for="user in filteredUsers" :key="user.id" :value="user.id">
+                {{ user.fullName }}
+              </option>
+            </select>
+          </div>
           <div class="modal-actions">
-            <button @click="saveEvent" class="btn btn-success" :disabled="!form.title || !form.startDate || !form.status.toString()">Lưu</button>
+            <button @click="saveEvent" class="btn btn-success"
+              :disabled="!form.title || !form.startDate || !form.status.toString() || !form.organizationId || !form.createdBy">Lưu</button>
             <button @click="closeModal" class="btn btn-secondary">Hủy</button>
           </div>
         </div>
@@ -124,8 +167,11 @@ export default {
   data() {
     return {
       events: [],
+      users: [],
+      organizations: [],
       showModal: false,
       editingEvent: null,
+      pendingImage: null,
       EventStatusLabel,
       form: {
         id: '',
@@ -143,9 +189,17 @@ export default {
         targetAmount: 0,
         currentAmount: 0,
         createdBy: '',
-        organizationId: ''
+        organizationId: '',
+        createdByName: null,
+        organizationName: null
       }
     };
+  },
+  computed: {
+    filteredUsers() {
+      if (!this.form.organizationId) return [];
+      return this.users.filter(user => user.organizationId === this.form.organizationId);
+    }
   },
   methods: {
     async fetchEvents() {
@@ -165,6 +219,44 @@ export default {
         await showErrorAlertDark('Lỗi', 'Không thể tải danh sách sự kiện.');
         console.error('Lỗi tải danh sách sự kiện:', error);
       }
+    },
+    async fetchUsers() {
+      try {
+        const response = await axios.get(`${BASE_URL}/api/User/get-all`, {
+          withCredentials: true
+        });
+        if (response.data.status === 200) {
+          this.users = response.data.responseData;
+        } else {
+          await showErrorAlertDark('Lỗi', response.data.message || 'Không thể tải danh sách người dùng.');
+        }
+      } catch (error) {
+        await showErrorAlertDark('Lỗi', 'Không thể tải danh sách người dùng.');
+        console.error('Lỗi tải danh sách người dùng:', error);
+      }
+    },
+    async fetchOrganizations() {
+      try {
+        const response = await axios.get(`${BASE_URL}/api/Organization/get-all`, {
+          withCredentials: true
+        });
+        if (response.data.status === 200) {
+          this.organizations = response.data.responseData;
+        } else {
+          await showErrorAlertDark('Lỗi', response.data.message || 'Không thể tải danh sách tổ chức.');
+        }
+      } catch (error) {
+        await showErrorAlertDark('Lỗi', 'Không thể tải danh sách tổ chức.');
+        console.error('Lỗi tải danh sách tổ chức:', error);
+      }
+    },
+    getOrganizationName(organizationId) {
+      const org = this.organizations.find(o => o.id === organizationId);
+      return org ? org.name : null;
+    },
+    getUserName(userId) {
+      const user = this.users.find(u => u.id === userId);
+      return user ? user.fullName : null;
     },
     getStatusLabel(status) {
       return EventStatusLabel[status] || 'Không xác định';
@@ -201,8 +293,11 @@ export default {
         targetAmount: 0,
         currentAmount: 0,
         createdBy: '',
-        organizationId: ''
+        organizationId: '',
+        createdByName: null,
+        organizationName: null
       };
+      this.pendingImage = null;
       if (this.$refs.fileInput) this.$refs.fileInput.value = '';
       this.showModal = true;
     },
@@ -225,74 +320,112 @@ export default {
         targetAmount: event.targetAmount || 0,
         currentAmount: event.currentAmount || 0,
         createdBy: event.createdBy || '',
-        organizationId: event.organizationId || ''
+        organizationId: event.organizationId || '',
+        createdByName: event.createdByName || null,
+        organizationName: event.organizationName || null
       };
       this.editingEvent = event;
+      this.pendingImage = null;
       this.showModal = true;
+    },
+    onOrganizationChange() {
+      this.form.createdBy = '';
     },
     async handleImageUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
 
-      try {
-        const formData = new FormData();
-        formData.append('file', file);
-        const eventId = this.form.id || this.editingEvent?.id || '';
-        const response = await axios.post(
-          `${BASE_URL}/api/Event/change-image?eventId=${encodeURIComponent(eventId)}`,
-          formData,
-          {
-            headers: { 'Content-Type': 'multipart/form-data' },
-            withCredentials: true
-          }
-        );
+      if (this.form.id) {
+        try {
+          const formData = new FormData();
+          formData.append('file', file);
+          const response = await axios.post(
+            `${BASE_URL}/api/Event/change-image?eventId=${encodeURIComponent(this.form.id)}`,
+            formData,
+            {
+              headers: { 'Content-Type': 'multipart/form-data' },
+              withCredentials: true
+            }
+          );
 
-        if (response.data.status === 200 && response.data.responseData) {
-          this.form.bannerImage = response.data.responseData;
-          await showSuccessAlertDark('Thành công', 'Ảnh sự kiện đã được cập nhật.');
-          this.fetchEvents();
-        } else {
-          await showErrorAlertDark('Lỗi', response.data.message || 'Không thể tải ảnh lên.');
+          if (response.data.status === 200 && response.data.responseData) {
+            this.form.bannerImage = response.data.responseData;
+            await showSuccessAlertDark('Thành công', 'Ảnh sự kiện đã được cập nhật.');
+            this.fetchEvents();
+          } else {
+            await showErrorAlertDark('Lỗi', response.data.message || 'Không thể tải ảnh lên.');
+          }
+        } catch (error) {
+          await showErrorAlertDark('Lỗi', 'Không thể tải ảnh lên.');
+          console.error('Lỗi tải ảnh:', error);
         }
-      } catch (error) {
-        await showErrorAlertDark('Lỗi', 'Không thể tải ảnh lên.');
-        console.error('Lỗi tải ảnh:', error);
+      } else {
+        // For new events, store the file temporarily
+        this.pendingImage = file;
+        this.form.bannerImage = URL.createObjectURL(file); // Preview the image
       }
     },
     async saveEvent() {
-      if (!this.form.title || !this.form.startDate || !this.form.status.toString()) {
-        await showErrorAlertDark('Lỗi', 'Vui lòng nhập đầy đủ thông tin bắt buộc: Tên sự kiện, Ngày bắt đầu, Trạng thái.');
+      if (!this.form.title || !this.form.startDate || !this.form.status.toString() || !this.form.organizationId || !this.form.createdBy) {
+        await showErrorAlertDark('Lỗi', 'Vui lòng nhập đầy đủ thông tin bắt buộc: Tên sự kiện, Ngày bắt đầu, Trạng thái, Tổ chức, Người tạo.');
         return;
       }
 
       try {
-        const payload = {
-          ...this.form,
+        const eventDto = {
           id: this.form.id || null,
-          startDate: this.form.startDate ? new Date(this.form.startDate).toISOString() : null,
-          endDate: this.form.endDate ? new Date(this.form.endDate).toISOString() : null,
+          title: this.form.title,
           description: this.form.description || null,
           detail: this.form.detail || null,
+          startDate: this.form.startDate ? new Date(this.form.startDate).toISOString() : null,
+          endDate: this.form.endDate ? new Date(this.form.endDate).toISOString() : null,
           location: this.form.location || null,
-          bannerImage: this.form.bannerImage || null,
+          status: this.form.status,
+          bannerImage: this.form.bannerImage && !this.pendingImage ? this.form.bannerImage : null,
           latitude: this.form.latitude || null,
           longitude: this.form.longitude || null,
           formattedAddress: this.form.formattedAddress || null,
           targetAmount: this.form.targetAmount || 0,
           currentAmount: this.form.currentAmount || 0,
           createdBy: this.form.createdBy || null,
-          organizationId: this.form.organizationId || null
+          organizationId: this.form.organizationId || null,
+          createdByName: null, // Set by backend
+          organizationName: null // Set by backend
         };
+
+        const payload = eventDto;
 
         const url = this.editingEvent
           ? `${BASE_URL}/api/Event/update`
           : `${BASE_URL}/api/Event/add`;
 
         const response = await axios.post(url, payload, {
+          headers: { 'Content-Type': 'application/json' },
           withCredentials: true
         });
 
         if ([200, 201].includes(response.data.status)) {
+          let eventId = this.form.id || response.data.responseData?.id;
+
+          if (!this.form.id && this.pendingImage) {
+            const formData = new FormData();
+            formData.append('file', this.pendingImage);
+            const imageResponse = await axios.post(
+              `${BASE_URL}/api/Event/change-image?eventId=${encodeURIComponent(eventId)}`,
+              formData,
+              {
+                headers: { 'Content-Type': 'multipart/form-data' },
+                withCredentials: true
+              }
+            );
+
+            if (imageResponse.data.status === 200 && imageResponse.data.responseData) {
+              this.form.bannerImage = imageResponse.data.responseData;
+            } else {
+              console.error('Failed to upload image:', imageResponse.data.message);
+            }
+          }
+
           await showSuccessAlertDark('Thành công', this.editingEvent ? 'Cập nhật sự kiện thành công!' : 'Thêm sự kiện thành công!');
           this.fetchEvents();
           this.closeModal();
@@ -348,11 +481,12 @@ export default {
     closeModal() {
       this.showModal = false;
       this.editingEvent = null;
+      this.pendingImage = null;
       if (this.$refs.fileInput) this.$refs.fileInput.value = '';
     }
   },
-  mounted() {
-    this.fetchEvents();
+  async mounted() {
+    await Promise.all([this.fetchEvents(), this.fetchUsers(), this.fetchOrganizations()]);
   }
 };
 </script>

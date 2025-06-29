@@ -115,7 +115,7 @@ namespace HopeBox.Core.Service
                     return new BaseResponseDto<bool>
                     {
                         Status = 404,
-                        Message = "User not found",
+                        Message = "Entity not found",
                         ResponseData = false
                     };
                 }

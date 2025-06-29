@@ -1,4 +1,5 @@
 ﻿using HopeBox.Core.IService;
+using HopeBox.Core.R2Storage;
 using HopeBox.Domain.Converter;
 using HopeBox.Domain.Dtos;
 using HopeBox.Domain.DTOs;
@@ -7,6 +8,7 @@ using HopeBox.Domain.RequestDto;
 using HopeBox.Domain.ResponseDto;
 using HopeBox.Infrastructure.Repository;
 using LinqKit;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using static HopeBox.Common.Enum.Enumerate;
@@ -24,7 +26,7 @@ namespace HopeBox.Core.Service
         protected readonly IConverter<User, UserDto> _userConverter;
         protected readonly IConverter<Comment, CommentDto> _commentConverter;
         protected readonly IConverter<Share, ShareDto> _shareConverter;
-
+        protected readonly IR2StorageService _r2StorageService;
         public BlogService(
             IRepository<Blog> repository,
             IRepository<User> userRepository,
@@ -34,7 +36,8 @@ namespace HopeBox.Core.Service
             IConverter<Blog, BlogDto> converter,
             IConverter<User, UserDto> userConverter,
             IConverter<Comment, CommentDto> commentConverter,
-            IConverter<Share, ShareDto> shareConverter)
+            IConverter<Share, ShareDto> shareConverter,
+            IR2StorageService r2StorageService)
         {
             _repository = repository;
             _userRepository = userRepository;
@@ -45,6 +48,7 @@ namespace HopeBox.Core.Service
             _userConverter = userConverter;
             _commentConverter = commentConverter;
             _shareConverter = shareConverter;
+            _r2StorageService = r2StorageService;
         }
 
         public async Task<BaseResponseDto<BasePagingResponseDto<BlogDto>>> GetBlogsByFilterAsync(BlogFilterRequestDto request)
@@ -527,6 +531,43 @@ namespace HopeBox.Core.Service
             catch (Exception ex)
             {
                 return new BaseResponseDto<BlogDto>
+                {
+                    Status = 500,
+                    Message = ex.Message,
+                    ResponseData = null
+                };
+            }
+        }
+
+        public async Task<BaseResponseDto<string>> ChangeImageAsync(Guid blogId, IFormFile file)
+        {
+            try
+            {
+                var blog = await _repository.GetByIdAsync(blogId);
+                if (blog == null)
+                {
+                    return new BaseResponseDto<string>
+                    {
+                        Status = 404,
+                        Message = "Không tìm thấy blog",
+                        ResponseData = null
+                    };
+                }
+
+                var fileUrl = await _r2StorageService.UploadFileAsync(file, "blog-images", blogId.ToString());
+                blog.ImageUrl = fileUrl;
+                await _repository.UpdateAsync(blog);
+
+                return new BaseResponseDto<string>
+                {
+                    Status = 200,
+                    Message = "Tải ảnh blog thành công",
+                    ResponseData = fileUrl + "?v=" + DateTime.Now.Ticks.ToString()
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponseDto<string>
                 {
                     Status = 500,
                     Message = ex.Message,
