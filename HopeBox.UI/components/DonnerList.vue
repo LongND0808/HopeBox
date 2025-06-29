@@ -7,7 +7,7 @@
                     <img :src="donner.avatarUrl" :alt="donner.fullName" class="donner-avatar" />
                     <div class="donner-info">
                         <div class="donner-name">{{ donner.fullName }}</div>
-                        <div class="donner-message">{{ donner.message || 'Xin ủng hộ chiến dịch!' }}</div>
+                        <div class="donner-message">{{ donner.message || 'Xin góp sức cho chiến dịch!' }}</div>
                     </div>
                     <div class="donner-amount">
                         {{ (donner.donationAmount) }}<span class="amount-unit"> ₫</span>

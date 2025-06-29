@@ -1,14 +1,9 @@
 ﻿using HopeBox.Core.IService;
 using HopeBox.Domain.Dtos;
 using HopeBox.Domain.ResponseDto;
-using HopeBox.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity.Data;
 using HopeBox.Domain.RequestDto;
-using Azure;
 using Duende.IdentityModel;
 using HopeBox.Core.IAspModelService;
 

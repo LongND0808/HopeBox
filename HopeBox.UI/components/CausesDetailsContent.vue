@@ -37,7 +37,39 @@
                       </div>
                     </div>
                   </div>
+                </div>
 
+                <div class="timeline-wrapper my-4">
+                  <div class="timeline">
+                    <div class="timeline-line"></div>
+                    <div class="timeline-milestone" :class="{ active: cause.status >= CausesStatus.ONGOING }">
+                      <div class="flag">
+                        <span class="flag-label">Đang diễn ra quyên góp</span>
+                      </div>
+                    </div>
+
+                    <div class="timeline-milestone milestone-2"
+                      :class="{ active: cause.status >= CausesStatus.COMPLETED }">
+                      <div class="flag">
+                        <span class="flag-label">Hoàn thành quyên góp</span>
+                      </div>
+                    </div>
+
+
+                    <div class="timeline-milestone milestone-3"
+                      :class="{ active: cause.status >= CausesStatus.EXECUTE }">
+                      <div class="flag">
+                        <span class="flag-label">Tiến hành từ thiện</span>
+                      </div>
+                    </div>
+
+                    <div class="timeline-milestone milestone-4"
+                      :class="{ active: cause.status >= CausesStatus.CLOSED }">
+                      <div class="flag">
+                        <span class="flag-label">Kết thúc chiến dịch</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <div class="thumb">
@@ -67,6 +99,7 @@
 <script>
   import axios from 'axios';
   import { BASE_URL } from '@/utils/constants';
+  import { CausesStatus } from '@/enums/enums.js';
 
   export default {
     props: {
@@ -78,6 +111,7 @@
     data() {
       return {
         cause: null,
+        CausesStatus
       };
     },
     computed: {
@@ -109,3 +143,111 @@
     },
   };
 </script>
+
+<style scoped>
+  .timeline-wrapper {
+    position: relative;
+    margin: 20px 0;
+  }
+
+  .timeline {
+    display: flex;
+    align-items: center;
+    position: relative;
+    height: 50px;
+    margin-top: 80px;
+    margin-bottom: 80px;
+    padding: 0 80px;
+  }
+
+  .timeline-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background-color: #e0e0e0;
+    z-index: 1;
+   margin: 0 30px;
+  }
+
+  .timeline-milestone {
+    position: relative;
+    flex: 1;
+    text-align: center;
+    z-index: 2;
+  }
+
+  .timeline-milestone::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 16px;
+    background-color: #e0e0e0;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+  }
+
+  .timeline-milestone.active::before {
+    background-color: #e88010;
+  }
+
+  .flag {
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #f8f9fa;
+    padding: 5px 10px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+  }
+
+  .timeline-milestone.active .flag {
+    background-color: #e88010;
+    color: white;
+    transform: translateX(-50%) scale(1.1);
+  }
+
+  .flag-label {
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+  }
+
+  .timeline-milestone.milestone-2 {
+    margin-left: 25%;
+  }
+
+  .timeline-milestone.milestone-3 {
+    margin-left: 25%;
+  }
+
+  .timeline-milestone.milestone-4 {
+    margin-left: 25%;
+  }
+
+  .timeline-milestone.active .flag {
+    animation: wave 1.5s infinite;
+  }
+
+  @keyframes wave {
+    0% {
+      transform: translateX(-50%) rotate(0deg);
+    }
+
+    50% {
+      transform: translateX(-50%) rotate(5deg);
+    }
+
+    100% {
+      transform: translateX(-50%) rotate(0deg);
+    }
+  }
+</style>

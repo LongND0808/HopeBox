@@ -1,6 +1,13 @@
 ﻿using HopeBox.Core.Config;
-using MailKit.Net.Smtp;
+using MailKit.Net.Imap;
+using MailKit.Search;
+using MailKit;
 using MimeKit;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using MailKit.Net.Smtp;
 
 namespace HopeBox.Core.Email
 {
@@ -11,6 +18,58 @@ namespace HopeBox.Core.Email
         public EmailService(IConfig config)
         {
             _config = config;
+        }
+
+        public async Task<IEnumerable<EmailData>> GetEmailsFromSenderAsync(string sender)
+        {
+            var emailConfig = _config.GetEmailConfiguration();
+            var emails = new List<EmailData>();
+
+            using var client = new ImapClient();
+            try
+            {
+                // Connect to Gmail IMAP server
+                await client.ConnectAsync("imap.gmail.com", 993, true);
+
+                // Authenticate using TrackingEmail and TrackingPassword
+                await client.AuthenticateAsync(emailConfig.TrackingEmail, emailConfig.TrackingPassword);
+
+                // Access the Inbox folder
+                var inbox = client.Inbox;
+                await inbox.OpenAsync(FolderAccess.ReadOnly);
+
+                // Search for emails from the specified sender
+                var query = SearchQuery.FromContains(sender).And(SearchQuery.DeliveredAfter(DateTime.Now.AddDays(-7)));
+                var uids = await inbox.SearchAsync(query);
+
+                // Fetch emails
+                foreach (var uid in uids)
+                {
+                    var message = await inbox.GetMessageAsync(uid);
+                    var emailData = new EmailData
+                    {
+                        Subject = message.Subject,
+                        Body = message.TextBody ?? message.HtmlBody,
+                        ReceivedDate = message.Date.UtcDateTime,
+                        From = message.From.ToString()
+                    };
+                    emails.Add(emailData);
+                }
+
+                return emails;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Lỗi khi lấy email: {ex.Message}", ex);
+            }
+            finally
+            {
+                if (client.IsConnected)
+                {
+                    await client.DisconnectAsync(true);
+                }
+                client.Dispose();
+            }
         }
 
         public async Task SendEmailAsync(string to, string subject, string body)
@@ -46,11 +105,14 @@ namespace HopeBox.Core.Email
             }
             catch (Exception ex)
             {
-                throw;
+                throw new Exception($"Lỗi khi gửi email: {ex.Message}", ex);
             }
             finally
             {
-                await client.DisconnectAsync(true);
+                if (client.IsConnected)
+                {
+                    await client.DisconnectAsync(true);
+                }
                 client.Dispose();
             }
         }

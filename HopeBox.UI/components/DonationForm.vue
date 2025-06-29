@@ -89,6 +89,28 @@
                 <a class="btn-theme btn-gradient btn-border">Tổng tiền: {{ formatCurrency(totalAmount) }}</a>
             </div>
         </form>
+        <!-- VietQR Popup -->
+        <div v-if="showVIETQRPopup" class="qr-popup" :key="VIETQRTradingCode">
+            <div class="qr-popup-content">
+                <h4 class="text-center text-white mb-3">Quét Mã VietQR</h4>
+                <img :src="VIETQRImageUrl || '/images/placeholder.jpg'" alt="VietQR Code"
+                    class="qr-image mx-auto d-block">
+                <p class="text-white text-center mt-2">Ngân hàng: {{ VIETQRBankName }}</p>
+                <p class="text-white text-center">Chủ tài khoản: {{ VIETQRRecipientName }}</p>
+                <button class="btn btn-theme btn-gradient btn-slide mt-3" @click="closeVIETQRPopup">Đóng</button>
+            </div>
+        </div>
+        <!-- SePay Popup -->
+        <div v-if="showSePayQRPopup" class="qr-popup" :key="SePayQRTradingCode">
+            <div class="qr-popup-content">
+                <h4 class="text-center text-white mb-3">Quét Mã SePay QR</h4>
+                <img src="/images/QR_Code.png" alt="SePay QR Code"
+                    class="qr-image mx-auto d-block">
+                <p class="text-white text-center mt-2">Mã giao dịch: {{ SePayQRTradingCode }}</p>
+                <p class="text-white text-center">Hãy nhập mã trên vào nội dung chuyển khoản để chúng mình xin ghi nhận đóng góp của bạn nhé!</p>
+                <button class="btn btn-theme btn-gradient btn-slide mt-3" @click="closeSePayQRPopup">Đóng</button>
+            </div>
+        </div>
         <div class="layer-style">
             <img class="layer-style1" src="/images/shape/form-shape1.png" alt="image">
             <img class="layer-style2" src="/images/shape/form-shape2.png" alt="image">
@@ -99,8 +121,8 @@
 <script>
     import { PaymentMethod, PaymentMethodLabel, Unit, UnitLabel } from '@/enums/enums.js';
     import axios from 'axios';
-    import { showSuccessAlert, showErrorAlert } from '@/utils/alertHelper.js';
-    import { BASE_URL } from '@/utils/constants'
+    import { showSuccessAlert, showErrorAlert, showConfirmDialog } from '@/utils/alertHelper.js';
+    import { BASE_URL } from '@/utils/constants';
 
     export default {
         props: {
@@ -114,16 +136,31 @@
                 donation: {
                     causeId: this.causeId,
                     donationAmount: 50000,
-                    paymentMethod: PaymentMethod.VNPAY,
+                    paymentMethod: PaymentMethod.SEPAY,
                     isAnonymous: false,
                     message: ''
                 },
                 reliefPackages: [],
                 reliefItems: [],
-                paymentLabels: PaymentMethodLabel,
+                paymentLabels: {
+                    ...PaymentMethodLabel,
+                    [PaymentMethod.SEPAY]: 'SePay QR'
+                },
                 tooltipTimeout: null,
                 units: Unit,
-                unitLabels: UnitLabel
+                unitLabels: UnitLabel,
+                showVIETQRPopup: false,
+                VIETQRImageUrl: '',
+                VIETQRTradingCode: '',
+                VIETQRRedirectUrl: '',
+                VIETQRBankName: '',
+                VIETQRRecipientName: '',
+                showSePayQRPopup: false,
+                SePayQRImageUrl: '',
+                SePayQRTradingCode: '',
+                SePayQRRedirectUrl: '',
+                SePayQRBankName: '',
+                SePayQRAccountName: ''
             };
         },
         computed: {
@@ -216,22 +253,22 @@
                 }
             },
             async submitDonation() {
-
                 try {
                     await axios.get(`${BASE_URL}/api/Authentication/me`, {
                         withCredentials: true
-                    })
-
+                    });
                 } catch (err) {
                     await showErrorAlert('Lỗi', 'Làm ơn đăng nhập để quyên góp.');
                     return;
                 }
 
-                if (this.totalAmount <= 0 || (this.donation.donationAmount || 0) < 0) {
-                    await showErrorAlert('Lỗi', 'Số tiền quyên góp phải lớn hơn 0.');
+                if (this.totalAmount < 2000) {
+                    await showErrorAlert('Lỗi', 'Số tiền quyên góp phải lớn hơn 2000.');
                     return;
                 }
+
                 try {
+                    const tradingCode = Math.random().toString(36).substring(2, 14);
                     const payload = {
                         causeId: this.donation.causeId,
                         donationAmount: this.donation.donationAmount || 0,
@@ -239,6 +276,7 @@
                         paymentMethod: Number(this.donation.paymentMethod),
                         isAnonymous: this.donation.isAnonymous,
                         message: this.donation.message || null,
+                        tradingCode: tradingCode,
                         reliefPackages: this.reliefPackages
                             .filter(pkg => (pkg.selectedQuantity || 0) > 0)
                             .reduce((acc, pkg) => {
@@ -247,7 +285,13 @@
                             }, {})
                     };
 
-                    const res = await axios.post(`${BASE_URL}/api/Donation/create-donation`, payload, {
+                    const endpoint = Number(this.donation.paymentMethod) === PaymentMethod.VIETQR
+                        ? `${BASE_URL}/api/Donation/create-donation-viet-qr`
+                        : Number(this.donation.paymentMethod) === PaymentMethod.SEPAY
+                            ? `${BASE_URL}/api/Donation/create-donation-sepay`
+                            : `${BASE_URL}/api/Donation/create-donation-vn-pay`;
+
+                    const res = await axios.post(endpoint, payload, {
                         withCredentials: true
                     });
 
@@ -255,14 +299,60 @@
                         throw new Error(res.data.message || 'Không thể tạo đơn quyên góp.');
                     }
 
-                    const paymentUrl = res.data.responseData;
-                    if (!paymentUrl) {
-                        throw new Error('Không lấy được URL thanh toán.');
-                    }
-
-                    const result = await showSuccessAlert('Thành công', 'Tạo đơn quyên góp thành công!');
-                    if (result.isConfirmed) {
-                        window.location.href = paymentUrl;
+                    if (Number(this.donation.paymentMethod) === PaymentMethod.VIETQR) {
+                        const vietQrData = res.data.responseData;
+                        if (!vietQrData || !vietQrData.qrDataURL) {
+                            await showErrorAlert('Lỗi', 'Dữ liệu VietQR không hợp lệ.');
+                            return;
+                        }
+                        this.VIETQRImageUrl = vietQrData.qrDataURL;
+                        this.VIETQRTradingCode = tradingCode;
+                        this.VIETQRRedirectUrl = `/return-payment?tradingCode=${encodeURIComponent(tradingCode)}`;
+                        this.VIETQRBankName = vietQrData.acpId === 970403 ? 'Ngân hàng BIDV' : 'Unknown Bank';
+                        this.VIETQRRecipientName = vietQrData.accountName || 'HOPEBOX';
+                        this.showVIETQRPopup = true;
+                        console.log('VietQR Popup Data:', {
+                            imageUrl: this.VIETQRImageUrl,
+                            tradingCode: this.VIETQRTradingCode,
+                            bankName: this.VIETQRBankName,
+                            recipientName: this.VIETQRRecipientName,
+                            showPopup: this.showVIETQRPopup
+                        });
+                        this.$nextTick(() => {
+                            console.log('VietQR Popup should be visible');
+                        });
+                        await showSuccessAlert('Thành công', 'Vui lòng quét mã VietQR để thực hiện thanh toán.');
+                    } else if (Number(this.donation.paymentMethod) === PaymentMethod.SEPAY) {
+                        const sePayQRData = res.data.responseData;
+                        if (!sePayQRData || !sePayQRData.imageUrl) {
+                            await showErrorAlert('Lỗi', 'Dữ liệu mã QR SePay không hợp lệ.');
+                            return;
+                        }
+                        this.SePayQRImageUrl = sePayQRData.imageUrl;
+                        this.SePayQRTradingCode = sePayQRData.tradingCode;
+                        this.SePayQRRedirectUrl = `/return-payment?tradingCode=${encodeURIComponent(tradingCode)}`;
+                        this.SePayQRBankName = sePayQRData.bankName || 'Ngân hàng BIDV';
+                        this.SePayQRAccountName = sePayQRData.accountName || 'HOPEBOX';
+                        this.showSePayQRPopup = true;
+                        console.log('SePay Popup Data:', {
+                            imageUrl: this.SePayQRImageUrl,
+                            tradingCode: this.SePayQRTradingCode,
+                            bankName: this.SePayQRBankName,
+                            accountName: this.SePayQRAccountName,
+                            showPopup: this.showSePayQRPopup
+                        });
+                        this.$nextTick(() => {
+                            console.log('SePay Popup should be visible');
+                        });
+                        await showSuccessAlert('Thành công', 'Vui lòng quét mã QR SePay để thực hiện thanh toán.');
+                    } else {
+                        await showSuccessAlert('Thành công', 'Tạo đơn quyên góp thành công!');
+                        const redirectUrl = res.data.responseData;
+                        if (redirectUrl) {
+                            window.location.href = redirectUrl;
+                        } else {
+                            await showErrorAlert('Lỗi', 'Không tìm thấy URL thanh toán VNPay.');
+                        }
                     }
                 } catch (err) {
                     console.error('Lỗi:', err);
@@ -270,6 +360,53 @@
                         'Đã xảy ra lỗi',
                         err.message || err.response?.data?.message || 'Có lỗi xảy ra. Vui lòng thử lại.'
                     );
+                }
+            },
+            async closeVIETQRPopup() {
+                this.showVIETQRPopup = false;
+                const result = await showConfirmDialog(
+                    'Xác nhận chuyển khoản',
+                    'Bạn có xác nhận đã chuyển khoản thành công không? Chỉ xác nhận khi bạn chắc chắn nhé!'
+                );
+                if (result.isConfirmed) {
+                    try {
+                        const res = await axios.post(`${BASE_URL}/api/Donation/track-email-transaction?tradingCode=${this.VIETQRTradingCode}`, {}, {
+                            withCredentials: true
+                        });
+                        if (res.data.status === 200 && res.data.responseData === true) {
+                            await showSuccessAlert('Thành công', 'Xác nhận giao dịch VietQR thành công! Hóa đơn đã được gửi vào Gmail của bạn.');
+                            this.$router.push(this.VIETQRRedirectUrl);
+                        } else {
+                            await showErrorAlert('Lỗi', res.data.message || 'Không tìm thấy giao dịch khớp với mã giao dịch.');
+                        }
+                    } catch (err) {
+                        console.error('Lỗi khi xác minh giao dịch VietQR:', err);
+                        await showErrorAlert('Lỗi', err.response?.data?.message || 'Có lỗi xảy ra khi xác minh giao dịch.');
+                    }
+                }
+            },
+            async closeSePayQRPopup() {
+                this.showSePayQRPopup = false;
+                const result = await showConfirmDialog(
+                    'Xác nhận chuyển khoản',
+                    'Bạn có xác nhận đã chuyển khoản thành công không? Chỉ xác nhận khi bạn chắc chắn nhé!'
+                );
+                if (result.isConfirmed) {
+                    try {
+                        const res = await axios.post(
+                            `${BASE_URL}/api/Donation/track-sepay?tradingCode=${this.SePayQRTradingCode}&amount=${this.totalAmount}`,
+                            {},
+                            { withCredentials: true }
+                        );
+                        if (res.data.status === 200 && res.data.responseData === true) {
+                            await showSuccessAlert('Thành công', 'Xác nhận giao dịch SePay thành công! Hóa đơn đã được gửi vào Gmail của bạn.');
+                        } else {
+                            await showErrorAlert('Lỗi', res.data.message || 'Không tìm thấy giao dịch khớp với mã giao dịch.');
+                        }
+                    } catch (err) {
+                        console.error('Lỗi khi xác minh giao dịch SePay:', err);
+                        await showErrorAlert('Lỗi', err.response?.data?.message || 'Có lỗi xảy ra khi xác minh giao dịch.');
+                    }
                 }
             }
         },
@@ -551,6 +688,36 @@
         right: 0;
     }
 
+    .qr-popup {
+        position: fixed;
+        top: 55%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 9999;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .qr-popup-content {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+        border: 2px solid #fbc658;
+    }
+
+    .qr-image {
+        max-width: 300px;
+        height: auto;
+        margin-bottom: 15px;
+    }
+
     @media (max-width: 768px) {
         .donation-form {
             padding: 20px;
@@ -578,6 +745,11 @@
         .tooltip {
             max-width: 100%;
         }
+
+        .qr-popup-content {
+            padding: 15px;
+            max-width: 80%;
+        }
     }
 
     @media (max-width: 576px) {
@@ -600,6 +772,10 @@
         .tooltip {
             font-size: 0.8rem;
             max-width: 100%;
+        }
+
+        .qr-image {
+            max-width: 150px;
         }
     }
 </style>

@@ -8,6 +8,9 @@
         </li>
         <li>
             <nuxt-link to="/causes">Chiến Dịch</nuxt-link>
+        </li>        
+        <li>
+            <nuxt-link to="/event-donation">Sự kiện</nuxt-link>
         </li>
         <li>
             <nuxt-link to="/blog">Blog</nuxt-link>
@@ -16,15 +19,9 @@
             <nuxt-link>Khác</nuxt-link>
             <ul class="submenu-nav">
                 <li>
-                    <nuxt-link to="/event-details">Sự Kiện</nuxt-link>
-                </li>
-                <li>
                     <nuxt-link to="/volunteer">Tình Nguyện Viên</nuxt-link>
                 </li>
             </ul>
-        </li>
-        <li>
-            <nuxt-link to="/contact">Liên hệ</nuxt-link>
         </li>
     </ul>
 </template>

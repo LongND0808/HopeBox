@@ -20,9 +20,6 @@
                 <li>
                     <nuxt-link to="/volunteer">Tình Nguyện Viên</nuxt-link>
                 </li>
-                <li>
-                    <nuxt-link to="/contact">Liên hệ</nuxt-link>
-                </li>
             </ul>
         </nav>
     </div>

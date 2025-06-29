@@ -1,8 +1,10 @@
-﻿namespace HopeBox.Domain.Dtos
+﻿using HopeBox.Domain.Dtos;
+using HopeBox.Domain.ResponseDto;
+
+namespace HopeBox.Domain.DTOs
 {
-    public class EventDto
+    public class EventDto : BaseModelDto
     {
-        public Guid Id { get; set; }
         public string? Title { get; set; }
         public string? Description { get; set; }
         public string? Detail { get; set; }
@@ -10,12 +12,9 @@
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public string? Location { get; set; }
-
-        // Thêm các trường tọa độ
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }
         public string? FormattedAddress { get; set; }
-
         public decimal TargetAmount { get; set; }
         public decimal CurrentAmount { get; set; }
         public int Status { get; set; }

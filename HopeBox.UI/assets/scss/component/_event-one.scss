@@ -1,0 +1,368 @@
+/*
+-----------------------------------------------------------------------
+    EventOne Component Styles - Fixed Layout
+-----------------------------------------------------------------------
+*/
+
+// ===== LOADING SKELETON =====
+.loading-skeleton {
+    .skeleton-item {
+        display: flex;
+        margin-bottom: 30px;
+        animation: pulse 1.5s ease-in-out infinite;
+        height: 200px; // Cố định chiều cao
+
+        @media (max-width: 575px) {
+            display: block;
+            height: auto;
+        }
+
+        .skeleton-thumb {
+            width: 280px; // Tăng width để cân đối hơn
+            height: 200px; // Cố định chiều cao
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 12px;
+            min-width: 280px;
+            flex-shrink: 0; // Không cho phép co lại
+
+            @media (max-width: 575px) {
+                width: 100%;
+                min-width: auto;
+                margin-bottom: 20px;
+                height: 180px;
+            }
+        }
+
+        .skeleton-content {
+            flex: 1;
+            padding: 25px 30px 25px 35px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            @media (max-width: 991px) {
+                padding: 20px 25px;
+            }
+
+            @media (max-width: 575px) {
+                padding: 25px 30px 25px;
+            }
+
+            .skeleton-info {
+                height: 18px;
+                background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+                background-size: 200% 100%;
+                animation: loading 1.5s infinite;
+                border-radius: 4px;
+                margin-bottom: 15px;
+                width: 65%;
+            }
+
+            .skeleton-title {
+                height: 22px;
+                background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+                background-size: 200% 100%;
+                animation: loading 1.5s infinite;
+                border-radius: 4px;
+                width: 85%;
+            }
+        }
+    }
+}
+
+// ===== SKELETON ANIMATIONS =====
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+// ===== NO EVENTS MESSAGE =====
+.no-events-message {
+    padding: 80px 0;
+    text-align: center;
+
+    @media (max-width: 575px) {
+        padding: 50px 20px;
+    }
+
+    .no-events-icon {
+        width: 80px;
+        height: 80px;
+        opacity: 0.5;
+        margin-bottom: 20px;
+    }
+
+    h4 {
+        color: #666;
+        margin-bottom: 10px;
+        font-size: 24px;
+
+        @media (max-width: 575px) {
+            font-size: 20px;
+        }
+    }
+
+    p {
+        color: #999;
+        font-size: 16px;
+        margin: 0;
+
+        @media (max-width: 575px) {
+            font-size: 14px;
+        }
+    }
+}
+
+// ===== ERROR STATE =====
+.error-message {
+    padding: 40px;
+    text-align: center;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #dc3545;
+
+    .error-icon {
+        color: #dc3545;
+        font-size: 48px;
+        margin-bottom: 16px;
+    }
+
+    h4 {
+        color: #dc3545;
+        margin-bottom: 12px;
+    }
+
+    p {
+        color: #666;
+        margin-bottom: 20px;
+    }
+
+    .retry-btn {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background-color 0.3s ease;
+
+        &:hover {
+            background-color: #0056b3;
+        }
+    }
+}
+
+// ===== ENHANCED EVENT ITEMS - FIXED LAYOUT =====
+.events-content.events-list {
+    .event-item {
+        display: flex;
+        margin-bottom: 30px;
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        height: 200px; // Cố định chiều cao cho tất cả items
+        
+        @media (max-width: 575px) {
+            display: block;
+            height: auto;
+        }
+
+        &:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .thumb {
+            width: 280px; // Cố định width
+            height: 200px; // Cố định height
+            min-width: 280px;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+
+            @media (max-width: 575px) {
+                width: 100%;
+                min-width: auto;
+                height: 180px;
+            }
+
+            .thumb-img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover; // Đảm bảo ảnh không bị méo
+                object-position: center;
+                transition: transform 0.6s ease;
+            }
+
+            &:hover .thumb-img {
+                transform: scale(1.08);
+            }
+
+            // Button overlay
+            .btn-theme {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+                z-index: 2;
+
+                &::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(0, 0, 0, 0.3);
+                    z-index: -1;
+                    border-radius: inherit;
+                }
+            }
+
+            &:hover .btn-theme {
+                opacity: 1;
+                visibility: visible;
+                transform: translate(-50%, -50%) scale(1.05);
+            }
+        }
+
+        .content {
+            flex: 1;
+            padding: 25px 30px 25px 35px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: #ffffff;
+
+            @media (max-width: 991px) {
+                padding: 20px 25px;
+            }
+
+            @media (max-width: 575px) {
+                padding: 25px 30px 25px;
+            }
+
+            .event-info {
+                color: #666;
+                font-size: 14px;
+                font-weight: 500;
+                margin-bottom: 12px;
+                line-height: 1.4;
+
+                span {
+                    color: #ff6b35;
+                    font-weight: 600;
+                }
+            }
+
+            .event-name {
+                margin: 0;
+                
+                a {
+                    color: #333;
+                    font-size: 20px;
+                    font-weight: 700;
+                    line-height: 1.3;
+                    text-decoration: none;
+                    display: block;
+                    transition: color 0.3s ease;
+
+                    @media (max-width: 991px) {
+                        font-size: 18px;
+                    }
+
+                    @media (max-width: 575px) {
+                        font-size: 16px;
+                    }
+
+                    &:hover {
+                        color: #ff6b35;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// ===== ANIMATION DELAYS =====
+.events-list {
+    .event-item:nth-child(1) {
+        animation-delay: 0.1s;
+    }
+
+    .event-item:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .event-item:nth-child(3) {
+        animation-delay: 0.3s;
+    }
+}
+
+// ===== RESPONSIVE ADJUSTMENTS =====
+@media (max-width: 991px) {
+    .events-content.events-list {
+        .event-item {
+            .thumb {
+                width: 240px;
+                min-width: 240px;
+            }
+        }
+    }
+}
+
+@media (max-width: 767px) {
+    .events-content.events-list {
+        .event-item {
+            .thumb {
+                width: 200px;
+                min-width: 200px;
+                height: 150px;
+            }
+            
+            height: 150px;
+        }
+    }
+}
+
+@media (max-width: 575px) {
+    .events-content.events-list {
+        .event-item {
+            .thumb {
+                height: 200px;
+            }
+        }
+    }
+}
+
+// ===== COMPONENT SPECIFIC OVERRIDES =====
+.events-area.events-default-area {
+    .events-content.events-list {
+        padding-right: 0; // Loại bỏ padding-right để layout đều hơn
+        
+        @media (min-width: 992px) {
+            padding-right: 50px; // Chỉ thêm padding trên desktop
+        }
+    }
+}

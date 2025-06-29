@@ -1,19 +1,22 @@
-﻿using HopeBox.Core.IService;
-using HopeBox.Domain.Dtos;
+using HopeBox.Core.IService;
+using HopeBox.Domain.DTOs;
 using HopeBox.Domain.RequestDto;
 using HopeBox.Domain.ResponseDto;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using HopeBox.Domain.Models;
+using HopeBox.Domain.Converter;
 
 namespace HopeBox.Web.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EventController : ControllerBase
+    public class EventController : BaseController<Event, EventDto>
     {
-        protected readonly IEventService _eventService;
-
-        public EventController(IEventService eventService)
+        private readonly IEventService _eventService;
+        public EventController(IBaseService<Event, EventDto> baseService, IEventService eventService) : base(baseService)
         {
+
             _eventService = eventService;
         }
 
@@ -24,10 +27,31 @@ namespace HopeBox.Web.Controller
             return StatusCode(result.Status, result);
         }
 
+        [HttpGet("get-upcoming-events")]
+        public virtual async Task<ActionResult<BaseResponseDto<List<EventDto>>>> GetUpcomingEvents()
+        {
+            var result = await _eventService.GetUpcomingEventsAsync();
+            return StatusCode(result.Status, result);
+        }
+
         [HttpGet("get-event-by-filter")]
         public async Task<IActionResult> GetEventsByFilter([FromQuery] EventFilterRequestDto request)
         {
             var result = await _eventService.GetEventsByFilterAsync(request);
+            return StatusCode(result.Status, result);
+        }
+
+        [HttpGet("get-events-donation-detail-by-filter")]
+        public async Task<ActionResult<BaseResponseDto<BasePagingResponseDto<EventDonationDetailDto>>>> GetEventsDonationDetailByFilter([FromQuery] EventFilterRequestDto request)
+        {
+            var result = await _eventService.GetEventsDonationDetailByFilterAsync(request);
+            return StatusCode(result.Status, result);
+        }
+
+        [HttpGet("get-event-donation-detail/{id}")]
+        public async Task<ActionResult<BaseResponseDto<EventDonationDetailDto>>> GetEventDonationDetailById(Guid id)
+        {
+            var result = await _eventService.GetEventDonationDetailByIdAsync(id);
             return StatusCode(result.Status, result);
         }
 
@@ -100,6 +124,17 @@ namespace HopeBox.Web.Controller
             {
                 return BadRequest(new { message = "OpenMap API failed", error = ex.Message });
             }
+        }
+
+        [HttpPost("change-image")]
+        [Authorize(Roles = "Admin")]
+        public async Task<BaseResponseDto<string>> ChangeImage(string eventId, IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return new BaseResponseDto<string> { Status = 400, Message = "File rỗng" };
+
+            var result = await _eventService.ChangeAvatarAsync(Guid.Parse(eventId), file);
+            return result;
         }
     }
 }

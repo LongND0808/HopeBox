@@ -1,33 +1,37 @@
-﻿using HopeBox.Core.IService;
+﻿using HopeBox.Common.Enum;
+using HopeBox.Core.IService;
+using HopeBox.Core.R2Storage;
 using HopeBox.Domain.Converter;
-using HopeBox.Domain.Dtos;
+using HopeBox.Domain.DTOs;
 using HopeBox.Domain.Models;
 using HopeBox.Domain.RequestDto;
 using HopeBox.Domain.ResponseDto;
 using HopeBox.Infrastructure.Repository;
 using LinqKit;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace HopeBox.Core.Service
 {
-    public class EventService : IEventService
+    public class EventService : BaseService<Event, EventDto>, IEventService
     {
-        protected readonly IRepository<Event> _repository;
-        protected readonly IConverter<Event, EventDto> _converter;
+        private readonly IConverter<Event, EventDonationDetailDto> _eventDetailConverter;
         protected readonly IOpenMapService _openMapService;
         protected readonly ILogger<EventService> _logger;
+        private readonly IR2StorageService _r2StorageService;
 
         public EventService(
             IRepository<Event> repository,
             IConverter<Event, EventDto> converter,
+            IConverter<Event, EventDonationDetailDto> eventDetailConverter,
             IOpenMapService openMapService,
-            ILogger<EventService> logger)
+            ILogger<EventService> logger, IR2StorageService r2StorageService) : base(repository, converter)
         {
-            _repository = repository;
-            _converter = converter;
+            _eventDetailConverter = eventDetailConverter;
             _openMapService = openMapService;
             _logger = logger;
+            _r2StorageService = r2StorageService;
         }
 
         #region GetNearestEvent
@@ -71,6 +75,63 @@ namespace HopeBox.Core.Service
                 {
                     Status = 500,
                     Message = ex.Message,
+                    ResponseData = null
+                };
+            }
+        }
+        #endregion
+
+        #region GetUpcomingEvents
+        public async Task<BaseResponseDto<List<EventDto>>> GetUpcomingEventsAsync()
+        {
+            try
+            {
+                _logger.LogInformation("Getting upcoming events started");
+
+                var today = DateTime.Now;
+
+                var filter = PredicateBuilder.New<Event>(true);
+
+                filter = filter.And(e => e.EndDate >= today);
+
+                filter = filter.And(e => e.Status == Enumerate.EventStatus.Upcoming ||
+                                        e.Status == Enumerate.EventStatus.Ongoing);
+
+                var upcomingEvents = await _repository.GetListAsyncUntracked<Event>(
+                    filter: filter,
+                    include: query => query.AsQueryable()
+                                           .Include(e => e.Creator)
+                                           .Include(e => e.Organization),
+                    orderBy: q => q.OrderBy(e => e.StartDate),
+                    pageSize: 3,
+                    pageNumber: 1
+                );
+
+                _logger.LogInformation("Found {Count} upcoming events", upcomingEvents.Count());
+
+                var eventDtos = new List<EventDto>();
+                foreach (var eventEntity in upcomingEvents)
+                {
+                    var dto = await ConvertEventToDtoWithLocationAsync(eventEntity);
+                    eventDtos.Add(dto);
+                }
+
+                return new BaseResponseDto<List<EventDto>>
+                {
+                    Status = 200,
+                    Message = eventDtos.Count > 0
+                        ? $"Lấy thành công {eventDtos.Count} sự kiện sắp tới"
+                        : "Không có sự kiện nào sắp tới",
+                    ResponseData = eventDtos
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting upcoming events");
+                return new BaseResponseDto<List<EventDto>>
+                {
+                    Status = 500,
+                    Message = $"Lỗi hệ thống: {ex.Message}",
                     ResponseData = null
                 };
             }
@@ -130,6 +191,142 @@ namespace HopeBox.Core.Service
                 {
                     Status = 500,
                     Message = ex.Message,
+                    ResponseData = null
+                };
+            }
+        }
+        #endregion
+
+        #region GetEventsDetailByFilter
+        public async Task<BaseResponseDto<BasePagingResponseDto<EventDonationDetailDto>>> GetEventsDonationDetailByFilterAsync(EventFilterRequestDto request)
+        {
+            try
+            {
+                _logger.LogInformation("Getting events detail by filter started");
+
+                var filter = PredicateBuilder.New<Event>(true);
+
+                if (!string.IsNullOrWhiteSpace(request.Title))
+                {
+                    filter = filter.And(e => EF.Functions.Like(e.Title, $"%{request.Title}%"));
+                }
+
+                if (!string.IsNullOrWhiteSpace(request.CauseTitle))
+                {
+                    filter = filter.And(e => e.Cause != null &&
+                                           EF.Functions.Like(e.Cause.Title, $"%{request.CauseTitle}%"));
+                }
+
+                var totalRecords = await _repository.GetCount(filter);
+                var totalPages = (int)Math.Ceiling((double)totalRecords / request.PageSize);
+
+                _logger.LogInformation("Found {TotalRecords} events matching filter criteria", totalRecords);
+
+                var events = await _repository.GetListAsyncUntracked<Event>(
+                    filter: filter,
+                    include: query => query.AsQueryable()
+                                           .Include(e => e.Creator)
+                                           .Include(e => e.Organization)
+                                           .Include(e => e.Cause),
+                    orderBy: q => q.OrderByDescending(e => e.StartDate),
+                    pageSize: request.PageSize,
+                    pageNumber: request.PageIndex
+                );
+
+                var eventDetailDtos = events.Select(e => {
+                    var dto = _eventDetailConverter.ToDTO(e);
+
+                    dto.OrganizationName = e.Organization?.Name ?? "Unknown Organization";
+                    dto.CauseTitle = e.Cause?.Title ?? "No Associated Cause";
+                    dto.CreatedByName = e.Creator?.FullName ?? "Unknown User";
+                    dto.CauseType = e.Cause?.Type;
+
+                    return dto;
+                }).ToList();
+
+                var pagingResponse = new BasePagingResponseDto<EventDonationDetailDto>
+                {
+                    TotalRecords = totalRecords,
+                    TotalPages = totalPages,
+                    PagedData = eventDetailDtos
+                };
+
+                _logger.LogInformation("Successfully processed {Count} events for page {PageIndex}",
+                    eventDetailDtos.Count, request.PageIndex);
+
+                return new BaseResponseDto<BasePagingResponseDto<EventDonationDetailDto>>
+                {
+                    Status = 200,
+                    Message = eventDetailDtos.Count > 0
+                        ? $"Lấy thành công {eventDetailDtos.Count} sự kiện (trang {request.PageIndex}/{totalPages})"
+                        : "Không tìm thấy sự kiện nào phù hợp với điều kiện lọc",
+                    ResponseData = pagingResponse
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting events detail by filter");
+                return new BaseResponseDto<BasePagingResponseDto<EventDonationDetailDto>>
+                {
+                    Status = 500,
+                    Message = $"Lỗi hệ thống: {ex.Message}",
+                    ResponseData = null
+                };
+            }
+        }
+        #endregion
+
+        #region GetEventDetailById
+        public async Task<BaseResponseDto<EventDonationDetailDto>> GetEventDonationDetailByIdAsync(Guid eventId)
+        {
+            try
+            {
+                _logger.LogInformation("Getting event detail by id: {EventId}", eventId);
+
+                var entity = await _repository.GetOneAsyncUntracked<Event>(
+                    filter: e => e.Id == eventId,
+                    include: query => query.AsQueryable()
+                                           .Include(e => e.Creator)
+                                           .Include(e => e.Organization)
+                                           .Include(e => e.Cause)
+                );
+
+                if (entity == null)
+                {
+                    _logger.LogWarning("Event not found with id: {EventId}", eventId);
+                    return new BaseResponseDto<EventDonationDetailDto>
+                    {
+                        Status = 404,
+                        Message = "Không tìm thấy sự kiện với ID được cung cấp",
+                        ResponseData = null
+                    };
+                }
+
+                var dto = _eventDetailConverter.ToDTO(entity);
+
+                dto.OrganizationName = entity.Organization?.Name ?? "Unknown Organization";
+                dto.CauseTitle = entity.Cause?.Title ?? "No Associated Cause";
+                dto.CreatedByName = entity.Creator?.FullName ?? "Unknown User";
+                dto.CurrentAmount = entity.Cause?.CurrentAmount ?? 0;
+                dto.TargetAmount = entity.Cause?.TargetAmount ?? 0;
+                dto.CauseType = entity.Cause?.Type;
+
+                _logger.LogInformation("Successfully retrieved event detail for id: {EventId}", eventId);
+
+                return new BaseResponseDto<EventDonationDetailDto>
+                {
+                    Status = 200,
+                    Message = "Lấy thông tin chi tiết sự kiện thành công",
+                    ResponseData = dto
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting event detail by id: {EventId}", eventId);
+                return new BaseResponseDto<EventDonationDetailDto>
+                {
+                    Status = 500,
+                    Message = $"Lỗi hệ thống: {ex.Message}",
                     ResponseData = null
                 };
             }
@@ -428,6 +625,56 @@ namespace HopeBox.Core.Service
             }
 
             return dto;
+        }
+        #endregion
+
+        #region ChangeAvatarAsync
+        public async Task<BaseResponseDto<string>> ChangeAvatarAsync(Guid eventId, IFormFile file)
+        {
+            try
+            {
+                if (file == null || file.Length == 0)
+                {
+                    return new BaseResponseDto<string>
+                    {
+                        Status = 400,
+                        Message = "Tệp ảnh không hợp lệ",
+                        ResponseData = null
+                    };
+                }
+
+                var eventEntity = await _repository.GetByIdAsync(eventId);
+                if (eventEntity == null)
+                {
+                    return new BaseResponseDto<string>
+                    {
+                        Status = 404,
+                        Message = "Sự kiện không tồn tại",
+                        ResponseData = null
+                    };
+                }
+
+                var fileUrl = await _r2StorageService.UploadFileAsync(file, "event-image", eventId.ToString());
+
+                eventEntity.BannerImage = fileUrl;
+                await _repository.UpdateAsync(eventEntity);
+
+                return new BaseResponseDto<string>
+                {
+                    Status = 200,
+                    Message = "Tải ảnh banner sự kiện thành công",
+                    ResponseData = fileUrl + "?v=" + DateTime.Now.Ticks.ToString()
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponseDto<string>
+                {
+                    Status = 500,
+                    Message = $"Lỗi hệ thống: {ex.Message}",
+                    ResponseData = null
+                };
+            }
         }
         #endregion
     }

@@ -2,7 +2,7 @@
     <div class="donation-page-wrapper">
         <Header />
         <OffCanvasMobileMenu />
-        <Breadcrumb items="Kết quả thanh toán" title="Thanh toán VNPay" />
+        <Breadcrumb items="Kết quả thanh toán" title="Thanh toán" />
 
         <div class="donation-wrapper">
             <div class="container">

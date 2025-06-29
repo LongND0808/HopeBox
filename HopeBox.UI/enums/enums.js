@@ -42,19 +42,37 @@ export const VolunteerStatusLabel = {
   [VolunteerStatus.REJECTED]: 'Từ chối'
 };
 
+export const VolunteerRegistrationState = {
+  NOT_REGISTERED: 0,
+  REGISTERED_PENDING: 1,
+  REGISTERED_APPROVED: 2,
+  REGISTERED_REJECTED: 3
+};
+
+export const VolunteerRegistrationStateLabel = {
+  [VolunteerRegistrationState.NOT_REGISTERED]: 'Chưa đăng ký',
+  [VolunteerRegistrationState.REGISTERED_PENDING]: 'Đã đăng ký - Chờ duyệt',
+  [VolunteerRegistrationState.REGISTERED_APPROVED]: 'Đã đăng ký - Được duyệt',
+  [VolunteerRegistrationState.REGISTERED_REJECTED]: 'Đã đăng ký - Bị từ chối'
+};
+
 export const CausesStatus = {
   PENDING: 1,
   APPROVED: 2,
   ONGOING: 3,
   COMPLETED: 4,
-  CANCELED: 5
+  EXECUTE: 5,
+  CLOSED: 6,
+  CANCELED: 7
 };
 
 export const CausesStatusLabel = {
   [CausesStatus.PENDING]: 'Chờ duyệt',
   [CausesStatus.APPROVED]: 'Đã duyệt',
-  [CausesStatus.ONGOING]: 'Đang diễn ra',
-  [CausesStatus.COMPLETED]: 'Đã hoàn thành',
+  [CausesStatus.ONGOING]: 'Đang diễn ra quyên góp',
+  [CausesStatus.COMPLETED]: 'Đã hoàn thành quyên góp',
+  [CausesStatus.EXECUTE]: 'Đang tiến hành từ thiện',
+  [CausesStatus.COMPLETED]: 'Đã hoàn thành chiến dịch',
   [CausesStatus.CANCELED]: 'Đã hủy'
 };
 
@@ -79,7 +97,8 @@ export const CausesTypeLabel = {
 export const CausesTypeOptions = Object.entries(CausesType)
   .map(([key, value]) => ({
     value,
-    label: CausesTypeLabel[value]
+    label: CausesTypeLabel[value],
+    key: key.toLowerCase()
   }));
 
 export const EventStatus = {
@@ -128,10 +147,12 @@ export const UnitLabel = {
 
 export const PaymentMethod = {
   VNPAY: 1,
-  VietQR: 2
+  VIETQR: 2,
+  SEPAY: 3,
 };
 
 export const PaymentMethodLabel = {
   [PaymentMethod.VNPAY]: 'VNPAY',
-  [PaymentMethod.VietQR]: 'VietQR'
+  [PaymentMethod.VIETQR]: 'VIETQR',
+  [PaymentMethod.SEPAY]: 'SEPAY'
 };

@@ -30,6 +30,7 @@
 import axios from 'axios';
 import { showSuccessAlert, showErrorAlert } from '@/utils/alertHelper.js';
 import { BASE_URL } from '@/utils/constants';
+import { PaymentMethod } from '@/enums/enums.js';
 
 export default {
     data() {
@@ -42,31 +43,50 @@ export default {
     async mounted() {
         try {
             const query = this.$route.query;
+            const paymentMethod = Number(query.paymentMethod);
 
-            const response = await axios.post(`${BASE_URL}/api/Donation/vnpay-return`, {
-                vnp_TxnRef: query.vnp_TxnRef,
-                vnp_ResponseCode: query.vnp_ResponseCode,
-                vnp_TransactionNo: query.vnp_TransactionNo
-            });
+            if (paymentMethod === PaymentMethod.VIETQR) {
+                // Handle VietQR transaction verification
+                const response = await axios.post(`${BASE_URL}/api/Donation/track-email-transaction?tradingCode=${query.tradingCode}`, {}, {
+                    withCredentials: true
+                });
 
-            const result = response.data;
+                const result = response.data;
 
-            if (result.status === 200 && result.responseData === true) {
-                this.statusMessage = 'Thanh toán thành công!';
-                this.detailMessage = (result.message || 'Cảm ơn bạn đã quyên góp!') + ' Hóa đơn đã được gửi vào Gmail của bạn.';
-
-                await showSuccessAlert('Thanh toán thành công', this.detailMessage);
+                if (result.status === 200 && result.responseData === true) {
+                    this.statusMessage = 'Thanh toán thành công!';
+                    this.detailMessage = (result.message || 'Cảm ơn bạn đã quyên góp!') + ' Hóa đơn đã được gửi vào Gmail của bạn.';
+                    await showSuccessAlert('Thanh toán thành công', this.detailMessage);
+                } else {
+                    this.statusMessage = 'Thanh toán thất bại';
+                    this.detailMessage = result.message || 'Không tìm thấy giao dịch khớp với mã giao dịch.';
+                    await showErrorAlert('Thanh toán thất bại', this.detailMessage);
+                }
             } else {
-                this.statusMessage = 'Thanh toán thất bại';
-                this.detailMessage = result.message || 'Thanh toán không thành công. Vui lòng thử lại.';
+                // Handle VNPay transaction verification
+                const response = await axios.post(`${BASE_URL}/api/Donation/vnpay-return`, {
+                    vnp_TxnRef: query.vnp_TxnRef,
+                    vnp_ResponseCode: query.vnp_ResponseCode,
+                    vnp_TransactionNo: query.vnp_TransactionNo
+                }, {
+                    withCredentials: true
+                });
 
-                await showErrorAlert('Thanh toán thất bại', this.detailMessage);
+                const result = response.data;
+
+                if (result.status === 200 && result.responseData === true) {
+                    this.statusMessage = 'Thanh toán thành công!';
+                    this.detailMessage = (result.message || 'Cảm ơn bạn đã quyên góp!') + ' Hóa đơn đã được gửi vào Gmail của bạn.';
+                    await showSuccessAlert('Thanh toán thành công', this.detailMessage);
+                } else {
+                    this.statusMessage = 'Thanh toán thất bại';
+                    this.detailMessage = result.message || 'Thanh toán không thành công. Vui lòng thử lại.';
+                    await showErrorAlert('Thanh toán thất bại', this.detailMessage);
+                }
             }
-
         } catch (error) {
             this.statusMessage = 'Lỗi hệ thống';
             this.detailMessage = 'Có lỗi xảy ra khi xác minh thanh toán.';
-
             await showErrorAlert('Lỗi', this.detailMessage);
         } finally {
             this.isLoading = false;
@@ -74,3 +94,84 @@ export default {
     }
 };
 </script>
+
+<style scoped>
+.donation-form {
+    position: relative;
+    padding: 40px;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.subtitle {
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.title {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.line-shape {
+    margin-top: 10px;
+}
+
+.btn-theme {
+    padding: 12px 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    text-transform: uppercase;
+}
+
+.btn-gradient {
+    background: linear-gradient(90deg, #fbc658, #f6a93b);
+    color: #111226;
+    border: none;
+}
+
+.btn-slide {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.icon-img {
+    width: 20px;
+    height: 20px;
+}
+
+.layer-style {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.layer-style1 {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.layer-style2 {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+@media (max-width: 768px) {
+    .donation-form {
+        padding: 20px;
+    }
+}
+</style>
