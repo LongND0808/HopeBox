@@ -122,6 +122,34 @@ export default {
   max-width: 1200px;
 }
 
+.management-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+  max-width: 1200px;
+}
+
+.management-item {
+  background-color: #2c2f3f;
+  padding: 20px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.management-item:hover {
+  background-color: #333;
+}
+
+.management-item .icon {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.management-item .info h3 {
+  margin-top: 0;
+}
+
 .charts-grid {
   display: flex;
   flex-direction: column;
@@ -131,6 +159,10 @@ export default {
 
 @media (max-width: 1024px) {
   .dashboard-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+  }
+  .management-grid {
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 15px;
   }
@@ -148,6 +180,10 @@ export default {
     padding: 10px;
   }
   .dashboard-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+  }
+  .management-grid {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 10px;
   }

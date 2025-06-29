@@ -80,8 +80,8 @@
                 teamMembers: [
                     {
                         imgSrc: "/images/team/1.jpg",
-                        name: "Harvey Harrington",
-                        designation: "Nhà thiết kế kỳ cựu",
+                        name: "Lê Hà Linh",
+                        designation: "Sinh viên ngành thiết kế",
                         socialLink: [
                             { icon: "icofont-facebook", url: "#" },
                             { icon: "icofont-skype", url: "#" },
@@ -90,8 +90,8 @@
                     },
                     {
                         imgSrc: "/images/team/2.jpg",
-                        name: "Alejandra Bobbitt",
-                        designation: "Tình nguyện viên nhiệt huyết",
+                        name: "Đăng Hoàng Nam",
+                        designation: "Thành viên của đoàn thanh niên Việt Nam",
                         socialLink: [
                             { icon: "icofont-facebook", url: "#" },
                             { icon: "icofont-skype", url: "#" },
@@ -100,8 +100,8 @@
                     },
                     {
                         imgSrc: "/images/team/3.jpg",
-                        name: "Sherika Hankins",
-                        designation: "Lập trình viên lâu năm",
+                        name: "Nguyễn Hoàng Phương Anh",
+                        designation: "Sinh viên ngành hội họa",
                         socialLink: [
                             { icon: "icofont-facebook", url: "#" },
                             { icon: "icofont-skype", url: "#" },

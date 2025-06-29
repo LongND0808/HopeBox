@@ -471,7 +471,7 @@ namespace HopeBox.Core.Service
             try
             {
                 var comments = await _commentRepository.GetListAsyncUntracked<Comment>(
-                    filter: c => c.BlogId == blogId && !c.IsDeleted && c.ParentCommentId == null,
+                    filter: c => c.BlogId == blogId && !c.IsDeleted,
                     orderBy: o => o.OrderByDescending(c => c.CreatedAt),
                     pageSize: pageSize,
                     pageNumber: pageIndex

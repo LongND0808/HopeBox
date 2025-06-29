@@ -1,10 +1,12 @@
 ﻿using HopeBox.Domain.DTOs;
+using HopeBox.Domain.Models;
 using HopeBox.Domain.RequestDto;
 using HopeBox.Domain.ResponseDto;
+using Microsoft.AspNetCore.Http;
 
 namespace HopeBox.Core.IService
 {
-    public interface IEventService
+    public interface IEventService : IBaseService<Event, EventDto>
     {
         Task<BaseResponseDto<EventDto>> GetNearestEventAsync();
         Task<BaseResponseDto<List<EventDto>>> GetUpcomingEventsAsync();
@@ -15,7 +17,9 @@ namespace HopeBox.Core.IService
         Task<BaseResponseDto<List<EventDto>>> GetEventsNearLocationAsync(double latitude, double longitude, double radiusKm);
         Task<BaseResponseDto<bool>> UpdateEventCoordinatesAsync(Guid eventId, double latitude, double longitude);
         Task<BaseResponseDto<List<OpenMapPlaceSuggestionDto>>> SearchPlacesAsync(string keyword, string? sessionToken = null);
-        Task<BaseResponseDto<OpenMapPlaceDetailDto>> GetPlaceDetailAsync(string placeId, string? sessionToken = null);
+        Task<BaseResponseDto<OpenMapPlaceDetailDto>> GetPlaceDetailAsync(string placeId, string? 
+            sessionToken = null);
         Task<BaseResponseDto<bool>> UpdateEventLocationByPlaceIdAsync(Guid eventId, string placeId);
+        Task<BaseResponseDto<string>> ChangeAvatarAsync(Guid guid, IFormFile file);
     }
 }

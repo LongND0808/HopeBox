@@ -1,4 +1,9 @@
-﻿using HopeBox.Core.Email;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+using HopeBox.Core.Email;
 using HopeBox.Core.IService;
 using HopeBox.Domain.Converter;
 using HopeBox.Domain.Dtos;
@@ -8,19 +13,14 @@ using HopeBox.Domain.ResponseDto;
 using HopeBox.Infrastructure.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using Org.BouncyCastle.Crypto.Macs;
-using System;
 using System.Collections.Generic;
-using System.Drawing.Printing;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
-using System.Runtime.InteropServices;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using static HopeBox.Common.Enum.Enumerate;
-using static System.Net.Mime.MediaTypeNames;
+using System.Text.Json;
+using HopeBox.Domain.VietQRModel;
+using HopeBox.Domain.SePayModel;
 
 namespace HopeBox.Core.Service
 {
@@ -33,6 +33,7 @@ namespace HopeBox.Core.Service
         private readonly IRepository<DonationReliefPackage> _donationReliefPackageRepository;
         private readonly IEmailService _emailService;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly HttpClient _httpClient;
 
         public DonationService(
             IConfiguration configuration,
@@ -53,47 +54,47 @@ namespace HopeBox.Core.Service
             _donationReliefPackageRepository = donationReliefPackageRepository;
             _emailService = emailService;
             _httpContextAccessor = httpContextAccessor;
+            _httpClient = new HttpClient();
         }
 
-        public async Task<BaseResponseDto<string>> CreateDonation(string userId, CreateDonationRequestDto donationDto)
+        private async Task<(BaseResponseDto<string>, Donation)> ValidateAndCreateDonationAsync(string userId, CreateDonationRequestDto donationDto)
         {
             try
             {
                 var cause = await _causeRepository.GetOneAsyncUntracked(filter: f => f.Id == donationDto.CauseId, selector: s => new { s.Id, s.Status });
                 if (cause == null)
                 {
-                    return new BaseResponseDto<string>
+                    return (new BaseResponseDto<string>
                     {
                         Status = 404,
                         Message = "Chiến dịch không tồn tại.",
                         ResponseData = null
-                    };
+                    }, null);
                 }
                 if (cause.Status == CauseStatus.Completed)
                 {
-                    return new BaseResponseDto<string>
+                    return (new BaseResponseDto<string>
                     {
                         Status = 400,
                         Message = "Chiến dịch đã hoàn thành, không thể quyên góp.",
                         ResponseData = null
-                    };
+                    }, null);
                 }
 
                 if (donationDto.ReliefPackages != null && donationDto.ReliefPackages.Any())
                 {
                     var packageIds = donationDto.ReliefPackages.Keys.ToList();
-
                     var packages = await _reliefPackageRepository.GetListAsyncUntracked<ReliefPackage>(
                         filter: f => packageIds.Contains(f.Id) && f.CauseId == donationDto.CauseId);
 
                     if (packages.Count() != packageIds.Count)
                     {
-                        return new BaseResponseDto<string>
+                        return (new BaseResponseDto<string>
                         {
                             Status = 400,
                             Message = "Một hoặc nhiều gói cứu trợ không tồn tại hoặc không thuộc chiến dịch này.",
                             ResponseData = null
-                        };
+                        }, null);
                     }
 
                     foreach (var pkg in packages)
@@ -102,91 +103,269 @@ namespace HopeBox.Core.Service
                         var availableQuantity = pkg.TargetQuantity - pkg.CurrentQuantity;
                         if (requestedQuantity <= 0 || requestedQuantity > availableQuantity)
                         {
-                            return new BaseResponseDto<string>
+                            return (new BaseResponseDto<string>
                             {
                                 Status = 400,
                                 Message = $"Số lượng yêu cầu cho gói {pkg.Name} không hợp lệ (còn lại {availableQuantity}).",
                                 ResponseData = null
-                            };
+                            }, null);
                         }
                     }
                 }
 
                 if (donationDto.DonationAmount < 0 || donationDto.Amount < donationDto.DonationAmount)
                 {
-                    return new BaseResponseDto<string>
+                    return (new BaseResponseDto<string>
                     {
                         Status = 400,
                         Message = "Số tiền quyên góp không hợp lệ.",
                         ResponseData = null
-                    };
+                    }, null);
                 }
 
-                using var transaction = await _repository.BeginTransactionAsync();
-
-                try
+                var donation = new Donation
                 {
-                    var donation = new Donation
-                    {
-                        Id = Guid.NewGuid(),
-                        Amount = donationDto.Amount,
-                        DonationAmount = donationDto.DonationAmount,
-                        CauseId = donationDto.CauseId,
-                        UserId = Guid.Parse(userId),
-                        DonationDate = DateTime.Now,
-                        PaymentMethod = donationDto.PaymentMethod,
-                        IsAnonymous = donationDto.IsAnonymous,
-                        Message = donationDto.Message,
-                        Status = DonationStatus.Pending,
-                        TransactionId = null,
-                        TradingCode = Guid.NewGuid().ToString("N")
-                    };
+                    Id = Guid.NewGuid(),
+                    Amount = donationDto.Amount,
+                    DonationAmount = donationDto.DonationAmount,
+                    CauseId = donationDto.CauseId,
+                    UserId = Guid.Parse(userId),
+                    DonationDate = DateTime.Now,
+                    PaymentMethod = donationDto.PaymentMethod,
+                    IsAnonymous = donationDto.IsAnonymous,
+                    Message = donationDto.Message,
+                    Status = DonationStatus.Pending,
+                    TransactionId = null,
+                    TradingCode = Guid.NewGuid().ToString("N").Substring(0, 12)
+                };
 
-                    await _repository.AddAsync(donation);
-
-                    if (donationDto.ReliefPackages != null && donationDto.ReliefPackages.Any())
-                    {
-                        foreach (var (packageId, quantity) in donationDto.ReliefPackages)
-                        {
-                            var package = await _reliefPackageRepository.GetOneAsync(filter: f => f.Id == packageId);
-
-                            package.CurrentQuantity += quantity;
-                            await _reliefPackageRepository.UpdateAsync(package);
-
-                            var donationReliefPackage = new DonationReliefPackage
-                            {
-                                DonationId = donation.Id,
-                                ReliefPackageId = packageId,
-                                Quantity = quantity
-                            };
-                            await _donationReliefPackageRepository.AddAsync(donationReliefPackage);
-                        }
-                    }
-
-                    string ipAddress = _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString() ?? "127.0.0.1";
-                    string paymentUrl = await CreateVNPayPaymentUrlAsync(donation.Id, ipAddress);
-
-                    await transaction.CommitAsync();
-
-                    return new BaseResponseDto<string>
-                    {
-                        Status = 200,
-                        Message = "Tạo đơn quyên góp thành công.",
-                        ResponseData = paymentUrl
-                    };
-                }
-                catch (Exception ex)
+                return (new BaseResponseDto<string>
                 {
-                    await transaction.RollbackAsync();
-                    throw new Exception($"Lỗi khi tạo đơn quyên góp: {ex.Message}", ex);
-                }
+                    Status = 200,
+                    Message = "Donation object created successfully.",
+                    ResponseData = donation.Id.ToString()
+                }, donation);
             }
             catch (Exception ex)
             {
-                return new BaseResponseDto<string>
+                return (new BaseResponseDto<string>
                 {
                     Status = 500,
                     Message = $"Lỗi server: {ex.Message}",
+                    ResponseData = null
+                }, null);
+            }
+        }
+
+        public async Task<BaseResponseDto<string>> CreateDonationVNPay(string userId, CreateDonationRequestDto donationDto)
+        {
+            if (donationDto.PaymentMethod != PaymentMethod.VNPay)
+            {
+                return new BaseResponseDto<string>
+                {
+                    Status = 400,
+                    Message = "Phương thức thanh toán không phải VNPay.",
+                    ResponseData = null
+                };
+            }
+
+            var (validationResult, donation) = await ValidateAndCreateDonationAsync(userId, donationDto);
+            if (validationResult.Status != 200)
+            {
+                return validationResult;
+            }
+
+            using var transaction = await _repository.BeginTransactionAsync();
+            try
+            {
+                await _repository.AddAsync(donation);
+
+                if (donationDto.ReliefPackages != null && donationDto.ReliefPackages.Any())
+                {
+                    foreach (var (packageId, quantity) in donationDto.ReliefPackages)
+                    {
+                        var package = await _reliefPackageRepository.GetOneAsync(filter: f => f.Id == packageId);
+                        package.CurrentQuantity += quantity;
+                        await _reliefPackageRepository.UpdateAsync(package);
+
+                        var donationReliefPackage = new DonationReliefPackage
+                        {
+                            DonationId = donation.Id,
+                            ReliefPackageId = packageId,
+                            Quantity = quantity
+                        };
+                        await _donationReliefPackageRepository.AddAsync(donationReliefPackage);
+                    }
+                }
+
+                string ipAddress = _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString() ?? "127.0.0.1";
+                string responseData = await CreateVNPayPaymentUrlAsync(donation.Id, ipAddress);
+
+                if (string.IsNullOrEmpty(responseData))
+                {
+                    await transaction.RollbackAsync();
+                    return new BaseResponseDto<string>
+                    {
+                        Status = 500,
+                        Message = "Không thể tạo URL thanh toán VNPay.",
+                        ResponseData = null
+                    };
+                }
+
+                await transaction.CommitAsync();
+
+                return new BaseResponseDto<string>
+                {
+                    Status = 200,
+                    Message = "Tạo đơn quyên góp thành công, chuyển hướng đến VNPay.",
+                    ResponseData = responseData
+                };
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return new BaseResponseDto<string>
+                {
+                    Status = 500,
+                    Message = $"Lỗi khi tạo đơn quyên góp: {ex.Message}",
+                    ResponseData = null
+                };
+            }
+        }
+
+        public async Task<BaseResponseDto<VietQrApiResponse>> CreateDonationVietQR(string userId, CreateDonationRequestDto donationDto)
+        {
+            if (donationDto.PaymentMethod != PaymentMethod.VietQR)
+            {
+                return new BaseResponseDto<VietQrApiResponse>
+                {
+                    Status = 400,
+                    Message = "Phương thức thanh toán không phải VietQR.",
+                    ResponseData = null
+                };
+            }
+
+            var (validationResult, donation) = await ValidateAndCreateDonationAsync(userId, donationDto);
+            if (validationResult.Status != 200)
+            {
+                return new BaseResponseDto<VietQrApiResponse>
+                {
+                    Status = validationResult.Status,
+                    Message = validationResult.Message,
+                    ResponseData = null
+                };
+            }
+
+            using var transaction = await _repository.BeginTransactionAsync();
+            try
+            {
+                await _repository.AddAsync(donation);
+
+                if (donationDto.ReliefPackages != null && donationDto.ReliefPackages.Any())
+                {
+                    foreach (var (packageId, quantity) in donationDto.ReliefPackages)
+                    {
+                        var package = await _reliefPackageRepository.GetOneAsync(filter: f => f.Id == packageId);
+                        package.CurrentQuantity += quantity;
+                        await _reliefPackageRepository.UpdateAsync(package);
+
+                        var donationReliefPackage = new DonationReliefPackage
+                        {
+                            DonationId = donation.Id,
+                            ReliefPackageId = packageId,
+                            Quantity = quantity
+                        };
+                        await _donationReliefPackageRepository.AddAsync(donationReliefPackage);
+                    }
+                }
+
+                var vietQrApiResponse = await CreateVietQRCodeAsync(donation);
+
+                await transaction.CommitAsync();
+
+                return new BaseResponseDto<VietQrApiResponse>
+                {
+                    Status = 200,
+                    Message = "Tạo đơn quyên góp thành công, hiển thị mã VietQR.",
+                    ResponseData = vietQrApiResponse
+                };
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return new BaseResponseDto<VietQrApiResponse>
+                {
+                    Status = 500,
+                    Message = $"Lỗi khi tạo đơn quyên góp: {ex.Message}",
+                    ResponseData = null
+                };
+            }
+        }
+
+        public async Task<BaseResponseDto<SePayQRResponse>> CreateDonationSePay(string userId, CreateDonationRequestDto donationDto)
+        {
+            if (donationDto.PaymentMethod != PaymentMethod.SePay)
+            {
+                return new BaseResponseDto<SePayQRResponse>
+                {
+                    Status = 400,
+                    Message = "Phương thức thanh toán không phải SePay.",
+                    ResponseData = null
+                };
+            }
+
+            var (validationResult, donation) = await ValidateAndCreateDonationAsync(userId, donationDto);
+            if (validationResult.Status != 200)
+            {
+                return new BaseResponseDto<SePayQRResponse>
+                {
+                    Status = validationResult.Status,
+                    Message = validationResult.Message,
+                    ResponseData = null
+                };
+            }
+
+            using var transaction = await _repository.BeginTransactionAsync();
+            try
+            {
+                await _repository.AddAsync(donation);
+
+                if (donationDto.ReliefPackages != null && donationDto.ReliefPackages.Any())
+                {
+                    foreach (var (packageId, quantity) in donationDto.ReliefPackages)
+                    {
+                        var package = await _reliefPackageRepository.GetOneAsync(filter: f => f.Id == packageId);
+                        package.CurrentQuantity += quantity;
+                        await _reliefPackageRepository.UpdateAsync(package);
+
+                        var donationReliefPackage = new DonationReliefPackage
+                        {
+                            DonationId = donation.Id,
+                            ReliefPackageId = packageId,
+                            Quantity = quantity
+                        };
+                        await _donationReliefPackageRepository.AddAsync(donationReliefPackage);
+                    }
+                }
+
+                var sePayQrResponse = await CreateSePayQRCodeAsync(donation);
+
+                await transaction.CommitAsync();
+
+                return new BaseResponseDto<SePayQRResponse>
+                {
+                    Status = 200,
+                    Message = "Tạo đơn quyên góp thành công, hiển thị mã SePay QR.",
+                    ResponseData = sePayQrResponse
+                };
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return new BaseResponseDto<SePayQRResponse>
+                {
+                    Status = 500,
+                    Message = $"Lỗi khi tạo đơn quyên góp: {ex.Message}",
                     ResponseData = null
                 };
             }
@@ -205,7 +384,7 @@ namespace HopeBox.Core.Service
             string vnp_Url = _configuration["VNPay:Url"];
             string returnUrl = _configuration["VNPay:ReturnUrl"] + $"?donationId={donationId}";
 
-            string vnp_TxnRef = donation.TradingCode ?? Guid.NewGuid().ToString("N");
+            string vnp_TxnRef = donation.TradingCode ?? Guid.NewGuid().ToString("N").Substring(0, 12);
             donation.TradingCode ??= vnp_TxnRef;
 
             string vnp_OrderInfo = $"Thanh toán ủng hộ";
@@ -235,6 +414,62 @@ namespace HopeBox.Core.Service
             string paymentUrl = vnp_Url + "?" + string.Join("&", payParams.Select(kvp => $"{kvp.Key}={WebUtility.UrlEncode(kvp.Value)}"));
 
             return paymentUrl;
+        }
+
+        private async Task<VietQrApiResponse> CreateVietQRCodeAsync(Donation donation)
+        {
+            var vietQrUrl = "https://api.vietqr.io/v2/generate";
+            var clientId = _configuration["VietQR:ClientId"];
+            var apiKey = _configuration["VietQR:ApiKey"];
+
+            var requestBody = new
+            {
+                accountNo = "4271000599",
+                accountName = "NGUYEN DANG LONG",
+                acqId = 970418,
+                amount = (int)donation.Amount,
+                addInfo = donation.TradingCode.Length > 25 ? donation.TradingCode.Substring(0, 25) : donation.TradingCode,
+                format = "text",
+                template = "print"
+            };
+
+            using var request = new HttpRequestMessage(HttpMethod.Post, vietQrUrl);
+            request.Headers.Add("x-client-id", clientId);
+            request.Headers.Add("x-api-key", apiKey);
+            request.Content = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var vietQrData = JsonSerializer.Deserialize<VietQrApiResponse>(responseContent);
+
+            if (vietQrData?.code != "00" || vietQrData?.data?.qrDataURL == null)
+            {
+                throw new Exception($"Không thể tạo mã VietQR: {vietQrData?.desc ?? "Lỗi không xác định"}");
+            }
+
+            return vietQrData;
+        }
+
+        private async Task<SePayQRResponse> CreateSePayQRCodeAsync(Donation donation)
+        {
+            var sepayQrUrl = "https://qr.sepay.vn/img";
+            var accountNumber = "4271000599"; 
+            var bankCode = "BIDV"; 
+            var amount = ((int)donation.Amount).ToString();
+            var description = donation.TradingCode.Length > 25 ? donation.TradingCode.Substring(0, 25) : donation.TradingCode; 
+
+            var queryParams = $"?bank={bankCode}&acc={accountNumber}&template=compact&amount={amount}&des={Uri.EscapeDataString(description)}";
+            var qrUrl = $"{sepayQrUrl}{queryParams}";
+
+            return new SePayQRResponse
+            {
+                ImageUrl = qrUrl,
+                BankName = "Ngân hàng BIDV",
+                AccountName = "NGUYEN DANG LONG",
+                TradingCode = donation.TradingCode
+            };
         }
 
         public async Task<BaseResponseDto<bool>> HandleVNPayReturnAsync(VNPayReturnRequestDto dto)
@@ -317,6 +552,257 @@ namespace HopeBox.Core.Service
             };
         }
 
+        public async Task<BaseResponseDto<bool>> TrackEmailTransactionAsync(string tradingCode)
+        {
+            try
+            {
+                var donation = await _repository.GetOneAsync(filter: f => f.TradingCode == tradingCode && f.Status == DonationStatus.Pending);
+                if (donation == null)
+                {
+                    return new BaseResponseDto<bool>
+                    {
+                        Status = 404,
+                        Message = "Không tìm thấy đơn quyên góp hoặc đơn đã được xử lý.",
+                        ResponseData = false
+                    };
+                }
+
+                var emails = await _emailService.GetEmailsFromSenderAsync("bidvsmartbanking@bidv.com.vn");
+                bool transactionFound = false;
+
+                foreach (var email in emails)
+                {
+                    if (email.Subject.Contains("Thông báo giao dịch thành công") && email.ReceivedDate >= donation.DonationDate)
+                    {
+                        var match = Regex.Match(email.Body, @"Nội dung giao dịch:\s*([^\n]+)");
+                        if (match.Success && match.Groups[1].Value.Trim().Contains(donation.TradingCode))
+                        {
+                            var amountMatch = Regex.Match(email.Body, @"Số tiền thực tế người thụ hưởng nhận được:\s*([\d,]+)\s*VND");
+                            if (amountMatch.Success)
+                            {
+                                var emailAmount = decimal.Parse(amountMatch.Groups[1].Value.Replace(",", ""));
+                                if (emailAmount == donation.Amount)
+                                {
+                                    transactionFound = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (!transactionFound)
+                {
+                    return new BaseResponseDto<bool>
+                    {
+                        Status = 400,
+                        Message = "Không tìm thấy giao dịch khớp với mã giao dịch.",
+                        ResponseData = false
+                    };
+                }
+
+                using var transaction = await _repository.BeginTransactionAsync();
+                try
+                {
+                    donation.Status = DonationStatus.Paid;
+                    await _repository.UpdateAsync(donation);
+
+                    var cause = await _causeRepository.GetOneAsync(filter: f => f.Id == donation.CauseId);
+                    cause.CurrentAmount += donation.Amount;
+                    if (cause.CurrentAmount >= cause.TargetAmount)
+                    {
+                        cause.Status = CauseStatus.Completed;
+                        await SendThankYouEmailsAndCertificatesAsync(cause);
+                    }
+                    await _causeRepository.UpdateAsync(cause);
+
+                    var user = await _userRepository.GetOneAsync(filter: f => f.Id == donation.UserId);
+                    if (user == null)
+                    {
+                        return new BaseResponseDto<bool>
+                        {
+                            Status = 404,
+                            Message = "Không tìm thấy người dùng.",
+                            ResponseData = false
+                        };
+                    }
+
+                    user.Point += (int)Math.Round(donation.Amount / 100000);
+                    await _userRepository.UpdateAsync(user);
+
+                    var donationReliefPackages = await _donationReliefPackageRepository.GetListAsync(
+                        filter: f => f.DonationId == donation.Id);
+                    string subject = "Hóa đơn quyên góp - HopeBox";
+                    string body = GenerateInvoiceHtml(donation, user.FullName, user.Email, cause.Title, donationReliefPackages.ToList());
+                    await _emailService.SendEmailAsync(user.Email, subject, body);
+
+                    await transaction.CommitAsync();
+
+                    return new BaseResponseDto<bool>
+                    {
+                        Status = 200,
+                        Message = "Xác nhận giao dịch VietQR thành công.",
+                        ResponseData = true
+                    };
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    return new BaseResponseDto<bool>
+                    {
+                        Status = 500,
+                        Message = $"Lỗi khi xử lý giao dịch: {ex.Message}",
+                        ResponseData = false
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponseDto<bool>
+                {
+                    Status = 500,
+                    Message = $"Lỗi server: {ex.Message}",
+                    ResponseData = false
+                };
+            }
+        }
+
+        public async Task<BaseResponseDto<bool>> TrackSePayTransactionAsync(string tradingCode, decimal amount)
+        {
+            try
+            {
+                var donation = await _repository.GetOneAsync(filter: f => f.TradingCode == tradingCode && f.Status == DonationStatus.Pending);
+                if (donation == null)
+                {
+                    return new BaseResponseDto<bool>
+                    {
+                        Status = 404,
+                        Message = "Không tìm thấy đơn quyên góp hoặc đơn đã được xử lý.",
+                        ResponseData = false
+                    };
+                }
+
+                var sepayApiUrl = "https://my.sepay.vn/userapi/transactions/list";
+                var apiToken = _configuration["SePay:ApiToken"] ?? "7SV05AWLIQHNIIODHRMKFX0R6X4NHABY8DDZBW4TEUJQLYZQGJL5GPKKVMNOMHCM";
+                var accountNumber = "4271000599";
+                var amountIn = amount.ToString("F2"); // Format as string with 2 decimal places
+
+                // Set time range for recent transactions (e.g., last 1 hour)
+                var transactionDateMin = donation.DonationDate.AddHours(-1).ToString("yyyy-MM-dd HH:mm:ss");
+                var transactionDateMax = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+                var queryParams = $"?account_number={accountNumber}&amount_in={amountIn}&transaction_date_min={transactionDateMin}&transaction_date_max={transactionDateMax}";
+
+                using var request = new HttpRequestMessage(HttpMethod.Get, sepayApiUrl + queryParams);
+                request.Headers.Add("Authorization", $"Bearer {apiToken}");
+
+                var response = await _httpClient.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var sepayResponse = JsonSerializer.Deserialize<SePayApiResponse>(responseContent);
+
+                if (sepayResponse?.status != 200 || sepayResponse.transactions == null)
+                {
+                    return new BaseResponseDto<bool>
+                    {
+                        Status = 500,
+                        Message = $"Không thể truy vấn giao dịch từ SePay: {sepayResponse?.error ?? "Lỗi không xác định"}",
+                        ResponseData = false
+                    };
+                }
+
+                // Check for transaction with matching TradingCode in transaction_content
+                var matchingTransaction = sepayResponse.transactions
+                    .FirstOrDefault(t => t.transaction_content?.Contains(tradingCode, StringComparison.OrdinalIgnoreCase) == true);
+
+                if (matchingTransaction == null)
+                {
+                    return new BaseResponseDto<bool>
+                    {
+                        Status = 400,
+                        Message = "Không tìm thấy giao dịch khớp với mã giao dịch.",
+                        ResponseData = false
+                    };
+                }
+
+                // Verify amount_in matches donation amount
+                if (decimal.Parse(matchingTransaction.amount_in) != amount)
+                {
+                    return new BaseResponseDto<bool>
+                    {
+                        Status = 400,
+                        Message = "Số tiền giao dịch không khớp.",
+                        ResponseData = false
+                    };
+                }
+
+                using var transaction = await _repository.BeginTransactionAsync();
+                try
+                {
+                    donation.Status = DonationStatus.Paid;
+                    await _repository.UpdateAsync(donation);
+
+                    var cause = await _causeRepository.GetOneAsync(filter: f => f.Id == donation.CauseId);
+                    cause.CurrentAmount += donation.Amount;
+                    if (cause.CurrentAmount >= cause.TargetAmount)
+                    {
+                        cause.Status = CauseStatus.Completed;
+                        await SendThankYouEmailsAndCertificatesAsync(cause);
+                    }
+                    await _causeRepository.UpdateAsync(cause);
+
+                    var user = await _userRepository.GetOneAsync(filter: f => f.Id == donation.UserId);
+                    if (user == null)
+                    {
+                        return new BaseResponseDto<bool>
+                        {
+                            Status = 404,
+                            Message = "Không tìm thấy người dùng.",
+                            ResponseData = false
+                        };
+                    }
+
+                    user.Point += (int)Math.Round(donation.Amount / 100000);
+                    await _userRepository.UpdateAsync(user);
+
+                    var donationReliefPackages = await _donationReliefPackageRepository.GetListAsync(
+                        filter: f => f.DonationId == donation.Id);
+                    string subject = "Hóa đơn quyên góp - HopeBox";
+                    string body = GenerateInvoiceHtml(donation, user.FullName, user.Email, cause.Title, donationReliefPackages.ToList());
+                    await _emailService.SendEmailAsync(user.Email, subject, body);
+
+                    await transaction.CommitAsync();
+
+                    return new BaseResponseDto<bool>
+                    {
+                        Status = 200,
+                        Message = "Xác nhận giao dịch SePay thành công.",
+                        ResponseData = true
+                    };
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    return new BaseResponseDto<bool>
+                    {
+                        Status = 500,
+                        Message = $"Lỗi khi xử lý giao dịch: {ex.Message}",
+                        ResponseData = false
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponseDto<bool>
+                {
+                    Status = 500,
+                    Message = $"Lỗi server: {ex.Message}",
+                    ResponseData = false
+                };
+            }
+        }
+
         private async Task SendThankYouEmailsAndCertificatesAsync(Cause cause)
         {
             var donations = await _repository.GetListAsyncUntracked<Donation>(filter: f => f.CauseId == cause.Id && f.Status == DonationStatus.Paid);
@@ -327,19 +813,16 @@ namespace HopeBox.Core.Service
                 var user = users.FirstOrDefault(u => u.Id == donation.UserId);
                 if (user == null) continue;
 
-                // Check certificate eligibility
                 bool isEligibleForCertificate = donation.Amount >= 10000000 || donation.Amount >= (cause.TargetAmount * (decimal)0.1);
 
                 if (isEligibleForCertificate)
                 {
-                    // Send certificate only
                     string certificateSubject = "Chứng nhận đóng góp - HopeBox";
                     string certificateHtml = GenerateCertificateHtml(donation, user.FullName, cause.Title);
                     await _emailService.SendEmailAsync(user.Email, certificateSubject, certificateHtml);
                 }
                 else
                 {
-                    // Send thank-you email only
                     string thankYouSubject = "Cảm ơn bạn đã ủng hộ chiến dịch - HopeBox";
                     string thankYouBody = $@"
                         <p>Xin chào {user.FullName},</p>
@@ -564,7 +1047,7 @@ namespace HopeBox.Core.Service
                         </div>
                         <div>
                             <h3>TÀI KHOẢN NGÂN HÀNG</h3>
-                            <p>Tên công ty: HopeBox<br>Số tài khoản: 09238812374912313<br>Tên ngân hàng: BIDV</p>
+                            <p>Tên công ty: HopeBox<br>Số tài khoản: 4271000599<br>Tên ngân hàng: BIDV</p>
                         </div>
                         <div class=""footer"">
                             <p><a href=""https://hopebox.long2003-2014.workers.dev/"">HopeBox</a></p>
@@ -582,4 +1065,6 @@ namespace HopeBox.Core.Service
             return BitConverter.ToString(bytes).Replace("-", "").ToLower();
         }
     }
+
+   
 }

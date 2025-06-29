@@ -301,8 +301,7 @@ namespace HopeBox.Core.Service
             }
         }
 
-        public async Task<BaseResponseDto<BasePagingResponseDto<CauseWithVolunteerStatusDto>>> GetCauseByFilterWithUserStatus(
-    CauseFilterWithUserRequestDto request)
+        public async Task<BaseResponseDto<BasePagingResponseDto<CauseWithVolunteerStatusDto>>> GetCauseByFilterWithUserStatus(CauseFilterWithUserRequestDto request)
         {
             try
             {

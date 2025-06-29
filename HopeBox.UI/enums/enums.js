@@ -147,10 +147,12 @@ export const UnitLabel = {
 
 export const PaymentMethod = {
   VNPAY: 1,
-  VietQR: 2
+  VIETQR: 2,
+  SEPAY: 3,
 };
 
 export const PaymentMethodLabel = {
   [PaymentMethod.VNPAY]: 'VNPAY',
-  [PaymentMethod.VietQR]: 'VietQR'
+  [PaymentMethod.VIETQR]: 'VIETQR',
+  [PaymentMethod.SEPAY]: 'SEPAY'
 };

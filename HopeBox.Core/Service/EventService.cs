@@ -1,5 +1,6 @@
 ﻿using HopeBox.Common.Enum;
 using HopeBox.Core.IService;
+using HopeBox.Core.R2Storage;
 using HopeBox.Domain.Converter;
 using HopeBox.Domain.DTOs;
 using HopeBox.Domain.Models;
@@ -7,31 +8,30 @@ using HopeBox.Domain.RequestDto;
 using HopeBox.Domain.ResponseDto;
 using HopeBox.Infrastructure.Repository;
 using LinqKit;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace HopeBox.Core.Service
 {
-    public class EventService : IEventService
+    public class EventService : BaseService<Event, EventDto>, IEventService
     {
-        protected readonly IRepository<Event> _repository;
-        protected readonly IConverter<Event, EventDto> _converter;
         private readonly IConverter<Event, EventDonationDetailDto> _eventDetailConverter;
         protected readonly IOpenMapService _openMapService;
         protected readonly ILogger<EventService> _logger;
+        private readonly IR2StorageService _r2StorageService;
 
         public EventService(
             IRepository<Event> repository,
             IConverter<Event, EventDto> converter,
             IConverter<Event, EventDonationDetailDto> eventDetailConverter,
             IOpenMapService openMapService,
-            ILogger<EventService> logger)
+            ILogger<EventService> logger, IR2StorageService r2StorageService) : base(repository, converter)
         {
-            _repository = repository;
-            _converter = converter;
             _eventDetailConverter = eventDetailConverter;
             _openMapService = openMapService;
             _logger = logger;
+            _r2StorageService = r2StorageService;
         }
 
         #region GetNearestEvent
@@ -625,6 +625,56 @@ namespace HopeBox.Core.Service
             }
 
             return dto;
+        }
+        #endregion
+
+        #region ChangeAvatarAsync
+        public async Task<BaseResponseDto<string>> ChangeAvatarAsync(Guid eventId, IFormFile file)
+        {
+            try
+            {
+                if (file == null || file.Length == 0)
+                {
+                    return new BaseResponseDto<string>
+                    {
+                        Status = 400,
+                        Message = "Tệp ảnh không hợp lệ",
+                        ResponseData = null
+                    };
+                }
+
+                var eventEntity = await _repository.GetByIdAsync(eventId);
+                if (eventEntity == null)
+                {
+                    return new BaseResponseDto<string>
+                    {
+                        Status = 404,
+                        Message = "Sự kiện không tồn tại",
+                        ResponseData = null
+                    };
+                }
+
+                var fileUrl = await _r2StorageService.UploadFileAsync(file, "event-image", eventId.ToString());
+
+                eventEntity.BannerImage = fileUrl;
+                await _repository.UpdateAsync(eventEntity);
+
+                return new BaseResponseDto<string>
+                {
+                    Status = 200,
+                    Message = "Tải ảnh banner sự kiện thành công",
+                    ResponseData = fileUrl + "?v=" + DateTime.Now.Ticks.ToString()
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponseDto<string>
+                {
+                    Status = 500,
+                    Message = $"Lỗi hệ thống: {ex.Message}",
+                    ResponseData = null
+                };
+            }
         }
         #endregion
     }

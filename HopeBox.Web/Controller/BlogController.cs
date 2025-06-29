@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using HopeBox.Domain.Dtos;
 using HopeBox.Core.IService;
 using HopeBox.Domain.RequestDto;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HopeBox.Web.Controller
 {
@@ -32,30 +33,38 @@ namespace HopeBox.Web.Controller
         }
 
         [HttpPost("{blogId}/like")]
-        public async Task<IActionResult> LikeBlog(Guid blogId, [FromBody] Guid userId)
+        [Authorize]
+        public async Task<IActionResult> LikeBlog(Guid blogId)
         {
-            var result = await _blogService.LikeBlogAsync(blogId, userId);
+            var userId = User.FindFirst("id")?.Value;
+            var result = await _blogService.LikeBlogAsync(blogId, Guid.Parse(userId));
             return StatusCode(result.Status, result);
         }
 
         [HttpDelete("{blogId}/like")]
-        public async Task<IActionResult> UnlikeBlog(Guid blogId, [FromBody] Guid userId)
+        [Authorize]
+        public async Task<IActionResult> UnlikeBlog(Guid blogId)
         {
-            var result = await _blogService.UnlikeBlogAsync(blogId, userId);
+            var userId = User.FindFirst("id")?.Value;
+            var result = await _blogService.UnlikeBlogAsync(blogId, Guid.Parse(userId));
             return StatusCode(result.Status, result);
         }
 
         [HttpPost("{blogId}/share")]
         public async Task<IActionResult> ShareBlog(Guid blogId, [FromBody] ShareBlogRequestDto request)
         {
-            var result = await _blogService.ShareBlogAsync(blogId, request.UserId, request.Platform, request.Caption);
+            var userId = User.FindFirst("id").Value;
+            var result = await _blogService.ShareBlogAsync(blogId, Guid.Parse(userId), request.Platform, request.Caption);
             return StatusCode(result.Status, result);
         }
 
         [HttpPost("{blogId}/comment")]
+        [Authorize]
         public async Task<IActionResult> AddComment(Guid blogId, [FromBody] AddCommentRequestDto request)
         {
-            var result = await _blogService.AddCommentAsync(blogId, request.UserId, request.Content, request.ParentCommentId);
+            var userId = User.FindFirst("id")?.Value;
+            var result = await _blogService.AddCommentAsync(blogId, Guid.Parse(userId),
+                request.Content, request.ParentCommentId);
             return StatusCode(result.Status, result);
         }
 

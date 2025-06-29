@@ -16,13 +16,31 @@
         <li>
           <nuxt-link to="/management-users" active-class="active-link">
             <i class="fas fa-users"></i>
-            <p>Thông tin người dùng</p>
+            <span>Quản lý người dùng</span>
+          </nuxt-link>
+        </li>
+        <li>
+          <nuxt-link to="/management-events" active-class="active-link">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Quản lý sự kiện</span>
+          </nuxt-link>
+        </li>
+        <li>
+          <nuxt-link to="/management-blogs" active-class="active-link">
+            <i class="fas fa-blog"></i>
+            <span>Quản lý blog</span>
           </nuxt-link>
         </li>
         <li>
           <nuxt-link to="/management-causes" active-class="active-link">
             <i class="fas fa-hand-holding-heart"></i>
             <p>Thông tin chiến dịch</p>
+          </nuxt-link>
+        </li>
+        <li>
+          <nuxt-link to="/management-volunteers" active-class="active-link">
+            <i class="fas fa-hands-helping"></i>
+            <p>Thông tin tình nguyện viên</p>
           </nuxt-link>
         </li>
       </ul>

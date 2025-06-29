@@ -446,30 +446,30 @@
   }
   
   .btn {
+    background: none;
     border: none;
-    padding: 8px;
-    border-radius: 6px;
+    color: white;
     cursor: pointer;
-    transition: background-color 0.3s;
+    font-size: 1rem;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background 0.3s;
   }
-  
+
   .edit {
-    background-color: #36a3f7;
-    color: white;
-    margin-right: 8px;
+    color: #ffc107;
   }
-  
+
   .edit:hover {
-    background-color: #2e8bd4;
+    background: rgba(255, 193, 7, 0.2);
   }
-  
+
   .delete {
-    background-color: #ef8157;
-    color: white;
+    color: #dc3545;
   }
-  
+
   .delete:hover {
-    background-color: #d66f4b;
+    background: rgba(220, 53, 69, 0.2);
   }
   
   .modal-overlay援助

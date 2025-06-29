@@ -5,8 +5,8 @@
                 <div class="col-lg-12">
                     <div class="volunteer-form">
                         <div class="section-title">
-                            <h5 class="subtitle">Join With Us</h5>
-                            <h2 class="title">If You Interest! You Can Join With Us <span>As A Volunteer.</span></h2>
+                            <h5 class="subtitle">Tham gia cùng chúng tôi</h5>
+                            <h2 class="title">Nếu bạn quan tâm! Bạn có thể tham gia cùng chúng tôi <span>như một tình nguyện viên.</span></h2>
                             <p>Tham gia cùng chúng tôi để tạo ra những thay đổi tích cực trong cộng đồng. Hãy đăng ký
                                 làm tình nguyện viên cho các chiến dịch mà bạn quan tâm.</p>
                         </div>

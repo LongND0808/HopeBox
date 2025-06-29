@@ -82,8 +82,9 @@ namespace HopeBox.Common.Enum
 
         public enum PaymentMethod
         {
-            VNPay = 0,
-            VietQR = 1
+            VNPay = 1,
+            VietQR = 2,
+            SePay = 3
         }
 
         public enum InkindDonationStatus

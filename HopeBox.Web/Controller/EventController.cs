@@ -1,19 +1,22 @@
-﻿using HopeBox.Core.IService;
+using HopeBox.Core.IService;
 using HopeBox.Domain.DTOs;
 using HopeBox.Domain.RequestDto;
 using HopeBox.Domain.ResponseDto;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using HopeBox.Domain.Models;
+using HopeBox.Domain.Converter;
 
 namespace HopeBox.Web.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EventController : ControllerBase
+    public class EventController : BaseController<Event, EventDto>
     {
-        protected readonly IEventService _eventService;
-
-        public EventController(IEventService eventService)
+        private readonly IEventService _eventService;
+        public EventController(IBaseService<Event, EventDto> baseService, IEventService eventService) : base(baseService)
         {
+
             _eventService = eventService;
         }
 
@@ -39,8 +42,7 @@ namespace HopeBox.Web.Controller
         }
 
         [HttpGet("get-events-donation-detail-by-filter")]
-        public async Task<ActionResult<BaseResponseDto<BasePagingResponseDto<EventDonationDetailDto>>>> GetEventsDonationDetailByFilter(
-    [FromQuery] EventFilterRequestDto request)
+        public async Task<ActionResult<BaseResponseDto<BasePagingResponseDto<EventDonationDetailDto>>>> GetEventsDonationDetailByFilter([FromQuery] EventFilterRequestDto request)
         {
             var result = await _eventService.GetEventsDonationDetailByFilterAsync(request);
             return StatusCode(result.Status, result);
@@ -122,6 +124,17 @@ namespace HopeBox.Web.Controller
             {
                 return BadRequest(new { message = "OpenMap API failed", error = ex.Message });
             }
+        }
+
+        [HttpPost("change-image")]
+        [Authorize(Roles = "Admin")]
+        public async Task<BaseResponseDto<string>> ChangeImage(string eventId, IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return new BaseResponseDto<string> { Status = 400, Message = "File rỗng" };
+
+            var result = await _eventService.ChangeAvatarAsync(Guid.Parse(eventId), file);
+            return result;
         }
     }
 }

@@ -1,8 +1,10 @@
-﻿namespace HopeBox.Domain.DTOs
+﻿using HopeBox.Domain.Dtos;
+using HopeBox.Domain.ResponseDto;
+
+namespace HopeBox.Domain.DTOs
 {
-    public class EventDto
+    public class EventDto : BaseModelDto
     {
-        public Guid Id { get; set; }
         public string? Title { get; set; }
         public string? Description { get; set; }
         public string? Detail { get; set; }
