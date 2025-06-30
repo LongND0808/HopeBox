@@ -1,4 +1,4 @@
-using Duende.IdentityModel;
+﻿using Duende.IdentityModel;
 using HopeBox.Core.Config;
 using HopeBox.Core.Email;
 using HopeBox.Core.IAspModelService;
@@ -16,6 +16,8 @@ using HopeBox.Infrastructure.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
@@ -157,14 +159,15 @@ using (var scope = app.Services.CreateScope())
 
     try
     {
-        dbContext.Database.Migrate();
-        logger.LogInformation("Database migration applied successfully.");
+        await dbContext.Database.MigrateAsync();
+        logger.LogInformation("Đã tạo lại bảng & __EFMigrationsHistory thành công.");
     }
     catch (Exception ex)
     {
-        logger.LogError(ex, "An error occurred while resetting and migrating the database.");
+        logger.LogError(ex, "Lỗi khi reset database.");
     }
 }
+
 
 
 app.Run();

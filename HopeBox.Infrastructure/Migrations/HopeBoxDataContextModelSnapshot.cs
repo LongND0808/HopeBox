@@ -1162,7 +1162,7 @@ namespace HopeBox.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("HopeBox.Domain.Models.ReliefPackage", "ReliefPackage")
-                        .WithMany()
+                        .WithMany("DonationReliefPackages")
                         .HasForeignKey("ReliefPackageId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -1485,6 +1485,8 @@ namespace HopeBox.Infrastructure.Migrations
 
             modelBuilder.Entity("HopeBox.Domain.Models.ReliefPackage", b =>
                 {
+                    b.Navigation("DonationReliefPackages");
+
                     b.Navigation("PackageItems");
                 });
 

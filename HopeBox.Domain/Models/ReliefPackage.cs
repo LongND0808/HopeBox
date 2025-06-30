@@ -27,5 +27,6 @@ namespace HopeBox.Domain.Models
 
         public virtual Cause? Cause { get; set; }
         public virtual ICollection<ReliefPackageItem>? PackageItems { get; set; }
+        public virtual ICollection<DonationReliefPackage>? DonationReliefPackages { get; set; }
     }
 }

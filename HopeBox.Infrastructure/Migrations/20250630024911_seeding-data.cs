@@ -1,13 +1,15 @@
-﻿using HopeBox.Domain.Models;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Migrations;
 using static HopeBox.Common.Enum.Enumerate;
-using static System.Net.Mime.MediaTypeNames;
+
+#nullable disable
 
 namespace HopeBox.Infrastructure.Migrations
 {
+    /// <inheritdoc />
     public partial class seedingdata : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             // User and Role IDs
@@ -46,15 +48,6 @@ namespace HopeBox.Infrastructure.Migrations
             // Event IDs
             var eventCharityId = Guid.NewGuid();
             var eventBloodDriveId = Guid.NewGuid();
-            var eventWorkshopId = Guid.NewGuid();
-
-            // Media IDs
-            var mediaIds = new[]
-            {
-                Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(),
-                Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(),
-                Guid.NewGuid(), Guid.NewGuid()
-            };
 
             // Blog IDs
             var blogIds = new Guid[15];
@@ -64,11 +57,11 @@ namespace HopeBox.Infrastructure.Migrations
             }
 
             // ReliefItem IDs
-            var reliefItemWaterId = Guid.NewGuid();
-            var reliefItemFoodId = Guid.NewGuid();
-            var reliefItemMedicineId = Guid.NewGuid();
-            var reliefItemBookId = Guid.NewGuid();
-            var reliefItemClothingId = Guid.NewGuid();
+            var reliefItemIds = new Guid[35];
+            for (int i = 0; i < 35; i++)
+            {
+                reliefItemIds[i] = Guid.NewGuid();
+            }
 
             // ReliefPackage IDs
             var reliefPackageWaterId = Guid.NewGuid();
@@ -104,10 +97,7 @@ namespace HopeBox.Infrastructure.Migrations
             // Insert Organizations
             migrationBuilder.InsertData(
                 table: "Organizations",
-                columns: new[]
-                {
-                    "Id", "Name", "Email", "PhoneNumber", "Address", "City", "Description", "Website", "Verified", "CreatedAt"
-                },
+                columns: new[] { "Id", "Name", "Email", "PhoneNumber", "Address", "City", "Description", "Website", "Verified", "CreatedAt" },
                 values: new object[,]
                 {
                     {
@@ -121,7 +111,6 @@ namespace HopeBox.Infrastructure.Migrations
                         "https://vietcare.org", true, DateTime.UtcNow
                     }
                 });
-
 
             // Insert Users
             migrationBuilder.InsertData(
@@ -166,70 +155,56 @@ namespace HopeBox.Infrastructure.Migrations
                         "Lê Văn Hùng", "101 Unity Avenue, Hue", new DateTime(1992, 7, 10), (int)Gender.Male,
                         null, 20, (int)UserStatus.Pending, orgId2,
                         0, false, null, false
+                    },
+                    {
+                        userManagerId1, "Phạm Thị Hồng", "PHAM THI HONG", "manager1_org1@hopebox.org", "MANAGER1_ORG1@HOPEBOX.ORG", true,
+                        new PasswordHasher<IdentityUser<Guid>>().HashPassword(null, "Manager@123"),
+                        Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "0900000001", true,
+                        "Phạm Thị Hồng", "12 Charity Street, HCMC", new DateTime(1987, 2, 20), (int)Gender.Female,
+                        "images/user/manager1.jpg", 90, (int)UserStatus.Active, orgId1,
+                        0, false, null, false
+                    },
+                    {
+                        userManagerId2, "Ngô Văn Tài", "NGO VAN TAI", "manager2_org1@hopebox.org", "MANAGER2_ORG1@HOPEBOX.ORG", true,
+                        new PasswordHasher<IdentityUser<Guid>>().HashPassword(null, "Manager@123"),
+                        Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "0900000002", true,
+                        "Ngô Văn Tài", "88 Love Road, HCMC", new DateTime(1990, 11, 5), (int)Gender.Male,
+                        "images/user/manager2.jpg", 85, (int)UserStatus.Active, orgId1,
+                        0, false, null, false
+                    },
+                    {
+                        userManagerId3, "Đinh Thị Mai", "DINH THI MAI", "manager3_org1@hopebox.org", "MANAGER3_ORG1@HOPEBOX.ORG", true,
+                        new PasswordHasher<IdentityUser<Guid>>().HashPassword(null, "Manager@123"),
+                        Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "0900000003", true,
+                        "Đinh Thị Mai", "99 Giving Blvd, HCMC", new DateTime(1992, 8, 12), (int)Gender.Female,
+                        "images/user/manager3.jpg", 88, (int)UserStatus.Active, orgId1,
+                        0, false, null, false
+                    },
+                    {
+                        userManagerId4, "Trần Quốc Hưng", "TRAN QUOC HUNG", "manager1_org2@hopebox.org", "MANAGER1_ORG2@HOPEBOX.ORG", true,
+                        new PasswordHasher<IdentityUser<Guid>>().HashPassword(null, "Manager@123"),
+                        Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "0900000004", true,
+                        "Trần Quốc Hưng", "10 Peace Alley, Hue", new DateTime(1985, 3, 10), (int)Gender.Male,
+                        "images/user/manager4.jpg", 92, (int)UserStatus.Active, orgId2,
+                        0, false, null, false
+                    },
+                    {
+                        userManagerId5, "Lê Thị Thu Hà", "LE THI THU HA", "manager2_org2@hopebox.org", "MANAGER2_ORG2@HOPEBOX.ORG", true,
+                        new PasswordHasher<IdentityUser<Guid>>().HashPassword(null, "Manager@123"),
+                        Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "0900000005", true,
+                        "Lê Thị Thu Hà", "55 Volunteer Rd, Hue", new DateTime(1993, 6, 25), (int)Gender.Female,
+                        "images/user/manager5.jpg", 87, (int)UserStatus.Active, orgId2,
+                        0, false, null, false
+                    },
+                    {
+                        userManagerId6, "Nguyễn Văn Khải", "NGUYEN VAN KHAI", "manager3_org2@hopebox.org", "MANAGER3_ORG2@HOPEBOX.ORG", true,
+                        new PasswordHasher<IdentityUser<Guid>>().HashPassword(null, "Manager@123"),
+                        Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "0900000006", true,
+                        "Nguyễn Văn Khải", "102 Unity Blvd, Hue", new DateTime(1991, 4, 18), (int)Gender.Male,
+                        "images/user/manager6.jpg", 89, (int)UserStatus.Active, orgId2,
+                        0, false, null, false
                     }
                 });
-
-            migrationBuilder.InsertData(
-            table: "AspNetUsers",
-            columns: new[]
-            {
-                "Id", "UserName", "NormalizedUserName", "Email", "NormalizedEmail", "EmailConfirmed",
-                "PasswordHash", "SecurityStamp", "ConcurrencyStamp", "PhoneNumber", "PhoneNumberConfirmed",
-                "FullName", "Address", "DateOfBirth", "Gender", "AvatarUrl", "Point", "UserStatus",
-                "OrganizationId", "AccessFailedCount", "LockoutEnabled", "LockoutEnd", "TwoFactorEnabled"
-            },
-            values: new object[,]
-            {
-                {
-                    userManagerId1, "Phạm Thị Hồng", "PHAM THI HONG", "manager1_org1@hopebox.org", "MANAGER1_ORG1@HOPEBOX.ORG", true,
-                    new PasswordHasher<IdentityUser<Guid>>().HashPassword(null, "Manager@123"),
-                    Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "0900000001", true,
-                    "Phạm Thị Hồng", "12 Charity Street, HCMC", new DateTime(1987, 2, 20), (int)Gender.Female,
-                    "images/user/manager1.jpg", 90, (int)UserStatus.Active, orgId1,
-                    0, false, null, false
-                },
-                {
-                    userManagerId2, "Ngô Văn Tài", "NGO VAN TAI", "manager2_org1@hopebox.org", "MANAGER2_ORG1@HOPEBOX.ORG", true,
-                    new PasswordHasher<IdentityUser<Guid>>().HashPassword(null, "Manager@123"),
-                    Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "0900000002", true,
-                    "Ngô Văn Tài", "88 Love Road, HCMC", new DateTime(1990, 11, 5), (int)Gender.Male,
-                    "images/user/manager2.jpg", 85, (int)UserStatus.Active, orgId1,
-                    0, false, null, false
-                },
-                {
-                    userManagerId3, "Đinh Thị Mai", "DINH THI MAI", "manager3_org1@hopebox.org", "MANAGER3_ORG1@HOPEBOX.ORG", true,
-                    new PasswordHasher<IdentityUser<Guid>>().HashPassword(null, "Manager@123"),
-                    Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "0900000003", true,
-                    "Đinh Thị Mai", "99 Giving Blvd, HCMC", new DateTime(1992, 8, 12), (int)Gender.Female,
-                    "images/user/manager3.jpg", 88, (int)UserStatus.Active, orgId1,
-                    0, false, null, false
-                },
-
-                {
-                    userManagerId4, "Trần Quốc Hưng", "TRAN QUOC HUNG", "manager1_org2@hopebox.org", "MANAGER1_ORG2@HOPEBOX.ORG", true,
-                    new PasswordHasher<IdentityUser<Guid>>().HashPassword(null, "Manager@123"),
-                    Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "0900000004", true,
-                    "Trần Quốc Hưng", "10 Peace Alley, Hue", new DateTime(1985, 3, 10), (int)Gender.Male,
-                    "images/user/manager4.jpg", 92, (int)UserStatus.Active, orgId2,
-                    0, false, null, false
-                },
-                {
-                    userManagerId5, "Lê Thị Thu Hà", "LE THI THU HA", "manager2_org2@hopebox.org", "MANAGER2_ORG2@HOPEBOX.ORG", true,
-                    new PasswordHasher<IdentityUser<Guid>>().HashPassword(null, "Manager@123"),
-                    Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "0900000005", true,
-                    "Lê Thị Thu Hà", "55 Volunteer Rd, Hue", new DateTime(1993, 6, 25), (int)Gender.Female,
-                    "images/user/manager5.jpg", 87, (int)UserStatus.Active, orgId2,
-                    0, false, null, false
-                },
-                {
-                    userManagerId6, "Nguyễn Văn Khải", "NGUYEN VAN KHAI", "manager3_org2@hopebox.org", "MANAGER3_ORG2@HOPEBOX.ORG", true,
-                    new PasswordHasher<IdentityUser<Guid>>().HashPassword(null, "Manager@123"),
-                    Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "0900000006", true,
-                    "Nguyễn Văn Khải", "102 Unity Blvd, Hue", new DateTime(1991, 4, 18), (int)Gender.Male,
-                    "images/user/manager6.jpg", 89, (int)UserStatus.Active, orgId2,
-                    0, false, null, false
-                }
-            });
 
             // Insert Roles
             migrationBuilder.InsertData(
@@ -358,7 +333,6 @@ namespace HopeBox.Infrastructure.Migrations
                 });
 
             // Insert Events
-
             migrationBuilder.InsertData(
                 table: "Events",
                 columns: new[]
@@ -366,19 +340,19 @@ namespace HopeBox.Infrastructure.Migrations
                     "Id", "Title", "Description", "Detail", "BannerImage",
                     "StartDate", "EndDate", "Location",
                     "Latitude", "Longitude", "FormattedAddress",
-                    "TargetAmount", "CurrentAmount", "Status", "CreatedBy", "OrganizationId"
+                    "CauseId", "CreatedBy", "OrganizationId", "Status"
                 },
-                    columnTypes: new[]
+                columnTypes: new[]
                 {
-                    "uniqueidentifier", "nvarchar(200)", "nvarchar(2000)", "nvarchar(max)",
-                    "nvarchar(max)", "datetime2", "datetime2", "nvarchar(1000)",
-                    "decimal(10,8)", "decimal(11,8)", "nvarchar(500)",
-                    "decimal(18,2)", "decimal(18,2)", "int", "uniqueidentifier", "uniqueidentifier"
+                    "uuid", "character varying(200)", "character varying(2000)", "character varying(10000)",
+                    "text", "timestamp without time zone", "timestamp without time zone", "character varying(1000)",
+                    "decimal(10,8)", "decimal(11,8)", "character varying(500)",
+                    "uuid", "uuid", "uuid", "integer"
                 },
                 values: new object[,]
                 {
                     {
-                        Guid.NewGuid(),
+                        eventCharityId,
                         "Ngày hội Trao Quà Cho Trẻ Em Nghèo Hà Nội",
                         "Ngày hội Trao Quà Cho Trẻ Em Nghèo Hà Nội là chương trình thiện nguyện đầy ý nghĩa, nhằm mang đến niềm vui và sự động viên thiết thực cho các em nhỏ có hoàn cảnh khó khăn tại các vùng ngoại thành Hà Nội. Sự kiện không chỉ là dịp các em nhận được sách vở, quà tặng và bữa ăn dinh dưỡng mà còn là nơi các em giao lưu, tham gia các hoạt động văn nghệ, trò chơi tập thể cùng hơn 200 tình nguyện viên và các nhà hảo tâm.",
                         "Sự kiện “Ngày hội Trao Quà Cho Trẻ Em Nghèo Hà Nội” sẽ diễn ra vào ngày 12/7/2025 tại Trường Tiểu học A, Hoài Đức, Hà Nội, dự kiến chào đón hơn 500 em nhỏ thuộc các hộ gia đình khó khăn trên địa bàn. Tại đây, mỗi em sẽ được nhận một phần quà bao gồm sách vở, đồ dùng học tập, sữa, bánh kẹo và một suất ăn trưa dinh dưỡng. Ngoài hoạt động trao quà, chương trình còn tổ chức các tiết mục văn nghệ do chính các em và tình nguyện viên biểu diễn, các trò chơi vận động, đố vui nhận thưởng, giúp các em giao lưu, tự tin hơn và có thêm nhiều kỷ niệm đẹp. Ban tổ chức bố trí đội ngũ y tế hỗ trợ, đảm bảo an toàn và sức khỏe cho tất cả người tham dự. Sự kiện cũng tạo cơ hội cho cộng đồng cùng chung tay chia sẻ, lan tỏa yêu thương và tiếp thêm động lực để các em nhỏ vượt qua khó khăn, vươn lên trong học tập cũng như cuộc sống.",
@@ -389,14 +363,13 @@ namespace HopeBox.Infrastructure.Migrations
                         21.0285,
                         105.8542,
                         "Hoài Đức, Hà Nội, Việt Nam",
-                        50000000m,
-                        0m,
-                        (int)EventStatus.Ongoing,
+                        causeEducationId,
                         userManagerId1,
-                        orgId1
+                        orgId1,
+                        (int)EventStatus.Ongoing
                     },
                     {
-                        Guid.NewGuid(),
+                        eventBloodDriveId,
                         "Ngày hội Hiến Máu Nhân Đạo Đà Nẵng",
                         "Ngày hội Hiến Máu Nhân Đạo Đà Nẵng - Một hành trình ý nghĩa lan tỏa yêu thương, kêu gọi toàn thể cộng đồng Đà Nẵng cùng chung tay giúp đỡ những bệnh nhân cần máu. Sự kiện diễn ra tại Nhà Văn hóa Thiếu nhi Đà Nẵng với không gian rộng rãi, trang thiết bị hiện đại, tạo điều kiện cho người tham gia có trải nghiệm tốt nhất.",
                         "Thời gian diễn ra từ 8h sáng đến 17h chiều ngày 20/7/2025. Mỗi người tham gia hiến máu sẽ được nhận quà tặng, giấy chứng nhận và phần ăn nhẹ. Ban tổ chức bố trí đội ngũ y tế túc trực, hỗ trợ tư vấn sức khỏe, theo dõi sát sao toàn bộ quá trình hiến máu. Đây là sự kiện thường niên, mong muốn kết nối các tình nguyện viên, nhóm máu hiếm và các tổ chức xã hội tại Đà Nẵng.",
@@ -407,11 +380,10 @@ namespace HopeBox.Infrastructure.Migrations
                         16.0544,
                         108.2022,
                         "Hải Châu, Đà Nẵng, Việt Nam",
-                        0m,
-                        0m,
-                        (int)EventStatus.Ongoing,
+                        causeHealthId,
                         userManagerId1,
-                        orgId1
+                        orgId1,
+                        (int)EventStatus.Ongoing
                     }
                 });
 
@@ -420,25 +392,26 @@ namespace HopeBox.Infrastructure.Migrations
                 table: "Blogs",
                 columns: new[]
                 {
-                    "Id", "Title", "Content", "Description", "ImageUrl", "IsPublished", "CreatedAt", "CreatedBy", "UpdatedAt"
+                    "Id", "Title", "Content", "Description", "ImageUrl", "IsPublished", "CreatedAt", "CreatedBy", "UpdatedAt",
+                    "CommentCount", "LikeCount", "ShareCount", "ViewCount", "MetaDescription", "MetaKeywords", "ReadingTime", "Slug", "Tags"
                 },
                 values: new object[,]
                 {
-                    { blogIds[0], "Giúp Trẻ Em Vùng Cao Có Nước Sạch", "Nội dung chi tiết về việc xây dựng giếng khoan và lọc nước sạch cho các bản làng vùng cao...", "Tổng quan về dự án nước sạch cho trẻ em vùng cao.", "/images/blog/water.jpg", true, DateTime.UtcNow.AddDays(-10), userAdminId, null },
-                    { blogIds[1], "Chương Trình Hỗ Trợ Dinh Dưỡng", "Chi tiết chương trình cung cấp thực phẩm dinh dưỡng cho trẻ em suy dinh dưỡng vùng cao...", "Giới thiệu chương trình hỗ trợ dinh dưỡng.", "/images/blog/food.jpg", false, DateTime.UtcNow.AddDays(-8), userAdminId, null },
-                    { blogIds[2], "Xây Dựng Lớp Học Vùng Núi", "Thông tin về dự án xây trường học mới cho trẻ em ở vùng sâu vùng xa...", "Cải thiện điều kiện học tập cho trẻ em vùng núi.", "/images/blog/education.jpg", true, DateTime.UtcNow.AddDays(-15), userAdminId, null },
-                    { blogIds[3], "Tặng Quần Áo Ấm Cho Trẻ Em", "Chiến dịch quyên góp và phân phát áo ấm cho trẻ em vùng lạnh...", "Mang đến hơi ấm mùa đông cho trẻ em vùng cao.", "/images/blog/clothing.jpg", true, DateTime.UtcNow.AddDays(-12), userAdminId, null },
-                    { blogIds[4], "Cung Cấp Sách Giáo Khoa", "Hỗ trợ sách vở và dụng cụ học tập cho học sinh nghèo...", "Nâng cao chất lượng giáo dục thông qua hỗ trợ vật chất.", "/images/blog/books.jpg", true, DateTime.UtcNow.AddDays(-10), userAdminId, null },
-                    { blogIds[5], "Khám Sức Khỏe Định Kỳ", "Chương trình khám sức khỏe miễn phí cho trẻ em...", "Quan tâm sức khỏe định kỳ cho trẻ em vùng xa.", "/images/blog/health.jpg", false, DateTime.UtcNow.AddDays(-7), userAdminId, null },
-                    { blogIds[6], "Trại Hè Tình Nguyện", "Tổ chức trại hè bổ ích và vui chơi cho trẻ em khó khăn...", "Mang đến nụ cười và niềm vui cho trẻ em mùa hè.", "/images/blog/camp.jpg", true, DateTime.UtcNow.AddDays(-20), userAdminId, null },
-                    { blogIds[7], "Hướng Nghiệp Cho Học Sinh", "Chia sẻ kiến thức nghề nghiệp và định hướng tương lai...", "Đồng hành cùng các em trong hành trình tương lai.", "/images/blog/career.jpg", false, DateTime.UtcNow.AddDays(-5), userAdminId, null },
-                    { blogIds[8], "Học Bổng Cho Học Sinh Nghèo", "Chương trình học bổng dành cho học sinh có hoàn cảnh khó khăn...", "Khuyến khích học sinh tiếp tục học tập.", "/images/blog/scholarship.jpg", true, DateTime.UtcNow.AddDays(-25), userAdminId, null },
-                    { blogIds[9], "Ngày Hội Đọc Sách", "Khơi dậy niềm yêu thích đọc sách trong trẻ em...", "Góp phần xây dựng văn hóa đọc cho thế hệ tương lai.", "/images/blog/reading.jpg", true, DateTime.UtcNow.AddDays(-7), userAdminId, null },
-                    { blogIds[10], "Trồng Cây Xanh Ở Trường Học", "Chiến dịch trồng cây xanh tại các điểm trường vùng cao...", "Cải thiện môi trường sống và học tập cho trẻ em.", "/images/blog/trees.jpg", true, DateTime.UtcNow.AddDays(-4), userAdminId, null },
-                    { blogIds[11], "Khóa Học Kỹ Năng Sống", "Giáo dục kỹ năng sống giúp học sinh tự tin và giao tiếp...", "Giáo dục toàn diện cho học sinh.", "/images/blog/skills.jpg", true, DateTime.UtcNow.AddDays(-3), userAdminId, null },
-                    { blogIds[12], "Hỗ Trợ Nhà Ở Vùng Cao", "Chi tiết về chương trình xây dựng nhà ở an toàn cho các gia đình nghèo...", "Mang lại mái ấm bền vững cho cộng đồng.", "/images/blog/shelter.jpg", true, DateTime.UtcNow.AddDays(-2), userAdminId, null },
-                    { blogIds[13], "Chương Trình Y Tế Cộng Đồng", "Tổ chức khám sức khỏe và tư vấn y tế miễn phí...", "Cải thiện sức khỏe cộng đồng vùng sâu vùng xa.", "/images/blog/healthcare.jpg", false, DateTime.UtcNow.AddDays(-6), userAdminId, null },
-                    { blogIds[14], "Ngày Hội Môi Trường", "Sự kiện tuyên truyền bảo vệ môi trường và trồng cây xanh...", "Lan tỏa ý thức bảo vệ môi trường trong cộng đồng.", "/images/blog/environment.jpg", true, DateTime.UtcNow.AddDays(-1), userAdminId, null }
+                    { blogIds[0], "Giúp Trẻ Em Vùng Cao Có Nước Sạch", "Nội dung chi tiết về việc xây dựng giếng khoan và lọc nước sạch cho các bản làng vùng cao...", "Tổng quan về dự án nước sạch cho trẻ em vùng cao.", "/images/blog/water.jpg", true, DateTime.UtcNow.AddDays(-10), userAdminId, null, 0, 0, 0, 0, null, null, 0, null, null },
+                    { blogIds[1], "Chương Trình Hỗ Trợ Dinh Dưỡng", "Chi tiết chương trình cung cấp thực phẩm dinh dưỡng cho trẻ em suy dinh dưỡng vùng cao...", "Giới thiệu chương trình hỗ trợ dinh dưỡng.", "/images/blog/food.jpg", false, DateTime.UtcNow.AddDays(-8), userAdminId, null, 0, 0, 0, 0, null, null, 0, null, null },
+                    { blogIds[2], "Xây Dựng Lớp Học Vùng Núi", "Thông tin về dự án xây trường học mới cho trẻ em ở vùng sâu vùng xa...", "Cải thiện điều kiện học tập cho trẻ em vùng núi.", "/images/blog/education.jpg", true, DateTime.UtcNow.AddDays(-15), userAdminId, null, 0, 0, 0, 0, null, null, 0, null, null },
+                    { blogIds[3], "Tặng Quần Áo Ấm Cho Trẻ Em", "Chiến dịch quyên góp và phân phát áo ấm cho trẻ em vùng lạnh...", "Mang đến hơi ấm mùa đông cho trẻ em vùng cao.", "/images/blog/clothing.jpg", true, DateTime.UtcNow.AddDays(-12), userAdminId, null, 0, 0, 0, 0, null, null, 0, null, null },
+                    { blogIds[4], "Cung Cấp Sách Giáo Khoa", "Hỗ trợ sách vở và dụng cụ học tập cho học sinh nghèo...", "Nâng cao chất lượng giáo dục thông qua hỗ trợ vật chất.", "/images/blog/books.jpg", true, DateTime.UtcNow.AddDays(-10), userAdminId, null, 0, 0, 0, 0, null, null, 0, null, null },
+                    { blogIds[5], "Khám Sức Khỏe Định Kỳ", "Chương trình khám sức khỏe miễn phí cho trẻ em...", "Quan tâm sức khỏe định kỳ cho trẻ em vùng xa.", "/images/blog/health.jpg", false, DateTime.UtcNow.AddDays(-7), userAdminId, null, 0, 0, 0, 0, null, null, 0, null, null },
+                    { blogIds[6], "Trại Hè Tình Nguyện", "Tổ chức trại hè bổ ích và vui chơi cho trẻ em khó khăn...", "Mang đến nụ cười và niềm vui cho trẻ em mùa hè.", "/images/blog/camp.jpg", true, DateTime.UtcNow.AddDays(-20), userAdminId, null , 0, 0, 0, 0, null, null, 0, null, null },
+                    { blogIds[7], "Hướng Nghiệp Cho Học Sinh", "Chia sẻ kiến thức nghề nghiệp và định hướng tương lai...", "Đồng hành cùng các em trong hành trình tương lai.", "/images/blog/career.jpg", false, DateTime.UtcNow.AddDays(-5), userAdminId, null, 0, 0, 0, 0, null, null, 0, null, null },
+                    { blogIds[8], "Học Bổng Cho Học Sinh Nghèo", "Chương trình học bổng dành cho học sinh có hoàn cảnh khó khăn...", "Khuyến khích học sinh tiếp tục học tập.", "/images/blog/scholarship.jpg", true, DateTime.UtcNow.AddDays(-25), userAdminId, null, 0, 0, 0, 0, null, null, 0, null, null },
+                    { blogIds[9], "Ngày Hội Đọc Sách", "Khơi dậy niềm yêu thích đọc sách trong trẻ em...", "Góp phần xây dựng văn hóa đọc cho thế hệ tương lai.", "/images/blog/reading.jpg", true, DateTime.UtcNow.AddDays(-7), userAdminId, null, 0, 0, 0, 0, null, null, 0, null, null },
+                    { blogIds[10], "Trồng Cây Xanh Ở Trường Học", "Chiến dịch trồng cây xanh tại các điểm trường vùng cao...", "Cải thiện môi trường sống và học tập cho trẻ em.", "/images/blog/trees.jpg", true, DateTime.UtcNow.AddDays(-4), userAdminId, null, 0, 0, 0, 0, null, null, 0, null, null },
+                    { blogIds[11], "Khóa Học Kỹ Năng Sống", "Giáo dục kỹ năng sống giúp học sinh tự tin và giao tiếp...", "Giáo dục toàn diện cho học sinh.", "/images/blog/skills.jpg", true, DateTime.UtcNow.AddDays(-3), userAdminId, null, 0, 0, 0, 0, null, null, 0, null, null },
+                    { blogIds[12], "Hỗ Trợ Nhà Ở Vùng Cao", "Chi tiết về chương trình xây dựng nhà ở an toàn cho các gia đình nghèo...", "Mang lại mái ấm bền vững cho cộng đồng.", "/images/blog/shelter.jpg", true, DateTime.UtcNow.AddDays(-2), userAdminId, null, 0, 0, 0, 0, null, null, 0, null, null },
+                    { blogIds[13], "Chương Trình Y Tế Cộng Đồng", "Tổ chức khám sức khỏe và tư vấn y tế miễn phí...", "Cải thiện sức khỏe cộng đồng vùng sâu vùng xa.", "/images/blog/healthcare.jpg", false, DateTime.UtcNow.AddDays(-6), userAdminId, null, 0, 0, 0, 0, null, null, 0, null, null },
+                    { blogIds[14], "Ngày Hội Môi Trường", "Sự kiện tuyên truyền bảo vệ môi trường và trồng cây xanh...", "Lan tỏa ý thức bảo vệ môi trường trong cộng đồng.", "/images/blog/environment.jpg", true, DateTime.UtcNow.AddDays(-1), userAdminId, null, 0, 0, 0, 0, null, null, 0, null, null }
                 });
 
             // Insert ReliefItems
@@ -447,22 +420,52 @@ namespace HopeBox.Infrastructure.Migrations
                 columns: new[] { "Id", "ItemName", "Unit", "UnitPrice" },
                 values: new object[,]
                 {
-                    { reliefItemWaterId, "Bình lọc nước", (int) Unit.Bottle, 150000m },
-                    { reliefItemFoodId, "Gói thực phẩm", (int) Unit.Pack, 100000m },
-                    { reliefItemMedicineId, "Hộp thuốc y tế", (int) Unit.Box, 200000m },
-                    { reliefItemBookId, "Bộ sách giáo khoa", (int) Unit.Pack, 50000m },
-                    { reliefItemClothingId, "Bộ quần áo ấm", (int) Unit.Pack, 80000m }
+                    { reliefItemIds[0], "Bình lọc nước", (int)Unit.Bottle, 150000m },
+                    { reliefItemIds[1], "Gói thực phẩm", (int)Unit.Pack, 100000m },
+                    { reliefItemIds[2], "Hộp thuốc y tế", (int)Unit.Box, 200000m },
+                    { reliefItemIds[3], "Bộ sách giáo khoa", (int)Unit.Pack, 50000m },
+                    { reliefItemIds[4], "Bộ quần áo ấm", (int)Unit.Pack, 80000m },
+                    { reliefItemIds[5], "Gạo", (int)Unit.kg, 15000m },
+                    { reliefItemIds[6], "Mì gói", (int)Unit.Pack, 25000m },
+                    { reliefItemIds[7], "Nước suối", (int)Unit.Bottle, 10000m },
+                    { reliefItemIds[8], "Dầu ăn", (int)Unit.Bottle, 35000m },
+                    { reliefItemIds[9], "Nước tương", (int)Unit.Bottle, 20000m },
+                    { reliefItemIds[10], "Đường", (int)Unit.kg, 18000m },
+                    { reliefItemIds[11], "Muối", (int)Unit.kg, 7000m },
+                    { reliefItemIds[12], "Bánh quy", (int)Unit.Pack, 22000m },
+                    { reliefItemIds[13], "Sữa hộp", (int)Unit.Carton, 120000m },
+                    { reliefItemIds[14], "Bột ngọt", (int)Unit.Bag, 15000m },
+                    { reliefItemIds[15], "Nước rửa tay", (int)Unit.Bottle, 25000m },
+                    { reliefItemIds[16], "Khẩu trang", (int)Unit.Box, 40000m },
+                    { reliefItemIds[17], "Xà phòng", (int)Unit.Box, 30000m },
+                    { reliefItemIds[18], "Trứng", (int)Unit.Box, 35000m },
+                    { reliefItemIds[19], "Thịt hộp", (int)Unit.Box, 50000m },
+                    { reliefItemIds[20], "Cháo ăn liền", (int)Unit.Pack, 17000m },
+                    { reliefItemIds[21], "Tã giấy", (int)Unit.Bag, 90000m },
+                    { reliefItemIds[22], "Kem đánh răng", (int)Unit.Box, 15000m },
+                    { reliefItemIds[23], "Bàn chải", (int)Unit.Pack, 12000m },
+                    { reliefItemIds[24], "Nước lau sàn", (int)Unit.Bottle, 35000m },
+                    { reliefItemIds[25], "Giấy vệ sinh", (int)Unit.Pack, 20000m },
+                    { reliefItemIds[26], "Khăn ướt", (int)Unit.Pack, 18000m },
+                    { reliefItemIds[27], "Ngũ cốc", (int)Unit.Box, 45000m },
+                    { reliefItemIds[28], "Bánh mì", (int)Unit.Bag, 25000m },
+                    { reliefItemIds[29], "Rau củ sấy", (int)Unit.Bag, 30000m },
+                    { reliefItemIds[30], "Nước trái cây", (int)Unit.Bottle, 28000m },
+                    { reliefItemIds[31], "Hạt nêm", (int)Unit.Bag, 22000m },
+                    { reliefItemIds[32], "Chanh", (int)Unit.kg, 12000m },
+                    { reliefItemIds[33], "Ớt", (int)Unit.kg, 10000m },
+                    { reliefItemIds[34], "Mì Ý", (int)Unit.Pack, 27000m }
                 });
 
             // Insert ReliefPackages
             migrationBuilder.InsertData(
                 table: "ReliefPackages",
-                columns: new[] { "Id", "CauseId", "Name", "Description" },
+                columns: new[] { "Id", "CauseId", "Name", "Description", "CurrentQuantity", "TargetQuantity", "ExtraFee", "Image", "TotalPrice" },
                 values: new object[,]
                 {
-                    { reliefPackageWaterId, causeWaterId, "Gói Nước Sạch", "Gói hỗ trợ nước sạch cho hộ gia đình" },
-                    { reliefPackageFoodId, causeFoodId, "Gói Thực Phẩm", "Gói thực phẩm dinh dưỡng cho trẻ em" },
-                    { reliefPackageMedicineId, causeMedicineId, "Gói Y Tế", "Gói thuốc và vật tư y tế cơ bản" }
+                    { reliefPackageWaterId, causeWaterId, "Gói Nước Sạch", "Gói hỗ trợ nước sạch cho hộ gia đình", 0, 100, 0m, null, 0m },
+                    { reliefPackageFoodId, causeFoodId, "Gói Thực Phẩm", "Gói thực phẩm dinh dưỡng cho trẻ em", 0, 100, 0m, null, 0m },
+                    { reliefPackageMedicineId, causeMedicineId, "Gói Y Tế", "Gói thuốc và vật tư y tế cơ bản", 0, 100, 0m, null, 0m }
                 });
 
             // Insert ReliefPackageItems
@@ -471,20 +474,20 @@ namespace HopeBox.Infrastructure.Migrations
                 columns: new[] { "Id", "ReliefPackageId", "ReliefItemId", "Quantity" },
                 values: new object[,]
                 {
-                    { Guid.NewGuid(), reliefPackageWaterId, reliefItemWaterId, 2.0 },
-                    { Guid.NewGuid(), reliefPackageFoodId, reliefItemFoodId, 5.0 },
-                    { Guid.NewGuid(), reliefPackageMedicineId, reliefItemMedicineId, 3.0 }
+                    { Guid.NewGuid(), reliefPackageWaterId, reliefItemIds[0], 2.0 },
+                    { Guid.NewGuid(), reliefPackageFoodId, reliefItemIds[1], 5.0 },
+                    { Guid.NewGuid(), reliefPackageMedicineId, reliefItemIds[2], 3.0 }
                 });
 
             // Insert Donations
             migrationBuilder.InsertData(
                 table: "Donations",
-                columns: new[] { "Id", "UserId", "CauseId", "Amount", "DonationDate", "PaymentMethod", "TransactionId", "TradingCode", "Status" },
+                columns: new[] { "Id", "UserId", "CauseId", "Amount", "DonationDate", "PaymentMethod", "TransactionId", "TradingCode", "Status", "DonationAmount", "IsAnonymous", "Message" },
                 values: new object[,]
                 {
-                    { donation1Id, userCustomer1Id, causeWaterId, 1000000m, DateTime.UtcNow.AddDays(-5), (int)PaymentMethod.VNPay, "TXN12345", "CODE123", 1 },
-                    { donation2Id, userCustomer2Id, causeFoodId, 500000m, DateTime.UtcNow.AddDays(-3), (int)PaymentMethod.VietQR, "TXN67890", "CODE456", 1 },
-                    { donation3Id, userCustomer1Id, causeEducationId, 2000000m, DateTime.UtcNow.AddDays(-2), (int)PaymentMethod.VNPay, "TXN54321", "CODE789", 1 }
+                    { donation1Id, userCustomer1Id, causeWaterId, 1000000m, DateTime.UtcNow.AddDays(-5), (int)PaymentMethod.VNPay, "TXN12345", "CODE123", 1, 1000000m, false, null },
+                    { donation2Id, userCustomer2Id, causeFoodId, 500000m, DateTime.UtcNow.AddDays(-3), (int)PaymentMethod.VietQR, "TXN67890", "CODE456", 1, 500000m, false, null },
+                    { donation3Id, userCustomer1Id, causeEducationId, 2000000m, DateTime.UtcNow.AddDays(-2), (int)PaymentMethod.VNPay, "TXN54321", "CODE789", 1, 2000000m, false, null }
                 });
 
             // Insert DonationReliefPackages
@@ -550,9 +553,10 @@ namespace HopeBox.Infrastructure.Migrations
                 });
         }
 
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            // No need to implement Down as per requirement
+
         }
     }
 }
