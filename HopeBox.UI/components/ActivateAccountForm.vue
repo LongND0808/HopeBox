@@ -61,11 +61,11 @@
                         await showSuccessAlert('Thành công', 'Tài khoản đã được kích hoạt!')
                         this.$router.push('/login')
                     } else {
-                        this.message = response.data.message || 'Kích hoạt thất bại.'
+                        await showErrorAlert('Thất bại', response.data.message || 'Kích hoạt thất bại.')
                         this.isError = true
                     }
                 } catch (err) {
-                    this.message = err.response?.data?.message || 'Lỗi khi kích hoạt tài khoản.'
+                    await showErrorAlert('Thất bại', response.data.message || 'Kích hoạt thất bại.')
                     this.isError = true
                 }
             },
