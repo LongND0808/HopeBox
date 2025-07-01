@@ -832,37 +832,38 @@ namespace HopeBox.Core.Service
         private string GenerateCertificateHtml(Donation donation, string userName, string causeTitle)
         {
             return $@"
-            <!DOCTYPE html>
-            <html lang=""vi"">
-            <head>
-                <meta charset=""UTF-8"">
-                <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
-                <title>Chứng nhận đóng góp – HopeBox</title>
-                <link href=""https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro&display=swap"" rel=""stylesheet"">
-            </head>
-            <body style=""margin: 0; padding: 0; font-family: 'Be Vietnam Pro', sans-serif; background-color: #ffffff;"">
-                <div style=""position: relative; width: 1123px; height: 794px; margin: 0 auto; background-image: url('https://pub-dc597dd9f97242ceb1fc0179075fabfa.r2.dev/certificate.png'); background-size: cover; background-repeat: no-repeat; padding: 60px 80px; box-sizing: border-box; color: #111111; text-align: center;"">
-                    <div style=""text-align: right; font-size: 16px; line-height: 1.5;"">
-                        <p style=""margin: 4px 0;""><strong>HOPEBOX</strong></p>
-                        <p style=""margin: 4px 0;"">Đại học FPT - Hòa Lạc</p>
-                        <p style=""margin: 4px 0;"">0868 390 784 | HopeBoxHola@gmail.com</p>
+                <!DOCTYPE html>
+                <html lang=""vi"">
+                <head>
+                    <meta charset=""UTF-8"">
+                    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+                    <title>Chứng nhận đóng góp – HopeBox</title>
+                    <link href=""https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro&display=swap"" rel=""stylesheet"">
+                </head>
+                <body style=""margin: 0; padding: 0; font-family: 'Be Vietnam Pro', sans-serif; background-color: #ffffff;"">
+                    <div style=""position: relative; width: 1123px; height: 794px; margin: 0 auto; background-image: url('https://pub-dc597dd9f97242ceb1fc0179075fabfa.r2.dev/certificate.png'); background-size: cover; background-repeat: no-repeat; padding: 60px 80px; box-sizing: border-box; color: #111111; text-align: center;"">
+                        <div style=""text-align: right; font-size: 16px; line-height: 1.5;"">
+                            <p style=""margin: 4px 0;""><strong>HOPEBOX</strong></p>
+                            <p style=""margin: 4px 0;"">Đại học FPT - Hòa Lạc</p>
+                            <p style=""margin: 4px 0;"">0868 390 784 | HopeBoxHola@gmail.com</p>
+                        </div>
+                        <div style=""text-align: center; font-size: 36px; color: #d4af37; font-weight: bold; text-transform: uppercase; margin-top: 20px;"">CHỨNG NHẬN ĐÓNG GÓP</div>
+                        <div style=""text-align: center; margin-top: 30px; font-size: 18px; line-height: 1.8;"">
+                            <p style=""margin: 4px 0;"">Chúng tôi xin chân thành cảm ơn</p>
+                            <p style=""font-size: 26px; font-weight: bold; text-decoration: underline; margin: 10px 0;"">{userName}</p>
+                            <p style=""margin: 4px 0;"">vì sự đóng góp quý báu, góp phần mang lại cơ hội phát triển cho những mảnh đời khó khăn.</p>
+                            <p style=""margin: 4px 0;"">Sự hỗ trợ của quý vị là động lực để dự án tiếp tục lan tỏa và phát triển.</p>
+                            <p style=""margin: 4px 0;"">Chiến dịch: <strong>{causeTitle}</strong></p>
+                            <p style=""margin: 4px 0;"">Số tiền ủng hộ: <strong>{donation.Amount:N0} VND</strong></p>
+                            <p style=""margin: 4px 0;"">Ngày trao: <strong>{DateTime.Now:dd/MM/yyyy}</strong></p>
+                        </div>
+                        <div style=""text-align: right; font-size: 16px; margin-top: 40px;"">
+                            <p style=""margin: 4px 0;"">Trân trọng,</p>
+                            <p style=""margin: 4px 0;"">Đội ngũ HopeBox</p>
+                        </div>
                     </div>
-                    <div style=""text-align: center; font-size: 36px; color: #d4af37; font-weight: bold; text-transform: uppercase; margin-top: 20px;"">CHỨNG NHẬN ĐÓNG GÓP</div>
-                    <div style=""text-align: center; margin-top: 30px; font-size: 18px; line-height: 1.8;"">
-                        <p style=""margin: 4px 0;"">Chứng nhận này được trao cho</p>
-                        <p style=""font-size: 26px; font-weight: bold; text-decoration: underline; margin: 10px 0;"">{userName}</p>
-                        <p style=""margin: 4px 0;"">Vì đã có đóng góp ý nghĩa cho chiến dịch:</p>
-                        <p style=""margin: 4px 0;""><strong>{causeTitle}</strong></p>
-                        <p style=""margin: 4px 0;"">Số tiền ủng hộ: <strong>{donation.Amount:N0} VND</strong></p>
-                        <p style=""margin: 4px 0;"">Ngày trao: <strong>{DateTime.Now:dd/MM/yyyy}</strong></p>
-                    </div>
-                    <div style=""text-align: right; font-size: 16px; margin-top: 40px;"">
-                        <p style=""margin: 4px 0;"">Trân trọng,</p>
-                        <p style=""margin: 4px 0;"">Đội ngũ HopeBox</p>
-                    </div>
-                </div>
-            </body>
-            </html>";
+                </body>
+                </html>";
         }
 
         private string GenerateInvoiceHtml(Donation donation, string userName, string userEmail, string causeTitle, List<DonationReliefPackage> donationReliefPackages)
