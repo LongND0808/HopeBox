@@ -390,28 +390,35 @@ namespace HopeBox.Core.Service
             string vnp_OrderInfo = $"Thanh toán ủng hộ";
             string vnp_Amount = ((double)(donation.Amount * 100)).ToString();
 
+            var vnTz = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            DateTime vnNow = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vnTz);
+
+            string createDate = vnNow.ToString("yyyyMMddHHmmss");
+            string expireDate = vnNow.AddMinutes(15).ToString("yyyyMMddHHmmss");
+
             var payParams = new SortedDictionary<string, string>
             {
-                { "vnp_Version", "2.1.0" },
-                { "vnp_Command", "pay" },
-                { "vnp_TmnCode", vnp_TmnCode },
-                { "vnp_Amount", vnp_Amount },
+                { "vnp_Version",  "2.1.0" },
+                { "vnp_Command",  "pay" },
+                { "vnp_TmnCode",  vnp_TmnCode },
+                { "vnp_Amount",   vnp_Amount },
                 { "vnp_CurrCode", "VND" },
-                { "vnp_TxnRef", vnp_TxnRef },
-                { "vnp_OrderInfo", vnp_OrderInfo },
-                { "vnp_OrderType", "donation" },
-                { "vnp_Locale", "vn" },
-                { "vnp_ReturnUrl", returnUrl },
-                { "vnp_IpAddr", ipAddress ?? "127.0.0.1" },
-                { "vnp_CreateDate", DateTime.Now.ToString("yyyyMMddHHmmss") },
-                { "vnp_ExpireDate", DateTime.Now.AddMinutes(15).ToString("yyyyMMddHHmmss") }
+                { "vnp_TxnRef",   vnp_TxnRef },
+                { "vnp_OrderInfo","Quyên góp HopeBox" },
+                { "vnp_OrderType","donation" },
+                { "vnp_Locale",   "vn" },
+                { "vnp_ReturnUrl",returnUrl },
+                { "vnp_IpAddr",   ipAddress ?? "127.0.0.1" },
+                { "vnp_CreateDate", createDate },
+                { "vnp_ExpireDate", expireDate }
             };
 
-            string queryString = string.Join("&", payParams.Select(kvp => $"{kvp.Key}={WebUtility.UrlEncode(kvp.Value)}"));
-            string secureHash = HmacSHA512(vnp_HashSecret, queryString);
+            string query = string.Join("&", payParams.Select(kvp => $"{kvp.Key}={WebUtility.UrlEncode(kvp.Value)}"));
+            string secureHash = HmacSHA512(vnp_HashSecret, query);
             payParams.Add("vnp_SecureHash", secureHash);
 
-            string paymentUrl = vnp_Url + "?" + string.Join("&", payParams.Select(kvp => $"{kvp.Key}={WebUtility.UrlEncode(kvp.Value)}"));
+            string paymentUrl = vnp_Url + "?" +
+                string.Join("&", payParams.Select(kvp => $"{kvp.Key}={WebUtility.UrlEncode(kvp.Value)}"));
 
             return paymentUrl;
         }
@@ -455,10 +462,10 @@ namespace HopeBox.Core.Service
         private async Task<SePayQRResponse> CreateSePayQRCodeAsync(Donation donation)
         {
             var sepayQrUrl = "https://qr.sepay.vn/img";
-            var accountNumber = "4271000599"; 
-            var bankCode = "BIDV"; 
+            var accountNumber = "4271000599";
+            var bankCode = "BIDV";
             var amount = ((int)donation.Amount).ToString();
-            var description = donation.TradingCode.Length > 25 ? donation.TradingCode.Substring(0, 25) : donation.TradingCode; 
+            var description = donation.TradingCode.Length > 25 ? donation.TradingCode.Substring(0, 25) : donation.TradingCode;
 
             var queryParams = $"?bank={bankCode}&acc={accountNumber}&template=compact&amount={amount}&des={Uri.EscapeDataString(description)}";
             var qrUrl = $"{sepayQrUrl}{queryParams}";
@@ -1063,5 +1070,5 @@ namespace HopeBox.Core.Service
         }
     }
 
-   
+
 }

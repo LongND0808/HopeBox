@@ -10,10 +10,10 @@
                         </div>
                         <div class="content">
                             <div class="number">
-                                <h2><span class="counter-animate">598</span>K</h2>
+                                <h2><span class="counter-animate">2000</span></h2>
                             </div>
                             <img class="line-shape" src="/images/shape/funfact-line1.png" alt="Image">
-                            <p class="title">// Poor People</p>
+                            <p class="title">// trẻ em nghèo</p>
                         </div>
                     </div>
                 </div>
@@ -25,10 +25,10 @@
                         </div>
                         <div class="content">
                             <div class="number">
-                                <h2><span class="counter-animate">897</span>M</h2>
+                                <h2><span class="counter-animate">40</span>M</h2>
                             </div>
                             <img class="line-shape" src="/images/shape/funfact-line1.png" alt="Image">
-                            <p class="title">// Fund raised</p>
+                            <p class="title">// tổng quyên góp</p>
                         </div>
                     </div>
                 </div>
@@ -40,10 +40,10 @@
                         </div>
                         <div class="content">
                             <div class="number">
-                                <h2><span class="counter-animate">998</span>+</h2>
+                                <h2><span class="counter-animate">20</span>+</h2>
                             </div>
                             <img class="line-shape" src="/images/shape/funfact-line1.png" alt="Image">
-                            <p class="title">// Active Member</p>
+                            <p class="title">// thành viên</p>
                         </div>
                     </div>
                 </div>

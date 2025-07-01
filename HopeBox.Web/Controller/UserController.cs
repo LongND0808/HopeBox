@@ -84,7 +84,7 @@ namespace HopeBox.Web.Controller
         public virtual async Task<BaseResponseDto<int>> GetCount()
         {
             var result = await _userService.GetCountAsync();
-            return (result);
+            return result;
         }
 
         [Authorize]
@@ -110,6 +110,13 @@ namespace HopeBox.Web.Controller
                 return new BaseResponseDto<string> { Status = 400, Message = "File rỗng" };
 
             var result = await _userService.ChangeAvatarAsync(Guid.Parse(userId), file);
+            return result;
+        }
+
+        [HttpGet("top-donors")]
+        public virtual async Task<BaseResponseDto<IEnumerable<TopDonorResponseDto>>> GetTopDonors()
+        {
+            var result = await _userService.GetTopDonorsAsync(20);
             return result;
         }
     }

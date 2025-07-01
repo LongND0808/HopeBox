@@ -5,7 +5,7 @@
                 <div class="col-lg-4">
                     <div class="section-title text-center text-lg-start">
                         <h2 class="title title-style mt-xl-30">
-                            Nhà Tài Trợ. 
+                            Nhà Đồng Hành. 
                             <img class="img-shape" src="/images/shape/3.png" alt="Image-HopeBox">
                         </h2>
                     </div>
@@ -41,34 +41,6 @@
                     },
                     {
                         logoSrc: "/images/brand-logo/3.png",
-                        alt: "Brand Name"
-                    },
-                    {
-                        logoSrc: "/images/brand-logo/4.png",
-                        alt: "Brand Name"
-                    },
-                    {
-                        logoSrc: "/images/brand-logo/5.png",
-                        alt: "Brand Name"
-                    },
-                    {
-                        logoSrc: "/images/brand-logo/6.png",
-                        alt: "Brand Name"
-                    },
-                    {
-                        logoSrc: "/images/brand-logo/7.png",
-                        alt: "Brand Name"
-                    },
-                    {
-                        logoSrc: "/images/brand-logo/8.png",
-                        alt: "Brand Name"
-                    },
-                    {
-                        logoSrc: "/images/brand-logo/9.png",
-                        alt: "Brand Name"
-                    },
-                    {
-                        logoSrc: "/images/brand-logo/10.png",
                         alt: "Brand Name"
                     },
                 ]
