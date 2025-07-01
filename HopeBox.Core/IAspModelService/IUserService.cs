@@ -22,5 +22,6 @@ namespace HopeBox.Core.IAspModelService
         Task<BaseResponseDto<IEnumerable<UserDto>>> GetManagerAsync();
         Task<BaseResponseDto<string>> ChangeAvatarAsync(Guid guid, IFormFile file);
         Task<BaseResponseDto<bool>> UpdateUserInfoAsync(UpdateUserInfoRequestDto dto);
+        Task<BaseResponseDto<IEnumerable<TopDonorResponseDto>>> GetTopDonorsAsync(int v);
     }
 }

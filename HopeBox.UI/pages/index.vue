@@ -5,6 +5,7 @@
         <Header />
         <OffCanvasMobileMenu />
         <HeroOne />
+        <TopDonor/>
         <ServiceOne />
         <AboutOne />
         <CausesOne />
@@ -24,6 +25,7 @@
             Header: () => import('@/components/Header'),
             OffCanvasMobileMenu: () => import('@/components/OffCanvasMobileMenu'),
             HeroOne: () => import('@/components/HeroOne'),
+            TopDonor: () => import('@/components/TopDonor'),
             ServiceOne: () => import('@/components/ServiceOne'),
             AboutOne: () => import('@/components/AboutOne'),
             CausesOne: () => import('@/components/CausesOne'),

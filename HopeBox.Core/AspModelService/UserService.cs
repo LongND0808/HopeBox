@@ -22,6 +22,7 @@ namespace HopeBox.Core.IdentityModelService
     public class UserService : IUserService
     {
         private readonly IRepository<User> _repository;
+        private readonly IRepository<Donation> _donationRepository;
         private readonly UserManager<User> _userManager;
         private readonly IConverter<User, UserDto> _converter;
         private readonly IConfiguration _configuration;
@@ -29,12 +30,14 @@ namespace HopeBox.Core.IdentityModelService
 
         public UserService(
             IRepository<User> repository,
+            IRepository<Donation> donationRepository,
             UserManager<User> userManager,
             IConverter<User, UserDto> converter,
             IConfiguration configuration,
             IR2StorageService r2StorageService)
         {
             _repository = repository;
+            _donationRepository = donationRepository;
             _userManager = userManager;
             _converter = converter;
             _configuration = configuration;
@@ -347,5 +350,49 @@ namespace HopeBox.Core.IdentityModelService
             }
         }
 
+        public async Task<BaseResponseDto<IEnumerable<TopDonorResponseDto>>> GetTopDonorsAsync(int limit)
+        {
+            try
+            {
+                var donations = await _donationRepository.GetListAsyncUntracked<Donation>(filter: f => f.Status == Common.Enum.Enumerate.DonationStatus.Paid);
+                var topDonors = donations
+                    .GroupBy(d => d.UserId)
+                    .Select(g => new TopDonorResponseDto
+                    {
+                        UserId = g.Key,
+                        TotalAmount = g.Sum(d => d.Amount),
+                        DonationCount = g.Count()
+                    })
+                    .OrderByDescending(d => d.TotalAmount)
+                    .Take(limit)
+                    .ToList();
+
+                foreach (var donor in topDonors)
+                {
+                    var user = await _repository.GetOneAsyncUntracked<User>(u => u.Id == donor.UserId);
+                    if (user != null)
+                    {
+                        donor.UserName = user.UserName;
+                        donor.AvatarUrl = user.AvatarUrl;
+                    }
+                }
+
+                return new BaseResponseDto<IEnumerable<TopDonorResponseDto>>
+                {
+                    Status = 200,
+                    Message = "Success",
+                    ResponseData = topDonors
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponseDto<IEnumerable<TopDonorResponseDto>>
+                {
+                    Status = 500,
+                    Message = ex.Message,
+                    ResponseData = null
+                };
+            }
+        }
     }
 }

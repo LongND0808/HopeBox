@@ -84,41 +84,6 @@
                                                     <img src="/images/brand-logo/3.png" alt="Image-HopeBox">
                                                 </div>
                                             </div>
-                                            <div class="col mt-50">
-                                                <div class="brand-logo-item">
-                                                    <img src="/images/brand-logo/4.png" alt="Image-HopeBox">
-                                                </div>
-                                            </div>
-                                            <div class="col mt-50">
-                                                <div class="brand-logo-item">
-                                                    <img src="/images/brand-logo/5.png" alt="Image-HopeBox">
-                                                </div>
-                                            </div>
-                                            <div class="col mt-50">
-                                                <div class="brand-logo-item">
-                                                    <img src="/images/brand-logo/6.png" alt="Image-HopeBox">
-                                                </div>
-                                            </div>
-                                            <div class="col mt-50">
-                                                <div class="brand-logo-item">
-                                                    <img src="/images/brand-logo/7.png" alt="Image-HopeBox">
-                                                </div>
-                                            </div>
-                                            <div class="col mt-50">
-                                                <div class="brand-logo-item">
-                                                    <img src="/images/brand-logo/8.png" alt="Image-HopeBox">
-                                                </div>
-                                            </div>
-                                            <div class="col mt-50">
-                                                <div class="brand-logo-item">
-                                                    <img src="/images/brand-logo/9.png" alt="Image-HopeBox">
-                                                </div>
-                                            </div>
-                                            <div class="col mt-50">
-                                                <div class="brand-logo-item">
-                                                    <img src="/images/brand-logo/10.png" alt="Image-HopeBox">
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
