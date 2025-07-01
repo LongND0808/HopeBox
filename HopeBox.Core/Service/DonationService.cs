@@ -687,11 +687,7 @@ namespace HopeBox.Core.Service
                 var accountNumber = "4271000599";
                 var amountIn = amount.ToString("F2"); // Format as string with 2 decimal places
 
-                // Set time range for recent transactions (e.g., last 1 hour)
-                var transactionDateMin = donation.DonationDate.AddHours(-1).ToString("yyyy-MM-dd HH:mm:ss");
-                var transactionDateMax = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-
-                var queryParams = $"?account_number={accountNumber}&amount_in={amountIn}&transaction_date_min={transactionDateMin}&transaction_date_max={transactionDateMax}";
+                var queryParams = $"?account_number={accountNumber}&amount_in={amountIn}";
 
                 using var request = new HttpRequestMessage(HttpMethod.Get, sepayApiUrl + queryParams);
                 request.Headers.Add("Authorization", $"Bearer {apiToken}");
