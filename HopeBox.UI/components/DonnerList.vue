@@ -33,7 +33,7 @@
         data() {
             return {
                 donnerList: [],
-                defaultAvatar: '/images/photos/default-avatar.png'
+                defaultAvatar: 'https://pub-dc597dd9f97242ceb1fc0179075fabfa.r2.dev/avatars/008f1239-beb4-430b-a66d-a263f8c2393a.jpg'
             };
         },
         computed: {
