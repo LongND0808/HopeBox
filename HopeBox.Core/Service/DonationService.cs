@@ -858,7 +858,7 @@ namespace HopeBox.Core.Service
                         <div style=""text-align: center; margin-top: 30px; font-size: 18px; line-height: 1.8;"">
                             <p style=""margin: 4px 0;"">Chúng tôi xin chân thành cảm ơn</p>
                             <p style=""font-size: 26px; font-weight: bold; text-decoration: underline; margin: 10px 0;"">{userName}</p>
-                            <p style=""margin: 4px 0;"">vì sự đóng góp quý báu, góp phần mang lại cơ hội phát triển cho những mảnh đời khó khăn.</p>
+                            <p style=""margin: 4px 0;"">Vì sự đóng góp quý báu, góp phần mang lại cơ hội phát triển cho những mảnh đời khó khăn.</p>
                             <p style=""margin: 4px 0;"">Sự hỗ trợ của quý vị là động lực để dự án tiếp tục lan tỏa và phát triển.</p>
                             <p style=""margin: 4px 0;"">Chiến dịch: <strong>{causeTitle}</strong></p>
                             <p style=""margin: 4px 0;"">Số tiền ủng hộ: <strong>{donation.Amount:N0} VND</strong></p>

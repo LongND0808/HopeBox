@@ -372,7 +372,7 @@ namespace HopeBox.Core.IdentityModelService
                     var user = await _repository.GetOneAsyncUntracked<User>(u => u.Id == donor.UserId);
                     if (user != null)
                     {
-                        donor.UserName = user.UserName;
+                        donor.UserName = user.FullName;
                         donor.AvatarUrl = user.AvatarUrl;
                     }
                 }
