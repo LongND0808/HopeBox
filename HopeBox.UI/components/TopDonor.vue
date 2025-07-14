@@ -13,7 +13,7 @@
                             class="donner-item flex items-center space-x-3 p-3">
                             <div class="row">
                                 <div class="col-md-2 d-flex justify-content-center">
-                                    <img :src="donor.avatarUrl || '/images/photos/default-avatar.png'"
+                                    <img :src="donor.avatarUrl || 'https://pub-dc597dd9f97242ceb1fc0179075fabfa.r2.dev/avatars/008f1239-beb4-430b-a66d-a263f8c2393a.jpg'"
                                         :alt="donor.userName" class="donner-avatar">
                                 </div>
                                 <div class="col-md-10">
@@ -48,7 +48,7 @@
         data() {
             return {
                 donors: [],
-                defaultAvatar: '/images/photos/default-avatar.png'
+                defaultAvatar: 'https://pub-dc597dd9f97242ceb1fc0179075fabfa.r2.dev/avatars/008f1239-beb4-430b-a66d-a263f8c2393a.jpg'
             };
         },
         computed: {
